@@ -3,11 +3,9 @@ import './App.css';
 import Guest from './components/Guest.js'
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        
-        <Guest/>
+    <div >
+      <header >
+        <Guest />
       </header>
     </div>
   );
