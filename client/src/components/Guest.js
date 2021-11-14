@@ -45,7 +45,6 @@ class HelloWorld extends Component {
       user_nickname: event.target.value,
     });
   };
-  
 
   submitForm = (event) => {
     console.log("submited form with values", this.state);
@@ -82,16 +81,25 @@ class HelloWorld extends Component {
       <Form
         onSubmit={this.handleSubmit}
         {...formItemLayout}
-        style={{ width: "600px" }}
+        /* style={{ width: "600px" }}*/
+        style={{ height : "1200px",
+          backgroundImage:
+            "url(" +
+            "https://cdn.jetphotos.com/full/5/60768_1635979380.jpg" +
+            ")",
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+        }}
       >
         <FormItem type="primary" {...formItemLayout} label="E-mail" hasFeedback>
           <Input onChange={this.get_email} />
         </FormItem>
-        <FormItem label="Password" hasFeedback>
-          <Input onChange={this.get_password} />
+        <FormItem label="Password"  hasFeedback>
+          <Input.Password onChange={this.get_password} />
         </FormItem>
         <FormItem label="Confirm Password" hasFeedback>
-          <Input onChange={this.get_confirm_passowrd} />
+          <Input.Password onChange={this.get_confirm_passowrd} />
         </FormItem>
         <FormItem
           label={
