@@ -13,6 +13,7 @@ import {
   AutoComplete,
 } from "antd";
 import "antd/dist/antd.css";
+import axios from 'axios';
 
 const FormItem = Form.Item;
 // const { getFieldDecorator } = this.props.form;
@@ -23,7 +24,7 @@ class HelloWorld extends Component {
     user_email: "",
   };
   // functions to controll input
-
+  
   // geters
   get_email = (event) => {
     this.setState({
@@ -46,12 +47,13 @@ class HelloWorld extends Component {
     });
   };
 
-  submitForm = (event) => {
-    console.log("submited form with values", this.state);
-  };
+
 
   handleSubmit = (e) => {
     console.log(this.state);
+    axios
+      .post("http://localhost:5000/", this.state)
+      .then((response) => this.setState({ articleId: response.data.id }));
   };
 
   render() {
