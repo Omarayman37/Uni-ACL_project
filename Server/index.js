@@ -62,4 +62,25 @@ app.post("/RegisterUser", function (req, res) {
     .catch((err) => {});
 });
 
+app.post("/LoginUser", function (req, res) {
+  console.log(
+    "in the post method server resived post request with body:\n" +
+      JSON.stringify(req.body)
+  );
+  let querry = {
+    Email: req.body.user_email,
+    Password: req.body.user_password,
+  };
+   UserData.findOne(querry).then(function (doc) {
+     if(doc){
+     console.log("found user login successfull" + doc);
+      res.status(200).json({ status: "ok" }); // this means that it was great and it worked quiet well if i can say so myself
+     }
+     else{//nothing found then return bad
+      console.log("no user found with " + querry);
+      res.status(200).json({ status: "no" });
+     }
+   }).catch(err=>console.error(err))
+});
+
 export default app;

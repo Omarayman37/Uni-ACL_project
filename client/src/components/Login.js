@@ -36,8 +36,10 @@ class LoginPage extends Component {
     axios
       .post("http://localhost:5000/LoginUser", this.state)
       .then((response) =>
-        console.log("sucessfully saved\n" + JSON.stringify(this.state))
-      );
+        console.log("sucessfully logged in\n" + JSON.stringify(this.state))
+      ).catch(err=>{
+          console.log('there was an error with the credentials')
+      })
   };
 
   render() {
