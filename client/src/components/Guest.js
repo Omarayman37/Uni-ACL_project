@@ -62,12 +62,9 @@ class HelloWorld extends Component {
       },
     };
     return (
-      <Form
-        onSubmit={this.handleSubmit}
-        {...formItemLayout}
-        /* style={{ width: "600px" }}*/
+      <div
         style={{
-          height: "1200px",
+          height: "1000px",
           backgroundImage:
             "url(" +
             "https://cdn.jetphotos.com/full/5/60768_1635979380.jpg" +
@@ -75,39 +72,51 @@ class HelloWorld extends Component {
           backgroundPosition: "center",
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
+          "padding-top":"65px"
         }}
       >
-        <FormItem type="primary" {...formItemLayout} label="E-mail" hasFeedback>
-          <Input name="user_email" onChange={this.handleChange} />
-        </FormItem>
-        <FormItem label="Password" hasFeedback>
-          <Input.Password name="user_password" onChange={this.handleChange} />
-        </FormItem>
-        <FormItem label="Confirm Password" hasFeedback>
-          <Input.Password
-            name="user_confirm_password"
-            onChange={this.handleChange}
-          />
-        </FormItem>
-        <FormItem
-          label={
-            <span>
-              Nickname&nbsp;
-              <Tooltip title="What do you want other to call you?">
-                {/* <Icon type="question-circle-o" /> */}
-              </Tooltip>
-            </span>
-          }
-          hasFeedback
+        <Form
+          onSubmit={this.handleSubmit}
+          {...formItemLayout}
+          /* style={{ width: "600px" }}*/
         >
-          <Input name="user_nickname" onChange={this.handleChange} />
-        </FormItem>
-        <FormItem {...tailFormItemLayout}>
-          <Button type="primary" onClick={this.handleSubmit}>
-            Register
-          </Button>
-        </FormItem>
-      </Form>
+          <FormItem
+            type="primary"
+            {...formItemLayout}
+            label="E-mail"
+            hasFeedback
+          >
+            <Input name="user_email" onChange={this.handleChange} />
+          </FormItem>
+          <FormItem label="Password" hasFeedback>
+            <Input.Password name="user_password" onChange={this.handleChange} />
+          </FormItem>
+          <FormItem label="Confirm Password" hasFeedback>
+            <Input.Password
+              name="user_confirm_password"
+              onChange={this.handleChange}
+            />
+          </FormItem>
+          <FormItem
+            label={
+              <span>
+                Nickname&nbsp;
+                <Tooltip title="What do you want other to call you?">
+                  {/* <Icon type="question-circle-o" /> */}
+                </Tooltip>
+              </span>
+            }
+            hasFeedback
+          >
+            <Input name="user_nickname" onChange={this.handleChange} />
+          </FormItem>
+          <FormItem {...tailFormItemLayout}>
+            <Button type="primary" onClick={this.handleSubmit}>
+              Register
+            </Button>
+          </FormItem>
+        </Form>
+      </div>
     );
   }
 }
