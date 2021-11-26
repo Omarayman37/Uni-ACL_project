@@ -14,8 +14,7 @@ function App() {
         <Route path="/RegisterUser" element={<Guest />} />
         <Route path="/AddAirplanes" element={<Airplanes />} />
       </Routes>
-      {/* <Airplanes /> */}
-      <LoginPage />
+
     </div>
   );
 }
