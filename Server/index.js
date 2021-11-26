@@ -44,17 +44,20 @@ app.post("/", (req, res) => {
   console.log("request sent", req.body);
 });
 // post request to post a user
-app.post("/insert", function (req, res) {
+app.post("/RegisterUser", function (req, res) {
+  console.log('in the post method server resived post request with body:\n'+JSON.stringify(req.body))
   var item = {
-    Email: req.body.Email,
-    Password: req.body.Password,
-    Nickname: req.body.Nickname,
+    Email: req.body.user_email,
+    Password: req.body.user_password,
+    Nickname: req.body.user_nickname,
   };
   var data = new UserData(item);
   data
     .save()
     .then((doc) => {
       console.log("saved sucess " + doc);
+      res.status(200).json({ status: "ok" }); // this means that it was great and it worked quiet well if i can say so myself
+
     })
     .catch((err) => {});
 });
