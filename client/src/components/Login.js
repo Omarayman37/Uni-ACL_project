@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { useNavigate, useHistory, browserHistory } from "react-router-dom";
 import {
   Form,
   Input,
@@ -11,9 +12,11 @@ import {
   Checkbox,
   Button,
   AutoComplete,
+  Alert,
 } from "antd";
 import "antd/dist/antd.css";
 import axios from "axios";
+import crypto, {AES, createCipheriv, createHash, randomBytes} from "crypto";
 
 const FormItem = Form.Item;
 // const { getFieldDecorator } = this.props.form;
@@ -22,27 +25,54 @@ class LoginPage extends Component {
   // state
   state = {
     user_email: "",
+    show_error: false,
+    error: "",
+    user_password:""
   };
   // functions to controll input
   handleChange = (evt) => {
     const value = evt.target.value;
     this.setState({
-      [evt.target.name]: value,
+      [evt.target.name]: value.trim(),
     });
   };
+  
+ 
 
   handleSubmit = (e) => {
-    console.log(this.state);
+    // Here we encrypt using a super scret key and and initialization vector 
+    let login_request_object = this.state
+    login_request_object["user_password"] = createHash("sha256")
+      .update(login_request_object["user_password"])
+      .digest("hex");
+    console.log(login_request_object);
+
     axios
-      .post("http://localhost:5000/LoginUser", this.state)
-      .then((response) =>
-        console.log("sucessfully logged in\n" + JSON.stringify(this.state))
-      ).catch(err=>{
-          console.log('there was an error with the credentials')
+      .post("http://localhost:5000/LoginUser", login_request_object)
+      .then((res) => {
+        const { success, err } = res.data;
+        if (success) {
+          console.log(
+            "successfull login with credentials : " + JSON.stringify(this.state)
+          );
+          window.location.href = "http://localhost:3000/AddAirplanes"; // TODO: FIX THIS TRASH LATER
+        } else {
+          console.log("invalud credentails :" + JSON.stringify(this.state));
+          // here we tell the UI to display an error we keda
+
+          this.setState({
+            show_error: true,
+            error: err,
+          });
+        }
       })
+      .catch((err) => {
+        console.error(err);
+      });
   };
 
   render() {
+    const { history } = this.props;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -65,6 +95,7 @@ class LoginPage extends Component {
         },
       },
     };
+
     return (
       <Form
         onSubmit={this.handleSubmit}
@@ -93,6 +124,17 @@ class LoginPage extends Component {
             Login
           </Button>
         </FormItem>
+        {this.state.show_error && (
+          <FormItem {...tailFormItemLayout}>
+            <Alert
+              message={this.state.error}
+              description="Your Username or Password is wrong"
+              type="error"
+              showIcon
+              display
+            />
+          </FormItem>
+        )}
       </Form>
     );
   }

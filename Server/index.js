@@ -1,23 +1,28 @@
-import express  from "express";
+import express from "express";
 import mongoose from "mongoose";
-import cors from 'cors';
+import cors from "cors";
+import crypto, { createDecipheriv } from 'crypto';
 //
-import userDataSchema from './models/UserDataSchema.js'; 
+import userDataSchema from "./models/UserDataSchema.js";
 //
-console.log('server is running')
+console.log("server is running");
 
 const app = express();
-const Schema = mongoose.Schema
+const Schema = mongoose.Schema;
 
-app.use(express.json({'limit':'30mb', extended:"true"})); //Used to parse JSON bodies
+app.use(express.json({ limit: "30mb", extended: "true" })); //Used to parse JSON bodies
 app.use(express.urlencoded({ limit: "30mb", extended: "true" }));
-app.use(cors({ origin:'*', 
-   credentials:true,            //access-control-allow-credentials:true
-   optionSuccessStatus:200,}))
+app.use(
+  cors({
+    origin: "*",
+    credentials: true, //access-control-allow-credentials:true
+    optionSuccessStatus: 200,
+  })
+);
 
 // Connect to DB and Server
 const CONNECTION_URL =
-  "mongodb+srv://hazemeffat93:hazem750@cluster0.ryp3q.mongodb.net/Cluster0?retryWrites=true&w=majority";
+  "mongodb+srv://karim:karim@cluster0.gmzul.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 const PORT = process.env.PORT || 5000;
 mongoose
   .connect(CONNECTION_URL, { useNewUrlParser: true, UseUnifiedTopology: true })
@@ -25,7 +30,6 @@ mongoose
     app.listen(PORT, () => console.log(`server running on port:${PORT}`))
   )
   .catch((error) => console.log(error.message));
-
 
 // Data Models
 var UserData = mongoose.model("UserData", userDataSchema);
@@ -45,11 +49,21 @@ app.post("/", (req, res) => {
 });
 // post request to post a user
 app.post("/RegisterUser", function (req, res) {
-  console.log('in the post method server resived post request with body:\n'+JSON.stringify(req.body))
+  console.log(
+    "in the post method server resived post request with body:\n" +
+      JSON.stringify(req.body)
+  );
+  const {user_email, user_password, user_passport_number, user_first_name, user_last_name, user_home_address, user_nickname, user_contry_code, user_telephone_number} = req.body
   var item = {
-    Email: req.body.user_email,
-    Password: req.body.user_password,
-    Nickname: req.body.user_nickname,
+    email:user_email,
+    password: user_password,
+    nickname: user_nickname,
+    first_name: user_first_name,
+    last_name: user_last_name,
+    home_address:user_home_address,
+    contry_code: user_contry_code,
+    telephone_number: user_telephone_number,
+    passport: user_passport_number,
   };
   var data = new UserData(item);
   data
@@ -57,9 +71,8 @@ app.post("/RegisterUser", function (req, res) {
     .then((doc) => {
       console.log("saved sucess " + doc);
       res.status(200).json({ status: "ok" }); // this means that it was great and it worked quiet well if i can say so myself
-
     })
-    .catch((err) => {});
+    .catch((err) => {console.error(err)});
 });
 
 app.post("/LoginUser", function (req, res) {
@@ -67,20 +80,30 @@ app.post("/LoginUser", function (req, res) {
     "in the post method server resived post request with body:\n" +
       JSON.stringify(req.body)
   );
+  console.log(req.body.user_email)
+  console.log(req.body.user_password);
+
   let querry = {
-    Email: req.body.user_email,
-    Password: req.body.user_password,
+    email: req.body.user_email,
+    password: req.body.user_password,
   };
-   UserData.findOne(querry).then(function (doc) {
-     if(doc){
-     console.log("found user login successfull" + doc);
-      res.status(200).json({ status: "ok" }); // this means that it was great and it worked quiet well if i can say so myself
-     }
-     else{//nothing found then return bad
-      console.log("no user found with " + querry);
-      res.status(200).json({ status: "no" });
-     }
-   }).catch(err=>console.error(err))
+  UserData.findOne(querry)
+    .then(function (doc) {
+      if (doc) {
+        console.log("found user login successfull" + doc);
+        res.status(200).json({ status: "ok", success: true, err: null }); // this means that it was great and it worked quiet well if i can say so myself
+      } else {
+        //nothing found then return bad
+        console.log("no user found with " + querry);
+        res
+          .status(200)
+          .json({ status: "ok", success: false, err: "Invalid Credentials" });
+      }
+    })
+    .catch((err) => console.error(err));
 });
+
+
+
 
 export default app;

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import crypto, { AES, createCipheriv, createHash, randomBytes } from "crypto";
 import {
   Form,
   Input,
@@ -11,9 +12,11 @@ import {
   Checkbox,
   Button,
   AutoComplete,
+  
 } from "antd";
 import "antd/dist/antd.css";
-import axios from 'axios';
+import axios from "axios";
+const { Option } = Select;
 
 const FormItem = Form.Item;
 // const { getFieldDecorator } = this.props.form;
@@ -24,18 +27,26 @@ class HelloWorld extends Component {
     user_email: "",
   };
   // functions to controll input
-  handleChange = (evt)=> {
-  const value = evt.target.value;
-  this.setState({
-    [evt.target.name]: value
-  });
-}
+  handleChange = (evt) => {
+    const value = evt.target.value;
+    this.setState({
+      [evt.target.name]: value,
+    });
+  };
 
   handleSubmit = (e) => {
     console.log(this.state);
+    let login_request_object = this.state;
+    login_request_object["user_password"] = createHash("sha256") // hash the passowrd to send it via internet
+      .update(login_request_object["user_password"])
+      .digest("hex");
+
+    delete login_request_object["user_confirm_password"]; // remove the confirm password field
     axios
       .post("http://localhost:5000/RegisterUser", this.state)
-      .then((response) => console.log('sucessfully saved\n' + JSON.stringify(this.state)));
+      .then((response) =>
+        console.log("sucessfully saved\n" + JSON.stringify(this.state))
+      );
   };
 
   render() {
@@ -61,6 +72,15 @@ class HelloWorld extends Component {
         },
       },
     };
+    const prefixSelector = (
+      <Form.Item name="prefix" noStyle>
+        <Select style={{ width: 70 }}>
+          <Option value="+49">+49</Option>
+          <Option value="+20">+20</Option>
+        </Select>
+      </Form.Item>
+    );
+
     return (
       <div
         style={{
@@ -72,7 +92,7 @@ class HelloWorld extends Component {
           backgroundPosition: "center",
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
-          "padding-top":"65px"
+          paddingTop: "65px",
         }}
       >
         <Form
@@ -88,7 +108,7 @@ class HelloWorld extends Component {
           >
             <Input name="user_email" onChange={this.handleChange} />
           </FormItem>
-          <FormItem label="Password" hasFeedback>
+          <FormItem label="Password" hasFeedback >
             <Input.Password name="user_password" onChange={this.handleChange} />
           </FormItem>
           <FormItem label="Confirm Password" hasFeedback>
@@ -109,6 +129,73 @@ class HelloWorld extends Component {
             hasFeedback
           >
             <Input name="user_nickname" onChange={this.handleChange} />
+          </FormItem>
+          <FormItem
+            type="primary"
+            {...formItemLayout}
+            label="First Name"
+            hasFeedback
+          >
+            <Input name="user_first_name" onChange={this.handleChange} />
+          </FormItem>
+          <FormItem
+            type="primary"
+            {...formItemLayout}
+            label="Last Name"
+            hasFeedback
+          >
+            <Input name="user_last_name" onChange={this.handleChange} />
+          </FormItem>
+          <FormItem
+            type="primary"
+            {...formItemLayout}
+            label="Home Address"
+            hasFeedback
+          >
+            <Input name="user_home_address" onChange={this.handleChange} />
+          </FormItem>
+          <FormItem
+            type="primary"
+            {...formItemLayout}
+            label="contry code"
+            hasFeedback
+          >
+            <Input name="user_contry_code" onChange={this.handleChange} />
+          </FormItem>
+
+          <Form.Item
+            name="phone"
+            label="Phone Number"
+            rules={[
+              { required: true, message: "Please input your phone number!" },
+            ]}
+          >
+            <Input
+              name="user_telephone_number"
+              onChange={this.handleChange}
+              addonBefore={prefixSelector}
+              style={{ width: "100%" }}
+            />
+          </Form.Item>
+          <Form.Item
+            name="phone2"
+            label="Phone Number"
+            rules={[{ required: false, message: "optional telephone number!" }]}
+          >
+            <Input
+              name="user_telephone_number_2"
+              onChange={this.handleChange}
+              addonBefore={prefixSelector}
+              style={{ width: "100%" }}
+            />
+          </Form.Item>
+          <FormItem
+            type="primary"
+            {...formItemLayout}
+            label="Passport Number"
+            hasFeedback
+          >
+            <Input name="user_passport_number" onChange={this.handleChange} />
           </FormItem>
           <FormItem {...tailFormItemLayout}>
             <Button type="primary" onClick={this.handleSubmit}>
