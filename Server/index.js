@@ -43,7 +43,12 @@ app.get("/get-data", function (req, res) {
     console.log("all users " + doc);
   });
 });
-
+app.get("/get-data-flights", function (req, res) {
+  //to get all users
+  flightData.find().then(function (doc) {
+    res.status(200).json({ data: doc });
+  });
+});
 // POST REQUESTS
 app.post("/", (req, res) => {
   console.log("request sent", req.body);
