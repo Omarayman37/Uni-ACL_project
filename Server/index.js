@@ -4,6 +4,7 @@ import cors from "cors";
 import crypto, { createDecipheriv } from 'crypto';
 //
 import userDataSchema from "./models/UserDataSchema.js";
+import flightSchema from './models/FlgihtsSchema.js';
 //
 console.log("server is running");
 
@@ -33,7 +34,7 @@ mongoose
 
 // Data Models
 var UserData = mongoose.model("UserData", userDataSchema);
-
+let flightData = mongoose.model("flightData", flightSchema);
 // GET REQUESTS
 // get request get-data to get all users
 app.get("/get-data", function (req, res) {
@@ -73,6 +74,35 @@ app.post("/RegisterUser", function (req, res) {
       res.status(200).json({ status: "ok" }); // this means that it was great and it worked quiet well if i can say so myself
     })
     .catch((err) => {console.error(err)});
+});
+
+app.post("/RegisterFlight", function (req, res) {
+  console.log(
+    "in the post method server resived post request with body:\n" +
+      JSON.stringify(req.body)
+  );
+  const {
+    id,
+    name,
+    seat_number,
+    range,
+  } = req.body;
+  var item = {
+    id: id,
+    name: name,
+    seat_number: seat_number,
+    range: range,
+  };
+  var data = new flightData(item);
+  data
+    .save()
+    .then((doc) => {
+      console.log("saved sucess " + doc);
+      res.status(200).json({ status: "ok" }); // this means that it was great and it worked quiet well if i can say so myself
+    })
+    .catch((err) => {
+      console.error(err);
+    });
 });
 
 app.post("/LoginUser", function (req, res) {
