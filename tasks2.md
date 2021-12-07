@@ -23,13 +23,22 @@
 * also a view seats that will open a list of booked seats and an input place to choose a seat by writing it's number
 * a button that will be named book return flights that will simply switch from <-> to and will put departure time as the next day after arrival time .... no need for complicated logic i think 
 
-4. favorited page where all of our flights are with a reserve button that shows a pop up screen to confirm
+4. Selected page where all of our flights are with a reserve button that shows a pop up screen to confirm
 * 
 
 5. A your flights page 
 * has all reserved flights with a cancel button gives pop up bardo we keda
 
---- back end
+15. UI user page to allow edits
+* use register page as template 
+* get info of user
+* display info in input fields
+* when input field is updated update user 
+* add save button
+
+## back end
+
+
 6. send mail to specific email confirming their cancelation
 7. update funciton that will update the values of a user 
 8. search method with criteria tha will take an object like this 
@@ -42,6 +51,7 @@ querry = {
     price: number // in dollars 
     from: string // location name
     to: string // location name
+    cabin:string ['economy', 'business'] // one of thses 2 things
 }
 ```
 * if any of the fields is null then the object should assume anything is accepted like if departure_time = null and price = 150 then all flights less than 150 are shown
