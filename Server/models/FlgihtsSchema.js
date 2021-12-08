@@ -8,8 +8,13 @@ let flightSchema = new Schema(
     name: String,
     seat_number: String,
     range: String,
+    arrival_time: Date,
+    departure_time: Date,
+    from: String,
+    to: String,
+    price: String,
   },
-  { collection: "flgits-data" }
+  { collection: "flights" }
 );
 
 export default flightSchema;

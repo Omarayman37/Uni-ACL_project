@@ -90,13 +90,23 @@ app.post("/RegisterFlight", function (req, res) {
     id,
     name,
     seat_number,
-    range,
+    duration,
+    arrival_time,
+    departure_time,
+    from,
+    to,
+    price
   } = req.body;
   var item = {
     id: id,
     name: name,
     seat_number: seat_number,
-    range: range,
+    duration:departure_time.diff(arrival_time, 'hours'),
+    arrival_time:arrival_time,
+    departure_time:departure_time,
+    from:from,
+    to:to,
+    price:price,
   };
   var data = new flightData(item);
   data
