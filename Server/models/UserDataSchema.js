@@ -11,6 +11,7 @@ var userDataSchema = new Schema(
     contry_code: { type: String, required: true },
     telephone_number: { type: String, required: true },
     passport: { type: String, required: true },
+    flightsID: { type: String, required: true },// lazem tb2a mawgooda 3shan t3rf tgeeb flights bt3t each user
   },
   { collection: "user-data" }
 );
