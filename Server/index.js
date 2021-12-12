@@ -5,6 +5,8 @@ import crypto, { createDecipheriv } from 'crypto';
 //
 import userDataSchema from "./models/UserDataSchema.js";
 import flightSchema from './models/FlgihtsSchema.js';
+import {timeDiffCalc} from "./util/diffrenceHours.js";
+import {create_functional_querry_from_request} from './util/querry_func.js'
 //
 console.log("server is running");
 
@@ -43,11 +45,19 @@ app.get("/get-data", function (req, res) {
     console.log("all users " + doc);
   });
 });
-app.get("/get-data-flights", function (req, res) {
+app.get("/get-all-flights", function (req, res) {
   //to get all users
   flightData.find().then(function (doc) {
     res.status(200).json({ data: doc });
   });
+});
+app.post("/get-flights", async function (req, res) {
+  //to get all users
+  console.log(req.body.querry)
+  const querry = req.body.querry;
+  const returned_response = await create_functional_querry_from_request(querry)
+  res.status(200).send({ data: returned_response });
+  
 });
 // POST REQUESTS
 app.post("/", (req, res) => {
@@ -90,13 +100,26 @@ app.post("/RegisterFlight", function (req, res) {
     id,
     name,
     seat_number,
-    range,
+    duration,
+    arrival_time,
+    departure_time,
+    from,
+    to,
+    price
   } = req.body;
   var item = {
     id: id,
     name: name,
     seat_number: seat_number,
-    range: range,
+    duration: timeDiffCalc(
+      Date.parse(arrival_time),
+      Date.parse(departure_time)
+    ), // departure_time.diff(arrival_time, 'hours'),
+    arrival_time: arrival_time,
+    departure_time: departure_time,
+    from: from,
+    to: to,
+    price: price,
   };
   var data = new flightData(item);
   data
