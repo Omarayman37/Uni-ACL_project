@@ -105,7 +105,10 @@ app.post("/RegisterFlight", function (req, res) {
     departure_time,
     from,
     to,
-    price
+    price,
+    baggage_allowance,
+    BusinessClass_seats,
+    Economy_seats,
   } = req.body;
   var item = {
     id: id,
@@ -120,6 +123,9 @@ app.post("/RegisterFlight", function (req, res) {
     from: from,
     to: to,
     price: price,
+    baggage_allowance: baggage_allowance,
+    BusinessClass_seats: BusinessClass_seats,
+    Economy_seats: Economy_seats,
   };
   var data = new flightData(item);
   data
