@@ -10,12 +10,16 @@ import myFlights from './components/myFlights'
 import UserAllFlights from './components/UserAllFlights'
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import AddAirplane from './components/AddAirplane';
 function App() {
   return (
     <div>
       <header></header>
       <Routes>
-        <Route path="/" element={<SearchPage />} exact />
+        <Route path="/" element={<AddAirplane />} exact />
+        <Route path="/AddAirplane" element={<AddAirplane />} exact />
+
+        <Route path="/SearchPage" element={<SearchPage />} exact />
         <Route path="/LoginUser" element={<LoginPage />} />
         <Route path="/myFlights" element={<myFlights />} />
         <Route path="/userAllFlights" element={<UserAllFlights />} />
@@ -23,7 +27,6 @@ function App() {
         <Route path="/AddAirplanes" element={<Airplanes />} />
         <Route path="/HomeGuest" element={<HomeGuest />} />
       </Routes>
-
     </div>
   );
 }
