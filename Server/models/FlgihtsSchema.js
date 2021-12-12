@@ -8,6 +8,7 @@ let flightSchema = new Schema(
     name: String,
     seat_number: String,
     range: String,
+    duration:Number,
     arrival_time: Date,
     departure_time: Date,
     from: String,

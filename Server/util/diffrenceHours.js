@@ -1,13 +1,13 @@
-export let timeDiffCalc =(dateFuture, dateNow) => {
+export let timeDiffCalc = (dateFuture, dateNow) => {
   let diffInMilliSeconds = Math.abs(dateFuture - dateNow) / 1000;
-
+  let diff = diffInMilliSeconds;
   // calculate days
   const days = Math.floor(diffInMilliSeconds / 86400);
   diffInMilliSeconds -= days * 86400;
   console.log("calculated days", days);
 
   // calculate hours
-  const hours = Math.floor(diffInMilliSeconds / 3600) % 24;
+  const hours = Math.floor(diffInMilliSeconds / 3600);
   diffInMilliSeconds -= hours * 3600;
   console.log("calculated hours", hours);
 
@@ -27,5 +27,5 @@ export let timeDiffCalc =(dateFuture, dateNow) => {
   difference +=
     minutes === 0 || hours === 1 ? `${minutes} minutes` : `${minutes} minutes`;
 
-  return hours;
-}
+  return (diff / (60 * 60)).toFixed(1);;
+};

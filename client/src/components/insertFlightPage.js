@@ -1,3 +1,5 @@
+// Could work as an insert page in the right format as it was used to insert the initial flights
+// change some of the input fields 
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -23,33 +25,33 @@ import axios from "axios";
 
 class SearchPage extends Component {
   state = {
-    flights:[]
+    flights: [],
   };
 
   // handel changes
   handleChange = async (evt) => {
     const value = evt.target.value;
-    console.log(typeof evt.target.value)
+    console.log(typeof evt.target.value);
     this.setState({
-      [evt.target.name]: (typeof value ==='string' )? value.trim(): value,
+      [evt.target.name]: typeof value === "string" ? value.trim() : value,
     }); // here SetState is async non bloking and making it bloking is bad so we change a opy of the state better
-    const new_state_after_async_setState = this.state
+    const new_state_after_async_setState = this.state;
     new_state_after_async_setState[evt.target.name] = value;
     const { ["flights"]: deletedKey, ...querry } =
       new_state_after_async_setState; // as we do not want to send the flights from state but send eveything else
     const response = await axios.post("http://localhost:5000/get-flights", {
       querry: querry,
     });
-    
-    const flights = response['data']['data']
-    console.log('recived updated flights: ', flights)
-    this.setState({flights:flights})
+
+    const flights = response["data"]["data"];
+    console.log("recived updated flights: ", flights);
+    this.setState({ flights: flights });
   };
-  handleChangeStartDate = (evt) => {
-    if(evt==null)return;
+  handleChangeDepartureDate = (evt) => {
+    if (evt == null) return;
     const obj = {
       target: {
-        name: "start_date",
+        name: "departure_time",
         value: evt._d,
       },
     };
@@ -59,16 +61,16 @@ class SearchPage extends Component {
     const obj = {
       target: {
         name: "price",
-        value: evt*10,
+        value: evt * 10,
       },
     };
     this.handleChange(obj);
   };
-  handleChangeEndDate = (evt) => {
-    if(evt==null)return;
+  handleChangeArrivalDate = (evt) => {
+    if (evt == null) return;
     const obj = {
       target: {
-        name: "end_date",
+        name: "arrival_time",
         value: evt._d,
       },
     };
@@ -82,7 +84,6 @@ class SearchPage extends Component {
       .then((response) =>
         console.log("sucessfully saved\n" + JSON.stringify(this.state))
       );
-
   };
   render() {
     return (
@@ -90,20 +91,21 @@ class SearchPage extends Component {
         <Form name="search from" layout="inline" onSubmit={this.handleSubmit}>
           <Row>
             <Col span={8}>
-              <Form.Item name="start_date" label="Start Date">
+              <Form.Item name="departure_time" label="Departure Time">
                 <DatePicker
-                  onChange={this.handleChangeStartDate}
+                  onChange={this.handleChangeDepartureDate}
                   showTime
-                  format="YYYY-MM-DD"
+                  format="YYYY-MM-DD HH:mm"
                 />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="end_date" label="End Date">
+              <Form.Item name="arrival_time" label="Arrival Time">
                 <DatePicker
-                  onChange={this.handleChangeEndDate}
+                  name="arrival_time"
+                  onChange={this.handleChangeArrivalDate}
                   showTime
-                  format="YYYY-MM-DD"
+                  format="YYYY-MM-DD HH:mm"
                 />
               </Form.Item>
             </Col>
@@ -150,22 +152,11 @@ class SearchPage extends Component {
               </Form.Item>
             </Col>
           </Row>
-          <Row>
-            <Col span={12}>
-              <Form.Item>
-                <Button type="primary" onClick={this.handleSubmit}>
-                  Submit
-                </Button>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item>
-                <Button type="primary" onClick={this.handleSubmit}>
-                  Submit
-                </Button>
-              </Form.Item>
-            </Col>
-          </Row>
+          <Form.Item>
+            <Button type="primary" onClick={this.handleSubmit}>
+              Submit
+            </Button>
+          </Form.Item>
         </Form>
         <Divider>Results</Divider>
         {this.state.flights.map((flight) => (
