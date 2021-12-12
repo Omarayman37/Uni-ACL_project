@@ -1,6 +1,7 @@
 export let timeDiffCalc = (dateFuture, dateNow) => {
   let diffInMilliSeconds = Math.abs(dateFuture - dateNow) / 1000;
   let diff = diffInMilliSeconds;
+  console.log('diff ', diff, dateFuture, dateNow)
   // calculate days
   const days = Math.floor(diffInMilliSeconds / 86400);
   diffInMilliSeconds -= days * 86400;
