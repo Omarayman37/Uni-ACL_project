@@ -11,8 +11,8 @@ let flightSchema = new Schema(
     duration: Number,
     arrival_time: Date,
     departure_time: Date,
-    from: String,
-    to: String,
+    from: String, // contry name 
+    to: String,//country name
     price: String,
     Economy_seats: Number,
     BusinessClass_seats: Number,
