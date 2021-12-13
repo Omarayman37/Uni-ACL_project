@@ -17,6 +17,7 @@ let flightSchema = new Schema(
     Economy_seats: Number,
     BusinessClass_seats: Number,
     baggage_allowance:Number,
+    // maher 
   },
   { collection: "flights" }
 );
