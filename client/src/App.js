@@ -7,6 +7,7 @@ import LoginPage from './components/Login';
 import SearchPage from './components/SearchPage'
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AddAirplane from './components/AddAirplane';
+import ReturnTrip from './components/ReturnTrip';
 function App() {
   return (
     <div>
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<AddAirplane />} exact />
         <Route path="/AddAirplane" element={<AddAirplane />} exact />
+        <Route path="/ReturnTrip" element={<ReturnTrip />} exact />
 
         <Route path="/SearchPage" element={<SearchPage />} exact />
         <Route path="/LoginUser" element={<LoginPage />} />
