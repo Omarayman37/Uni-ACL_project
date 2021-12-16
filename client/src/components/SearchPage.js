@@ -20,10 +20,34 @@ import {
 import "antd/dist/antd.css";
 import axios from "axios";
 import NavigateButton from "./navigate_buton";
+import moment from "moment";
+
 class SearchPage extends Component {
   state = {
     flights: [],
   };
+  async componentWillMount(props) {
+    if (this.props.querry) {
+      console.log(
+        "Search page was given an initial querry of ",
+        this.props.querry
+      );
+      const inital_state = Object.assign(this.state, this.props.querry);
+      inital_state["start_date"] = new Date("2021-12-02"); // ! TODO: remove this and put the pnae arrival time here
+      await this.setState(inital_state);
+      console.log("date format", inital_state["end_date"]);
+      console.log("moment object", moment(this.state["end_date"]));
+      console.log("this state end date", this.state["end_date"]);
+      this.handleChange({
+        target:{
+          value:inital_state['end_date'],
+          name:'end_date'
+        }
+      }) // Eftekasa to force the Search on the backend we keda
+    }
+
+    //
+  }
 
   // handel changes
   handleChange = async (evt) => {
@@ -85,13 +109,26 @@ class SearchPage extends Component {
 
   reroute = (e) => {
     console.log("rerouting");
-   this.props.navigation.navigate("Login");
-
+    this.props.navigation.navigate("Login");
   };
   render() {
     return (
       <div>
-        <Form name="search from" layout="inline" onSubmit={this.handleSubmit}>
+        <Form
+          name="search from"
+          layout="inline"
+          onSubmit={this.handleSubmit}
+          initialValues={{
+            end_date:
+              this.state["end_date"] != undefined
+                ? moment(this.state["end_date"])
+                : null,
+            start_date:
+              this.state["start_date"] != undefined
+                ? moment(this.state["start_date"])
+                : null,
+          }}
+        >
           <Row>
             <Col span={8}>
               <Form.Item name="start_date" label="Start Date">
@@ -99,6 +136,7 @@ class SearchPage extends Component {
                   onChange={this.handleChangeStartDate}
                   showTime
                   format="YYYY-MM-DD"
+                  //defaultValue={this.state["start_date"]}
                 />
               </Form.Item>
             </Col>
@@ -107,7 +145,8 @@ class SearchPage extends Component {
                 <DatePicker
                   onChange={this.handleChangeEndDate}
                   showTime
-                  format="YYYY-MM-DD"
+                  // value={moment(this.state["end_date"])}
+                  format={"YYYY-MM-DD"}
                 />
               </Form.Item>
             </Col>
@@ -115,12 +154,20 @@ class SearchPage extends Component {
           <Row>
             <Col span={8}>
               <Form.Item label="from">
-                <Input name="from" onChange={this.handleChange} />
+                <Input
+                  value={this.state["from"]}
+                  name="from"
+                  onChange={this.handleChange}
+                />
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item label="to">
-                <Input name="to" onChange={this.handleChange} />
+                <Input
+                  value={this.state["to"]}
+                  name="to"
+                  onChange={this.handleChange}
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -163,7 +210,13 @@ class SearchPage extends Component {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item><NavigateButton/></Form.Item>
+              <Form.Item>
+                <NavigateButton
+                  func={() => {
+                    return this.state;
+                  }}
+                />
+              </Form.Item>
             </Col>
           </Row>
         </Form>
