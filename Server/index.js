@@ -7,9 +7,10 @@ import userDataSchema from "./models/UserDataSchema.js";
 import flightSchema from './models/FlgihtsSchema.js';
 import {timeDiffCalc} from "./util/diffrenceHours.js";
 import {create_functional_querry_from_request} from './util/querry_func.js'
+import { Console } from "console";
 //
 console.log("server is running");
-
+var userID;//id of signed in user
 const app = express();
 const Schema = mongoose.Schema;
 
@@ -45,6 +46,17 @@ app.get("/get-data", function (req, res) {
     console.log("all users " + doc);
   });
 });
+
+app.get("/userallflight",function(req, res)  {
+  flightData.find((error, data) => {
+    if (error) {
+      return next(error)
+    } else {
+      res.json(data)
+    }
+  })
+});
+
 app.get("/get-all-flights", function (req, res) {
   //to get all users
   flightData.find().then(function (doc) {
@@ -80,6 +92,7 @@ app.post("/RegisterUser", function (req, res) {
     contry_code: user_contry_code,
     telephone_number: user_telephone_number,
     passport: user_passport_number,
+    //FlightsID : "",
   };
   var data = new UserData(item);
   data
@@ -138,6 +151,37 @@ app.post("/RegisterFlight", function (req, res) {
       console.error(err);
     });
 });
+ app.get("/reserveflight/:id",function(req,res){
+  UserData.findById(userID, (error, data) => {
+        if (error) {
+          return next(error)
+        } else {
+          console.log("el flights hena ");
+          //console.log(data.FlightsID);
+  //         var myquery = { address: "Valley 345" };
+  // var newvalues = { $set: { address: "Canyon 123" } };
+          var flights = data.FlightsID + req.params.id;
+          var flighttoAdd = { $set: { FlightsID: flights } };
+          var IDold = {_id: userID};
+          UserData.updateOne(IDold, flighttoAdd, function(err, res) {
+            if (err) throw err;
+            console.log(data.FlightsID);
+            //db.close();
+          });
+          res.json(data)
+        }
+ })
+
+ });
+// router.route('/edit-flight/:id').get((req, res) => {
+//   flightSchema.findById(req.params.id, (error, data) => {
+//     if (error) {
+//       return next(error)
+//     } else {
+//       res.json(data)
+//     }
+//   })
+// })
 
 app.post("/LoginUser", function (req, res) {
   console.log(
@@ -156,6 +200,10 @@ app.post("/LoginUser", function (req, res) {
       if (doc) {
         console.log("found user login successfull" + doc);
         res.status(200).json({ status: "ok", success: true, err: null }); // this means that it was great and it worked quiet well if i can say so myself
+        
+        userID =doc._id;
+        console.log("the id of the user is");
+        console.log(userID);
       } else {
         //nothing found then return bad
         console.log("no user found with " + querry);
