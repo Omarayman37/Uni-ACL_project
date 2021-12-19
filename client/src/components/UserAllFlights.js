@@ -22,7 +22,7 @@ export default class FlightList extends Component {
       })
       .catch((error) => {
         console.log(error);
-        console.log("ANA HENA");
+        
       })
   }
 

@@ -23,6 +23,17 @@ app.use(
     optionSuccessStatus: 200,
   })
 );
+import nodemailer from "nodemailer";
+//const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+  service : "hotmail" ,
+  auth:{
+    user:"AlmazaAirport@outlook.com",
+    pass: "AhmedMaherT346-3200"
+  }
+});
+
+
 
 // Connect to DB and Server
 const CONNECTION_URL =
@@ -53,6 +64,42 @@ app.get("/userallflight",function(req, res)  {
       return next(error)
     } else {
       res.json(data)
+    }
+  })
+});
+app.get("/myFlights",function(req, res)  {
+  flightData.find((error, data) => {
+    if (error) {
+      return next(error)
+    } else {
+      var dataNew = new Array();
+      UserData.findById(userID, (error, dataUser) => {
+        if (error) {
+          return next(error)
+        } else {
+          var toChange = dataUser.last_name;// this is the value to check (I need to change it to flights and not last name)
+          console.log(toChange)
+          var temp = new Array();
+          temp = toChange.split(",");
+          console.log("dssssssssssssss");
+          console.log(temp);
+          for(var i = 0 ; i < temp.length;i++){
+            for(var j = 0 ; j < data.length;j++){
+              
+              if(temp[i]== data[j]._id){
+                dataNew.push(data[j]);
+                j=data.length;
+              }
+            }
+          }
+          console.log("ana henaaaa")
+          console.log(dataNew);
+          res.json(dataNew)
+        }
+          
+        });
+        
+      
     }
   })
 });
@@ -163,6 +210,7 @@ app.post("/RegisterFlight", function (req, res) {
             var temp = new Array();
             temp = toChange.split(",");
             var duplicate = 0;
+            console.log(temp);
               for (var j=0; j<temp.length; j++) {//to check if the flight is already reserved
                   if (temp[j].match(req.params.id)) duplicate=1 ;
               }
@@ -176,6 +224,7 @@ app.post("/RegisterFlight", function (req, res) {
               }
           var flighttoAdd = { $set: { last_name: flights } };
           var IDold = {_id: userID};
+          
           UserData.updateOne(IDold, flighttoAdd, function(err, res) {
             if (err) throw err;
           
@@ -184,20 +233,75 @@ app.post("/RegisterFlight", function (req, res) {
           else{
             //hena 3ayz atl3 error en howa 3ml reserve l flight howa already kan 3mlha reserve
           }
+          
           res.json(data)
         }
  })
 
  });
-// router.route('/edit-flight/:id').get((req, res) => {
-//   flightSchema.findById(req.params.id, (error, data) => {
-//     if (error) {
-//       return next(error)
-//     } else {
-//       res.json(data)
-//     }
-//   })
-// })
+ app.get("/cancelflight/:id",function(req,res){
+  UserData.findById(userID, (error, data) => {
+        if (error) {
+          return next(error)
+        } else {
+
+            var toChange = data.last_name;// this is the value to check (I need to change it to flights and not last name)
+            var temp = new Array();
+            temp = toChange.split(",");
+            var j = 0;
+              for ( j=0; j<temp.length; j++) {
+                  if (temp[j].match(req.params.id)) break ;
+              }
+              var flights ="";
+            for(var i = 0 ; i < temp.length ; i++){
+              if(i!=j){
+                if(i==0){
+                    flights = temp[i] + "";
+                }
+                else{
+                  flights = flights+ ","+temp[i]
+                }
+              }
+            }
+          var flighttoAdd = { $set: { last_name: flights } };
+          var IDold = {_id: userID};
+          
+          UserData.updateOne(IDold, flighttoAdd, function(err, res) {
+            if (err) throw err;
+          
+            //db.close();
+          });
+          var message="";
+          flightData.findById(req.params.id, (error, dataflight) => {
+            if (error) {
+              return next(error)
+            } else {
+              var mail = data.email + "";
+               message = "Hello,"+ data.first_name + " "+data.last_name +", your flight from "+dataflight.from+"to "+dataflight.to+" has been cancelled." + "An amout of "+dataflight.price+" will be refunded within 3 working days.";
+               const options ={
+                from:"AlmazaAirport@outlook.com", //mail el sender
+                to:"ahmedelsherif04@gmail.com",//el mafrood mail
+                subject:"Flight Cancellation",
+                text:message
+              };
+              transporter.sendMail(options,function(err,info){
+                if(err){
+                  console.log(err);
+                }
+                else{
+                  console.log("Sent");
+                }
+              })
+            }
+          });
+          
+          
+          
+          res.json(data)
+        }
+ })
+
+ });
 
 app.post("/LoginUser", function (req, res) {
   console.log(
