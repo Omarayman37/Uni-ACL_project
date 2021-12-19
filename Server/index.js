@@ -92,7 +92,7 @@ app.post("/RegisterUser", function (req, res) {
     contry_code: user_contry_code,
     telephone_number: user_telephone_number,
     passport: user_passport_number,
-    //FlightsID : "",
+    FlightsID : "",
   };
   var data = new UserData(item);
   data
@@ -158,16 +158,32 @@ app.post("/RegisterFlight", function (req, res) {
         } else {
           console.log("el flights hena ");
           //console.log(data.FlightsID);
-  //         var myquery = { address: "Valley 345" };
-  // var newvalues = { $set: { address: "Canyon 123" } };
-          var flights = data.FlightsID + req.params.id;
-          var flighttoAdd = { $set: { FlightsID: flights } };
+
+            var toChange = data.last_name;// this is the value to check (I need to change it to flights and not last name)
+            var temp = new Array();
+            temp = toChange.split(",");
+            var duplicate = 0;
+              for (var j=0; j<temp.length; j++) {//to check if the flight is already reserved
+                  if (temp[j].match(req.params.id)) duplicate=1 ;
+              }
+              
+          if(duplicate !=1){
+            if(toChange==""){//msh 3arf leh how msh byd5ol hena
+              var flights =  req.params.id ;
+            }
+            else{
+               var flights = toChange + "," +req.params.id ;
+              }
+          var flighttoAdd = { $set: { last_name: flights } };
           var IDold = {_id: userID};
           UserData.updateOne(IDold, flighttoAdd, function(err, res) {
             if (err) throw err;
-            console.log(data.FlightsID);
+          
             //db.close();
-          });
+          });}
+          else{
+            //hena 3ayz atl3 error en howa 3ml reserve l flight howa already kan 3mlha reserve
+          }
           res.json(data)
         }
  })
