@@ -12,15 +12,22 @@ import UserAllFlights from './components/UserAllFlights'
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AddAirplane from './components/AddAirplane';
 import ReturnTrip from './components/ReturnTrip';
+import Seat from './components/Seat'
+import Seats from './components/Seats'
+import ChooseSeats from './components/ChooseSeats'
+import CSeats from './components/CSeats'
 function App() {
   return (
     <div>
       <header></header>
       <Routes>
-        <Route path="/" element={<AddAirplane />} exact />
+        <Route
+          path="/"
+          element={<CSeats flight_id={"61c022ef9c781f4d8bf68930"} />}
+          exact
+        />
         <Route path="/AddAirplane" element={<AddAirplane />} exact />
         <Route path="/ReturnTrip" element={<ReturnTrip />} exact />
-
         <Route path="/SearchPage" element={<SearchPage />} exact />
         <Route path="/LoginUser" element={<LoginPage />} />
         <Route path="/myFlights" element={<myFlights />} />

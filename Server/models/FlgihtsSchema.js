@@ -11,12 +11,29 @@ let flightSchema = new Schema(
     duration: Number,
     arrival_time: Date,
     departure_time: Date,
-    from: String, // contry name 
-    to: String,//country name
+    from: String, // contry name
+    to: String, //country name
     price: String,
     Economy_seats: Number,
     BusinessClass_seats: Number,
-    baggage_allowance:Number,
+    FirstClass_seats:Number,
+    baggage_allowance: Number,
+    Seats: {
+      EconomySeats: {
+        type: Map,
+        of: String,
+      },
+
+      BusinessSeats: {
+        type: Map,
+        of: String,
+      },
+
+      FirstClassSeats: {
+        type: Map,
+        of: String,
+      }
+    },
   },
   { collection: "flights" }
 );
