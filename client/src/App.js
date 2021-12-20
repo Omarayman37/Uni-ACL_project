@@ -5,9 +5,9 @@ import Airplanes from './components/Airplanes.js';
 import AllAirplanes from './components/AllAirplanes.js';
 import LoginPage from './components/Login';
 import SearchPage from './components/SearchPage'
-import HomeGuest from './components/HomeGuest'
-import myFlights from './components/myFlights'
-import UserAllFlights from './components/UserAllFlights'
+import HomeGuest from './components/HomeGuest'//home page that the guest gets to see when he logs in
+import MyFlights from './components/myFlights'//page containing the flights of the user signed in
+import UserAllFlights from './components/UserAllFlights'//contains all flights with an option to reserve it
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AddAirplane from './components/AddAirplane';
@@ -30,7 +30,7 @@ function App() {
         <Route path="/ReturnTrip" element={<ReturnTrip />} exact />
         <Route path="/SearchPage" element={<SearchPage />} exact />
         <Route path="/LoginUser" element={<LoginPage />} />
-        <Route path="/myFlights" element={<myFlights />} />
+        <Route path="/myFlights" element={<MyFlights />} />
         <Route path="/userAllFlights" element={<UserAllFlights />} />
         <Route path="/RegisterUser" element={<Guest />} />
         <Route path="/AddAirplanes" element={<Airplanes />} />

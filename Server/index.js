@@ -4,13 +4,13 @@ import cors from "cors";
 import crypto, { createDecipheriv } from "crypto";
 //
 import userDataSchema from "./models/UserDataSchema.js";
-import flightSchema from "./models/FlgihtsSchema.js";
-import { timeDiffCalc } from "./util/diffrenceHours.js";
-import { create_functional_querry_from_request } from "./util/querry_func.js";
-import CreateSeatsObject from "./util/CreateSeatsObject.js";
+import flightSchema from './models/FlgihtsSchema.js';
+import {timeDiffCalc} from "./util/diffrenceHours.js";
+import {create_functional_querry_from_request} from './util/querry_func.js'
+import { Console } from "console";
 //
 console.log("server is running");
-
+var userID;//id of signed in user
 const app = express();
 const Schema = mongoose.Schema;
 
@@ -23,6 +23,17 @@ app.use(
     optionSuccessStatus: 200,
   })
 );
+import nodemailer from "nodemailer";
+//const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+  service : "hotmail" ,
+  auth:{
+    user:"AlmazaAirport@outlook.com",
+    pass: "AhmedMaherT346-3200"
+  }
+});
+
+
 
 // Connect to DB and Server
 const CONNECTION_URL =
@@ -46,6 +57,53 @@ app.get("/get-data", function (req, res) {
     console.log("all users " + doc);
   });
 });
+
+app.get("/userallflight",function(req, res)  {
+  flightData.find((error, data) => {
+    if (error) {
+      return next(error)
+    } else {
+      res.json(data)
+    }
+  })
+});
+app.get("/myFlights",function(req, res)  {
+  flightData.find((error, data) => {
+    if (error) {
+      return next(error)
+    } else {
+      var dataNew = new Array();
+      UserData.findById(userID, (error, dataUser) => {
+        if (error) {
+          return next(error)
+        } else {
+          var toChange = dataUser.last_name;// this is the value to check (I need to change it to flights and not last name)
+          console.log(toChange)
+          var temp = new Array();
+          temp = toChange.split(",");
+          console.log("dssssssssssssss");
+          console.log(temp);
+          for(var i = 0 ; i < temp.length;i++){
+            for(var j = 0 ; j < data.length;j++){
+              
+              if(temp[i]== data[j]._id){
+                dataNew.push(data[j]);
+                j=data.length;
+              }
+            }
+          }
+          console.log("ana henaaaa")
+          console.log(dataNew);
+          res.json(dataNew)
+        }
+          
+        });
+        
+      
+    }
+  })
+});
+
 app.get("/get-all-flights", function (req, res) {
   //to get all users
   flightData.find().then(function (doc) {
@@ -98,6 +156,7 @@ app.post("/RegisterUser", function (req, res) {
     contry_code: user_contry_code,
     telephone_number: user_telephone_number,
     passport: user_passport_number,
+    FlightsID : "",
   };
   var data = new UserData(item);
   data
@@ -164,6 +223,110 @@ app.post("/RegisterFlight", function (req, res) {
       console.error(err);
     });
 });
+ app.get("/reserveflight/:id",function(req,res){
+  UserData.findById(userID, (error, data) => {
+        if (error) {
+          return next(error)
+        } else {
+          console.log("el flights hena ");
+          //console.log(data.FlightsID);
+
+            var toChange = data.last_name;// this is the value to check (I need to change it to flights and not last name)
+            var temp = new Array();
+            temp = toChange.split(",");
+            var duplicate = 0;
+            console.log(temp);
+              for (var j=0; j<temp.length; j++) {//to check if the flight is already reserved
+                  if (temp[j].match(req.params.id)) duplicate=1 ;
+              }
+              
+          if(duplicate !=1){
+            if(toChange==""){//msh 3arf leh how msh byd5ol hena
+              var flights =  req.params.id ;
+            }
+            else{
+               var flights = toChange + "," +req.params.id ;
+              }
+          var flighttoAdd = { $set: { last_name: flights } };
+          var IDold = {_id: userID};
+          
+          UserData.updateOne(IDold, flighttoAdd, function(err, res) {
+            if (err) throw err;
+          
+            //db.close();
+          });}
+          else{
+            //hena 3ayz atl3 error en howa 3ml reserve l flight howa already kan 3mlha reserve
+          }
+          
+          res.json(data)
+        }
+ })
+
+ });
+ app.get("/cancelflight/:id",function(req,res){
+  UserData.findById(userID, (error, data) => {
+        if (error) {
+          return next(error)
+        } else {
+
+            var toChange = data.last_name;// this is the value to check (I need to change it to flights and not last name)
+            var temp = new Array();
+            temp = toChange.split(",");
+            var j = 0;
+              for ( j=0; j<temp.length; j++) {
+                  if (temp[j].match(req.params.id)) break ;
+              }
+              var flights ="";
+            for(var i = 0 ; i < temp.length ; i++){
+              if(i!=j){
+                if(i==0){
+                    flights = temp[i] + "";
+                }
+                else{
+                  flights = flights+ ","+temp[i]
+                }
+              }
+            }
+          var flighttoAdd = { $set: { last_name: flights } };
+          var IDold = {_id: userID};
+          
+          UserData.updateOne(IDold, flighttoAdd, function(err, res) {
+            if (err) throw err;
+          
+            //db.close();
+          });
+          var message="";
+          flightData.findById(req.params.id, (error, dataflight) => {
+            if (error) {
+              return next(error)
+            } else {
+              var mail = data.email + "";
+               message = "Hello,"+ data.first_name + " "+data.last_name +", your flight from "+dataflight.from+"to "+dataflight.to+" has been cancelled." + "An amout of "+dataflight.price+" will be refunded within 3 working days.";
+               const options ={
+                from:"AlmazaAirport@outlook.com", //mail el sender
+                to:"ahmedelsherif04@gmail.com",//el mafrood mail
+                subject:"Flight Cancellation",
+                text:message
+              };
+              transporter.sendMail(options,function(err,info){
+                if(err){
+                  console.log(err);
+                }
+                else{
+                  console.log("Sent");
+                }
+              })
+            }
+          });
+          
+          
+          
+          res.json(data)
+        }
+ })
+
+ });
 
 app.post("/LoginUser", function (req, res) {
   console.log(
@@ -182,6 +345,10 @@ app.post("/LoginUser", function (req, res) {
       if (doc) {
         console.log("found user login successfull" + doc);
         res.status(200).json({ status: "ok", success: true, err: null }); // this means that it was great and it worked quiet well if i can say so myself
+        
+        userID =doc._id;
+        console.log("the id of the user is");
+        console.log(userID);
       } else {
         //nothing found then return bad
         console.log("no user found with " + querry);

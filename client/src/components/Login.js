@@ -20,7 +20,6 @@ import crypto, {AES, createCipheriv, createHash, randomBytes} from "crypto";
 
 const FormItem = Form.Item;
 // const { getFieldDecorator } = this.props.form;
-
 class LoginPage extends Component {
   // state
   state = {
@@ -40,6 +39,8 @@ class LoginPage extends Component {
  
 
   handleSubmit = (e) => {
+    
+
     // Here we encrypt using a super scret key and and initialization vector 
     let login_request_object = this.state
     login_request_object["user_password"] = createHash("sha256")
@@ -52,10 +53,11 @@ class LoginPage extends Component {
       .then((res) => {
         const { success, err } = res.data;
         if (success) {
+
           console.log(
             "successfull login with credentials : " + JSON.stringify(this.state)
           );
-          window.location.href = "http://localhost:3000/AddAirplanes"; // TODO: FIX THIS TRASH LATER
+          window.location.href = "http://localhost:3000/HomeGuest"; // TODO: FIX THIS TRASH LATER
         } else {
           console.log("invalud credentails :" + JSON.stringify(this.state));
           // here we tell the UI to display an error we keda
