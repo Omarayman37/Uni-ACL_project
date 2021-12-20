@@ -55,7 +55,9 @@ export default class MyFlights extends Component {
             <th>economy</th>
             <th>business</th>
             <th>baggage</th>
+            <th>Cabin Class</th>
             <th>Cancel</th>
+            <th>Reserve the Flight</th>
           </tr>
         </thead>
         <tbody>
