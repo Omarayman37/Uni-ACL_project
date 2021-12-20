@@ -5,6 +5,7 @@ import crypto, { createDecipheriv } from 'crypto';
 //
 import userDataSchema from "./models/UserDataSchema.js";
 import flightSchema from './models/FlgihtsSchema.js';
+import ticketSchema from './models/TicketSchema.js';
 import {timeDiffCalc} from "./util/diffrenceHours.js";
 import {create_functional_querry_from_request} from './util/querry_func.js'
 import { Console } from "console";
@@ -49,6 +50,8 @@ mongoose
 // Data Models
 var UserData = mongoose.model("UserData", userDataSchema);
 let flightData = mongoose.model("flightData", flightSchema);
+let ticketData = mongoose.model("ticketData", ticketSchema);
+
 // GET REQUESTS
 // get request get-data to get all users
 app.get("/get-data", function (req, res) {
@@ -77,7 +80,7 @@ app.get("/myFlights",function(req, res)  {
         if (error) {
           return next(error)
         } else {
-          var toChange = dataUser.last_name;// this is the value to check (I need to change it to flights and not last name)
+          var toChange = dataUser.flightsID;// this is the value to check (I need to change it to flights and not last name)
           console.log(toChange)
           var temp = new Array();
           temp = toChange.split(",");
@@ -139,7 +142,8 @@ app.post("/RegisterUser", function (req, res) {
     contry_code: user_contry_code,
     telephone_number: user_telephone_number,
     passport: user_passport_number,
-    FlightsID : "",
+    flightsID : "",
+    ticketsID : "",
   };
   var data = new UserData(item);
   data
@@ -198,15 +202,12 @@ app.post("/RegisterFlight", function (req, res) {
       console.error(err);
     });
 });
- app.get("/reserveflight/:id",function(req,res){
+ app.get("/addToFavourite/:id",function(req,res){
   UserData.findById(userID, (error, data) => {
         if (error) {
           return next(error)
         } else {
-          console.log("el flights hena ");
-          //console.log(data.FlightsID);
-
-            var toChange = data.last_name;// this is the value to check (I need to change it to flights and not last name)
+            var toChange = data.flightsID;// this is the value to check (I need to change it to flights and not last name)
             var temp = new Array();
             temp = toChange.split(",");
             var duplicate = 0;
@@ -222,7 +223,7 @@ app.post("/RegisterFlight", function (req, res) {
             else{
                var flights = toChange + "," +req.params.id ;
               }
-          var flighttoAdd = { $set: { last_name: flights } };
+          var flighttoAdd = { $set: { flightsID: flights } };
           var IDold = {_id: userID};
           
           UserData.updateOne(IDold, flighttoAdd, function(err, res) {
@@ -263,7 +264,7 @@ app.post("/RegisterFlight", function (req, res) {
                 }
               }
             }
-          var flighttoAdd = { $set: { last_name: flights } };
+          var flighttoAdd = { $set: { flightsID: flights } };
           var IDold = {_id: userID};
           
           UserData.updateOne(IDold, flighttoAdd, function(err, res) {
@@ -277,10 +278,10 @@ app.post("/RegisterFlight", function (req, res) {
               return next(error)
             } else {
               var mail = data.email + "";
-               message = "Hello,"+ data.first_name + " "+data.last_name +", your flight from "+dataflight.from+"to "+dataflight.to+" has been cancelled." + "An amout of "+dataflight.price+" will be refunded within 3 working days.";
+               message = "Hello,"+ data.first_name + " "+data.last_name +", your flight from "+dataflight.from+" to "+dataflight.to+" has been cancelled." + "An amout of "+dataflight.price+" EGP will be refunded within 3 working days.";
                const options ={
                 from:"AlmazaAirport@outlook.com", //mail el sender
-                to:"ahmedelsherif04@gmail.com",//el mafrood mail
+                to:mail,//el mafrood mail
                 subject:"Flight Cancellation",
                 text:message
               };

@@ -1,5 +1,4 @@
 
-
 import Mongoose from "mongoose";
 let Schema = Mongoose.Schema;
 let flightSchema = new Schema(
