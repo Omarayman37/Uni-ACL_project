@@ -7,8 +7,7 @@ import userDataSchema from "./models/UserDataSchema.js";
 import flightSchema from './models/FlgihtsSchema.js';
 import {timeDiffCalc} from "./util/diffrenceHours.js";
 import {create_functional_querry_from_request} from './util/querry_func.js'
-import { Console } from "console";
-//
+import CreateSeatsObject from './util/CreateSeatsObject.js'
 console.log("server is running");
 var userID;//id of signed in user
 const app = express();
@@ -206,6 +205,11 @@ app.post("/RegisterFlight", function (req, res) {
     baggage_allowance: baggage_allowance,
     BusinessClass_seats: BusinessClass_seats,
     Economy_seats: Economy_seats,
+    FirstClass_seats: BusinessClass_seats,
+    SeatsLeft:
+      parseInt(BusinessClass_seats) +
+      parseInt(Economy_seats) +
+      parseInt(BusinessClass_seats),
     Seats: CreateSeatsObject(
       Economy_seats,
       BusinessClass_seats,
@@ -367,8 +371,28 @@ app.post("/ReserveSeats", async (req, res) => {
     for (const reserved_seat of reserved_seats) {
       doc.Seats[seat_class].set(reserved_seat, "taken"); // setting these seats to taken in this seat class
     }
-    doc.save().then((doc) => {
-      console.log(`saved seats successfully`);
+    
+    doc.save().then((old_doc) => {
+      console.log(`saved seats  successfully and remaingin seats are ${doc.SeatsLeft}`);
+      res.status(200).json({ status: "ok", success: true, err: null }); // this means that it was great and it worked quiet well if i can say so myself
+    });
+    
+  });
+});
+
+app.post("/DecreaseSeats", async (req, res) => {
+  console.log("decrasing seat number by seats:\n" + JSON.stringify(req.body));
+  const { flight_id, number_of_seats } = req.body;
+  const flight = await flightData.findById(flight_id).then((doc) => {
+    doc.SeatsLeft = doc.SeatsLeft-number_of_seats;
+    if(doc.SeatsLeft<0){
+      doc.SeatsLeft = 0;
+    }
+
+    doc.save().then((old_doc) => {
+      console.log(
+        `remaining seats are now ${doc.SeatsLeft}`
+      );
       res.status(200).json({ status: "ok", success: true, err: null }); // this means that it was great and it worked quiet well if i can say so myself
     });
   });

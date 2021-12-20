@@ -154,8 +154,7 @@ const Seats = ({ flight_id }) => {
             )
             .catch((err) => setError_msg(err.message));
 
-        
-         let reserved_seats_business = [];
+          let reserved_seats_business = [];
 
           for (const [key, value] of Object.entries(seats["BusinessSeats"])) {
             if (value == "reserved") reserved_seats_business.push(key);
@@ -194,7 +193,16 @@ const Seats = ({ flight_id }) => {
             )
             .catch((err) => setError_msg(err.message));
 
-            
+          axios
+            .post("http://localhost:5000/DecreaseSeats", {
+              flight_id: flight_id,
+              number_of_seats:
+                reserved_seats_business.length +
+                reserved_seats_eco.length +
+                reserved_seats_first.length,
+            })
+            .then((res) => console.log(`changed remaing seats`))
+            .catch((err) => setError_msg(err.message));
         }}
       >
         Checkout

@@ -16,15 +16,19 @@ import {
   DatePicker,
   Slider,
   Divider,
+  Typography
 } from "antd";
 import "antd/dist/antd.css";
 import axios from "axios";
 import NavigateButton from "./navigate_buton";
 import moment from "moment";
+import {DownloadOutlined} from '@ant-design/icons'
+const { Text, Link } = Typography;
 
 class SearchPage extends Component {
   state = {
     flights: [],
+    number_of_seats:0,
   };
   async componentWillMount(props) {
     if (this.props.querry) {
@@ -32,18 +36,20 @@ class SearchPage extends Component {
         "Search page was given an initial querry of ",
         this.props.querry
       );
+      
       const inital_state = Object.assign(this.state, this.props.querry);
+      
       inital_state["start_date"] = new Date("2021-12-02"); // ! TODO: remove this and put the pnae arrival time here
       await this.setState(inital_state);
       console.log("date format", inital_state["end_date"]);
       console.log("moment object", moment(this.state["end_date"]));
       console.log("this state end date", this.state["end_date"]);
       this.handleChange({
-        target:{
-          value:inital_state['end_date'],
-          name:'end_date'
-        }
-      }) // Eftekasa to force the Search on the backend we keda
+        target: {
+          value: inital_state["end_date"],
+          name: "end_date",
+        },
+      }); // Eftekasa to force the Search on the backend we keda
     }
 
     //
@@ -184,6 +190,48 @@ class SearchPage extends Component {
               </Form.Item>
             </Col>
           </Row>
+          <Row justify="center">
+            <Col span={4}>
+              <Button
+                type="primary"
+                shape="circle"
+                icon={<DownloadOutlined />}
+                size="large"
+                onClick={(evt)=>{
+                  let new_number_of_state= (this.state.number_of_seats>0)? this.state.number_of_seats-1 : 0
+                  //this.setState({ number_of_seats: new_number_of_state });
+                  this.handleChange({target:{
+                    name:'number_of_seats',
+                    value:new_number_of_state
+                  }})
+                }}
+               
+              />
+            </Col>
+            <Col span={4}>
+              <Text type="secondary">{this.state.number_of_seats || 0}</Text>
+            </Col>
+            <Col span={4}>
+              <Button
+                type="primary"
+                shape="circle"
+                icon={<DownloadOutlined />}
+                size="large"
+                onClick={(evt)=>{
+                  let new_number_of_state = this.state.number_of_seats + 1;
+                  //this.setState({ number_of_seats: new_number_of_state });
+                  this.handleChange({
+                    target: {
+                      name: "number_of_seats",
+                      value: new_number_of_state,
+                    },
+                  });
+                }
+              }
+              />
+            </Col>
+          </Row>
+
           <Row>
             <Col span={24}>
               <Form.Item name="price" label="Price">

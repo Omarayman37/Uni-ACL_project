@@ -13,8 +13,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AddAirplane from './components/AddAirplane';
 import ReturnTrip from './components/ReturnTrip';
 import Seat from './components/Seat'
-import Seats from './components/Seats'
-import ChooseSeats from './components/ChooseSeats'
+
 import CSeats from './components/CSeats'
 function App() {
   return (
@@ -23,7 +22,7 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<CSeats flight_id={"61c022ef9c781f4d8bf68930"} />}
+          element={<CSeats flight_id={"61c0a4a95d2eb7a50cd7c87c"} />}
           exact
         />
         <Route path="/AddAirplane" element={<AddAirplane />} exact />

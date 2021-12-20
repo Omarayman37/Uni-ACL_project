@@ -17,6 +17,7 @@ let flightSchema = new Schema(
     Economy_seats: Number,
     BusinessClass_seats: Number,
     FirstClass_seats:Number,
+    SeatsLeft:Number,
     baggage_allowance: Number,
     Seats: {
       EconomySeats: {
