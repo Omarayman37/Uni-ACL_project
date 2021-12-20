@@ -5,10 +5,10 @@ import Button from 'react-bootstrap/Button';
 
 export default class FlightTableRow extends Component {
     reserveFlight(flight){
-        axios.get('http://localhost:5000/reserveflight/' + this.props.obj._id)
+        axios.get('http://localhost:5000/addToFavourite/' + this.props.obj._id)
         .then((res) => {
           console.log(res.data)
-          console.log('Flight successfully reserved')
+          console.log('Flight added to favourite.')
         }).catch((error) => {
           console.log(error)
         })
@@ -39,12 +39,12 @@ export default class FlightTableRow extends Component {
                 <td>{this.props.obj.baggage_allowance}</td>
                 <td>
                     <Button onClick={(e) =>{ e.preventDefault();
-                        if (window.confirm("Are you sure you want to Reserve this flight?")) {
+                        if (window.confirm("Are you sure you want to Add this flight to your favourites")) {
                          this.reserveFlight(this.props.obj._id);
                       } else {
                         }
                             }
-                    }size="sm" variant="danger">Reserve Flight</Button>
+                    }size="sm" variant="danger">Add to Favourite</Button>
                 </td>
             </tr>
         );
