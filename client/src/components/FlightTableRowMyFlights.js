@@ -5,13 +5,14 @@ import Button from 'react-bootstrap/Button';
 
 export default class FlightTableRowMyFlight extends Component {
     reserve(){
-
+            //here you link to the reserve flight
+            //lazem hena bardo lma y3ml reserve el reservation ytshal mn el favourites
     }
     removeFromFavourite(){
-        axios.get('http://localhost:5000/cancelflight/' + this.props.obj._id)
+        axios.get('http://localhost:5000/removefromFavourite/' + this.props.obj._id)
         .then((res) => {
           console.log(res.data)
-          console.log('Reservation Cancelled')
+          console.log('removed from favourites')
         }).catch((error) => {
           console.log(error)
         })
@@ -21,6 +22,7 @@ export default class FlightTableRowMyFlight extends Component {
     constructor(props) {
         super(props);
         this.removeFromFavourite = this.removeFromFavourite.bind(this);
+        this.reserve = this.reserve.bind(this);
         
     }
    
@@ -41,11 +43,6 @@ export default class FlightTableRowMyFlight extends Component {
                 <td>{this.props.obj.firstclass_seats}</td>
                 <td>{this.props.obj.baggage_allowance}</td>
                 <td>
-                <div className="dd-list">
-    <button className="dd-list-item">size="sm" variant="danger">Reserve</button>
-    <button className="dd-list-item"></button>
-    <button className="dd-list-item"></button>
-  </div>
                     <Button onClick={(e) =>{ e.preventDefault();
                         if (window.confirm("Are you sure you want to Remove this flight from favourites")) {
                          this.removeFromFavourite();

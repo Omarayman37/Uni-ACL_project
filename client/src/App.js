@@ -5,10 +5,11 @@ import Airplanes from './components/Airplanes.js';
 import AllAirplanes from './components/AllAirplanes.js';
 import LoginPage from './components/Login';
 import SearchPage from './components/SearchPage'
+import Reservedflights from './components/Reservedflights'
 import HomeGuest from './components/HomeGuest'//home page that the guest gets to see when he logs in
 import MyFlights from './components/myFlights'//page containing the flights of the user signed in
 import UserAllFlights from './components/UserAllFlights'//contains all flights with an option to reserve it
-
+import EditUser from './components/EditUser'
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AddAirplane from './components/AddAirplane';
 import ReturnTrip from './components/ReturnTrip';
