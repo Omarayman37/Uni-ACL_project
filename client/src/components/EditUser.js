@@ -1,175 +1,181 @@
 import React, { Component } from "react";
-import crypto, { AES, createCipheriv, createHash, randomBytes } from "crypto";
-import {
-  Form,
-  Input,
-  Tooltip,
-  Icon,
-  Cascader,
-  Select,
-  Row,
-  Col,
-  Checkbox,
-  Button,
-  AutoComplete,
-} from "antd";
-import "antd/dist/antd.css";
-import axios from "axios";
-const { Option } = Select;
-const FormItem = Form.Item;
+import Form from 'react-bootstrap/Form'
+import Button from 'react-bootstrap/Button';
+import axios from 'axios';
 
-const EditUSer = ({ user_id }) => {
-  //UI Constsants
-  const formItemLayout = {
-    labelCol: {
-      xs: { span: 24 },
-      sm: { span: 6 },
-    },
-    wrapperCol: {
-      xs: { span: 24 },
-      sm: { span: 14 },
-    },
-  };
-  const tailFormItemLayout = {
-    wrapperCol: {
-      xs: {
-        span: 24,
-        offset: 0,
-      },
-      sm: {
-        span: 14,
-        offset: 6,
-      },
-    },
-  };
-  const prefixSelector = (
-    <Form.Item name="prefix" noStyle>
-      <Select style={{ width: 70 }}>
-        <Option value="+49">+49</Option>
-        <Option value="+20">+20</Option>
-      </Select>
-    </Form.Item>
-  );
+export default class EditUser extends Component {
 
-  return (
-    <div
-      style={{
-        height: "1000px",
-        backgroundImage:
-          "url(" +
-          "https://cdn.jetphotos.com/full/5/60768_1635979380.jpg" +
-          ")",
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        paddingTop: "65px",
-      }}
-    >
-      <Form
-        onSubmit={this.handleSubmit}
-        {...formItemLayout}
-        /* style={{ width: "600px" }}*/
-      >
-        <FormItem type="primary" {...formItemLayout} label="E-mail" hasFeedback>
-          <Input name="user_email" onChange={this.handleChange} />
-        </FormItem>
-        <FormItem label="Password" hasFeedback>
-          <Input.Password name="user_password" onChange={this.handleChange} />
-        </FormItem>
-        <FormItem label="Confirm Password" hasFeedback>
-          <Input.Password
-            name="user_confirm_password"
-            onChange={this.handleChange}
-          />
-        </FormItem>
-        <FormItem
-          label={
-            <span>
-              Nickname&nbsp;
-              <Tooltip title="What do you want other to call you?">
-                {/* <Icon type="question-circle-o" /> */}
-              </Tooltip>
-            </span>
-          }
-          hasFeedback
-        >
-          <Input name="user_nickname" onChange={this.handleChange} />
-        </FormItem>
-        <FormItem
-          type="primary"
-          {...formItemLayout}
-          label="First Name"
-          hasFeedback
-        >
-          <Input name="user_first_name" onChange={this.handleChange} />
-        </FormItem>
-        <FormItem
-          type="primary"
-          {...formItemLayout}
-          label="Last Name"
-          hasFeedback
-        >
-          <Input name="user_last_name" onChange={this.handleChange} />
-        </FormItem>
-        <FormItem
-          type="primary"
-          {...formItemLayout}
-          label="Home Address"
-          hasFeedback
-        >
-          <Input name="user_home_address" onChange={this.handleChange} />
-        </FormItem>
-        <FormItem
-          type="primary"
-          {...formItemLayout}
-          label="contry code"
-          hasFeedback
-        >
-          <Input name="user_contry_code" onChange={this.handleChange} />
-        </FormItem>
+  constructor(props) {
+    super(props)
 
-        <Form.Item
-          name="phone"
-          label="Phone Number"
-          rules={[
-            { required: true, message: "Please input your phone number!" },
-          ]}
-        >
-          <Input
-            name="user_telephone_number"
-            onChange={this.handleChange}
-            addonBefore={prefixSelector}
-            style={{ width: "100%" }}
-          />
-        </Form.Item>
-        <Form.Item
-          name="phone2"
-          label="Phone Number"
-          rules={[{ required: false, message: "optional telephone number!" }]}
-        >
-          <Input
-            name="user_telephone_number_2"
-            onChange={this.handleChange}
-            addonBefore={prefixSelector}
-            style={{ width: "100%" }}
-          />
-        </Form.Item>
-        <FormItem
-          type="primary"
-          {...formItemLayout}
-          label="Passport Number"
-          hasFeedback
-        >
-          <Input name="user_passport_number" onChange={this.handleChange} />
-        </FormItem>
-        <FormItem {...tailFormItemLayout}>
-          <Button type="primary" onClick={this.handleSubmit}>
-            Register
-          </Button>
-        </FormItem>
+
+    this.onChangeemail = this.onChangeemail.bind(this);
+
+    this.onChangepassword = this.onChangepassword.bind(this);
+    this.onChangefirst_name = this.onChangefirst_name.bind(this);
+    
+    this.onChangelast_name = this.onChangelast_name.bind(this);
+    this.onChangehome_address=this.onChangehome_address.bind(this);
+    
+    this.onChangenickname=this.onChangenickname.bind(this);
+    this.onChangepassport=this.onChangepassport.bind(this);
+
+    this.onChangetelephone_number = this.onChangetelephone_number.bind(this);
+    
+   
+    this.onSubmit = this.onSubmit.bind(this);
+
+    // Setting up state
+    this.state = {
+      email:'',
+      password: '',
+      nickname: '',
+      first_name: '',
+      last_name: '',
+      home_address: '',
+      telephone_number:'',
+      passport:''
+
+    }
+  }
+
+//   componentDidMount() {
+//     axios.get('http://localhost:4000/flights/edit-flight/' + this.props.match.params.id)
+//       .then(res => {
+//         this.setState({
+//           flightNum:res.data.flightNum,
+//           airportFrom: res.data.airportFrom,
+//           airportTo: res.data.airportTo,
+//           leaveAt:res.data.leaveAt,
+//           arriveAt:res.data.arriveAt,
+//           economy: res.data.economy,
+//           business: res.data.business,
+//           first: res.data.first,
+//           date: res.data.date,
+//           arrivalDate:res.data.arrivalDate
+
+//         });
+//       })
+//       .catch((error) => {
+//         console.log(error);
+//       })
+//   }
+
+  onChangeemail(e){
+    this.setState({email:e.target.value})
+  }
+ 
+  onChangepassword(e) {
+     this.setState({password: e.target.value})
+   }
+   onChangenickname(e) {
+     this.setState({nickname: e.target.value})
+   }
+ 
+   onChangefirst_name(e) {
+     this.setState({first_name: e.target.value})
+   }
+   onChangelast_name(e){
+     this.setState({last_name: e.target.value})
+   }
+ 
+   onChangehome_address(e){
+     this.setState({home_address: e.target.value})
+   }
+   onChangetelephone_number(e){
+     this.setState({telephone_number: e.target.value})
+   }
+ 
+   onChangepassport(e) {
+     this.setState({passport: e.target.value})
+   }
+   
+   
+   
+  onSubmit(e) {
+    console.log("ana d5lt henad");
+
+    e.preventDefault()
+        console.log("ana d5lt hena");
+    const flightObject = {
+      email:this.state.email,
+    
+      password: this.state.password,
+      nickname: this.state.nickname,
+
+      first_name:this.state.first_name,
+      last_name:this.state.last_name,
+
+      home_address: this.state.home_address,
+      telephone_number: this.state.telephone_number,
+      passport: this.state.passport
+    };
+
+    axios.post('http://localhost:5000/updateUser' , flightObject)
+      .then((res) => {
+        console.log(res.data)
+        console.log(' User succesfully updated')
+      }).catch((error) => {
+          console.log("ya bdany");
+        console.log(error)
+      })
+    // Redirect to Flight List 
+    //this.props.history.push('/flight-list')
+    //window.location.reload(false);
+  }
+
+
+  render() {
+    return (<div className="form-wrapper">
+      <Form onSubmit={this.onSubmit}>
+      <b style={{color: 'black',fontSize:'50px',position: 'absolute',left: '50%',transform: 'translate(-50%, -40%)'}}>Edit Flight</b>
+      <br></br>
+      <br></br>
+
+      <Form.Group controlId="email">
+          <Form.Label>Email Address</Form.Label>
+          <Form.Control type="text" value={this.state.email} onChange={this.onChangeemail} placeholder ="Email-Address"required/>
+        </Form.Group>
+
+        <Form.Group controlId="password">
+          <Form.Label>Password</Form.Label>
+          <Form.Control type="text" value={this.state.password} onChange={this.onChangepassword} placeholder ="Passcode"required/>
+        </Form.Group>
+
+        <Form.Group controlId="nickname">
+          <Form.Label>Nickname</Form.Label>
+          <Form.Control type="text" value={this.state.nickname} onChange={this.onChangenickname} placeholder ="Nickname" required/>
+        </Form.Group>
+
+        <Form.Group controlId="first_name">
+          <Form.Label>First Name</Form.Label>
+          <Form.Control type="text" value={this.state.first_name} onChange={this.onChangefirst_name} placeholder ="First Name" required/>
+        </Form.Group>
+        
+        <Form.Group controlId="last_name">
+          <Form.Label>Last Name</Form.Label>
+          <Form.Control type="text" value={this.state.last_name} onChange={this.onChangelast_name} placeholder ="Last Name" required/>
+        </Form.Group>
+
+        <Form.Group controlId="home_address">
+          <Form.Label>Home Address</Form.Label>
+          <Form.Control type="text" value={this.state.home_address} onChange={this.onChangehome_address} placeholder ="Home Address" required/>
+        </Form.Group>
+
+        <Form.Group controlId="telephone_number">
+          <Form.Label>Phone Number</Form.Label>
+          <Form.Control type="text" value={this.state.telephone_number} onChange={this.onChangetelephone_number} placeholder ="Phone Number" required/>
+        </Form.Group>
+
+        <Form.Group controlId="passport">
+          <Form.Label>Passport Number</Form.Label>
+          <Form.Control type="text" value={this.state.passport} onChange={this.onChangepassport} placeholder ="Passport Number" required/>
+        </Form.Group>
+
+        <Button variant="danger" size="lg" block="block" type="submit">
+          Update User
+        </Button>
       </Form>
-    </div>
-  );
-};
-
-export default EditUSer;
+    </div>);
+  }
+}

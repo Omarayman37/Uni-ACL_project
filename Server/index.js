@@ -83,8 +83,7 @@ app.get("/myFlights",function(req, res)  {
           console.log(toChange)
           var temp = new Array();
           temp = toChange.split(",");
-          console.log("dssssssssssssss");
-          console.log(temp);
+          
           for(var i = 0 ; i < temp.length;i++){
             for(var j = 0 ; j < data.length;j++){
               
@@ -105,7 +104,38 @@ app.get("/myFlights",function(req, res)  {
     }
   })
 });
-
+app.get("/myReservedFlights",function(req, res)  {
+  ticketData.find((error, data) => {
+    if (error) {
+      return next(error)
+    } else {
+      var dataNew = new Array();
+      UserData.findById(userID, (error, dataUser) => {
+        if (error) {
+          return next(error)
+        } else {
+          var toChange = dataUser.ticketsID;// this is the value to check (I need to change it to flights and not last name)
+          console.log(toChange)
+          var temp = new Array();
+          temp = toChange.split(",");
+          for(var i = 0 ; i < temp.length;i++){
+            for(var j = 0 ; j < data.length;j++){
+              if(temp[i]== data[j]._id){
+                dataNew.push(data[j]);
+                j=data.length;
+              }
+            }
+          }
+          
+          res.json(dataNew)
+        }
+          
+        });
+        
+      
+    }
+  })
+});
 app.get("/get-all-flights", function (req, res) {
   //to get all users
   flightData.find().then(function (doc) {
@@ -113,6 +143,37 @@ app.get("/get-all-flights", function (req, res) {
   });
 });
 
+app.post('/updateUser',function(req, res, next) {
+  console.log(req.body);
+  console.log(userID);
+  var edituseremail = { $set: { email: req.body.email } };
+  var editusernickname = { $set: { email: req.body.nickname } };
+  var edituserpassword = { $set: { email: req.body.password } };
+  var edituserfirstname = { $set: { email: req.body.first_name } };
+  var edituserlastname = { $set: { email: req.body.last_name } };
+  var edituserphone = { $set: { email: req.body.telephone_number } };
+  var edituseraddress = { $set: { email: req.body.home_address } };
+  var edituserpassport = { $set: { email: req.body.passport } };
+
+          var IDold = {_id: userID};
+          
+          UserData.updateOne(IDold, edituseremail, function(err, res) {
+            if (err) throw err;});
+            UserData.updateOne(IDold, edituseraddress, function(err, res) {
+              if (err) throw err;});
+              UserData.updateOne(IDold, edituserfirstname, function(err, res) {
+                if (err) throw err;});
+                UserData.updateOne(IDold, edituserlastname, function(err, res) {
+                  if (err) throw err;});
+                  UserData.updateOne(IDold, editusernickname, function(err, res) {
+                    if (err) throw err;});
+                    UserData.updateOne(IDold, edituserpassword, function(err, res) {
+                      if (err) throw err;});
+                      UserData.updateOne(IDold, edituserpassport, function(err, res) {
+                        if (err) throw err;});
+                        UserData.updateOne(IDold, edituserphone, function(err, res) {
+                          if (err) throw err;});
+});
 app.post("/get-seats", async (req, res) => {
   const flight_id = req.body?.flight_id;
   const flight = await flightData.findById(flight_id);
@@ -274,8 +335,116 @@ app.post("/RegisterFlight", function (req, res) {
         if (error) {
           return next(error)
         } else {
+            ticketData.findById(req.params.id,(error,data) =>{
+              if(error){
+                return next(error);
+              }
+              else{
+                var flight = data.IDFlight;
+                var class_cabin = data.Cabin_Class;
+                flightData.findById(flight,(error,dataf) =>{
+                    if(error){
+                      return next(error);
+                    }
+                    else{
+                      if(class_cabin == "first"){
+                        var changer = dataf.firstclass_seats +1; 
+                        var flighttoAdd = { $set: { firstclass_seats: changer } };
+          var IDold = {_id: flight};
+          
+          flightData.updateOne(IDold, flighttoAdd, function(err, res) {
+            if (err) throw err;
+          
+          });
+                      }
+                      else if(class_cabin= "economy"){
+                        var changer = dataf.Economy_seats +1;
+                        var flighttoAdd = { $set: { Economy_seats: changer } };
+                        var IDold = {_id: flight};
+                        
+                        flightData.updateOne(IDold, flighttoAdd, function(err, res) {
+                          if (err) throw err;
+                        
+                        });
+                      }
+                      else if(class_cabin = "business"){
+                        var changer = dataf.BusinessClass_seats +1;
+                        var flighttoAdd = { $set: { BusinessClass_seats: changer } };
+          var IDold = {_id: flight};
+          
+          flightData.updateOne(IDold, flighttoAdd, function(err, res) {
+            if (err) throw err;
+          
+          });
+                      }
+                    }
+                });
+              }
+            });
+            var toChange = data.ticketsID;// this is the value to check (I need to change it to flights and not last name)
+            var temp = new Array();
+            temp = toChange.split(",");///tickets id
+            var j = 0;
+              for ( j=0; j<temp.length; j++) {
+                  if (temp[j].match(req.params.id)) break ;
+              }
+              var flights ="";
+            for(var i = 0 ; i < temp.length ; i++){
+              if(i!=j){
+                if(i==0){
+                    flights = temp[i] + "";
+                }
+                else{
+                  flights = flights+ ","+temp[i]
+                }
+              }
+            }
+          var flighttoAdd = { $set: { ticketsID: flights } };
+          var IDold = {_id: userID};
+          
+          UserData.updateOne(IDold, flighttoAdd, function(err, res) {
+            if (err) throw err;
+          
+            //db.close();
+          });
+          var message="";
+          ticketData.findById(req.params.id, (error, dataflight) => {
+            if (error) {
+              return next(error)
+            } else {
+              var mail = data.email + "";
+               message = "Hello,"+ data.first_name + " "+data.last_name +", your flight from "+dataflight.from+" to "+dataflight.to+" has been cancelled." + "An amout of "+dataflight.price+" EGP will be refunded within 3 working days.";
+               const options ={
+                from:"AlmazaAirport@outlook.com", //mail el sender
+                to:mail,//el mafrood mail
+                subject:"Flight Cancellation",
+                text:message
+              };
+              transporter.sendMail(options,function(err,info){
+                if(err){
+                  console.log(err);
+                }
+                else{
+                  console.log("Sent");
+                }
+              })
+            }
+          });
+          
+          
+          
+          res.json(data)
+        }
+ })
 
-            var toChange = data.last_name;// this is the value to check (I need to change it to flights and not last name)
+ });
+ app.get("/removefromFavourite/:id",function(req,res){
+  UserData.findById(userID, (error, data) => {
+        if (error) {
+          return next(error)
+        } else {
+
+            var toChange = data.flightsID;// this is the value to check (I need to change it to flights and not last name)
             var temp = new Array();
             temp = toChange.split(",");
             var j = 0;
@@ -301,29 +470,7 @@ app.post("/RegisterFlight", function (req, res) {
           
             //db.close();
           });
-          var message="";
-          flightData.findById(req.params.id, (error, dataflight) => {
-            if (error) {
-              return next(error)
-            } else {
-              var mail = data.email + "";
-               message = "Hello,"+ data.first_name + " "+data.last_name +", your flight from "+dataflight.from+" to "+dataflight.to+" has been cancelled." + "An amout of "+dataflight.price+" EGP will be refunded within 3 working days.";
-               const options ={
-                from:"AlmazaAirport@outlook.com", //mail el sender
-                to:mail,//el mafrood mail
-                subject:"Flight Cancellation",
-                text:message
-              };
-              transporter.sendMail(options,function(err,info){
-                if(err){
-                  console.log(err);
-                }
-                else{
-                  console.log("Sent");
-                }
-              })
-            }
-          });
+          
           
           
           
