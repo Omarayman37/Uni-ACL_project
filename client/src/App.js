@@ -28,7 +28,7 @@ function App() {
       <Layout className="layout">
         <Header>
           <div className="logo" />
-          <Nav/>
+          <Nav />
         </Header>
         <Content style={{ padding: "0 50px" }}>
           <Breadcrumb style={{ margin: "16px 0" }}>
@@ -38,14 +38,22 @@ function App() {
                 element={<ChooseSeats flight_id={"61c0a4a95d2eb7a50cd7c87c"} />}
                 exact
               /> */}
-              <Route path="/"
+              {/* <Route
+                path="/"
                 element={<EditUSer user_id={"61c0a4a95d2eb7a50cd7c87c"} />}
-                exact />
+                exact
+              />
               <Route
                 path="/ChooseSeats"
                 element={<ChooseSeats flight_id={"61c0a4a95d2eb7a50cd7c87c"} />}
                 exact
+              /> */}
+              <Route
+                path="/LoginUser"
+                element={<LoginPage />}
+                exact
               />
+              
               <Route path="/AddAirplane" element={<AddAirplane />} exact />
               <Route path="/ReturnTrip" element={<ReturnTrip />} exact />
               <Route path="/SearchPage" element={<SearchPage />} exact />
@@ -55,12 +63,14 @@ function App() {
               <Route path="/RegisterUser" element={<Guest />} />
               <Route path="/AddAirplanes" element={<Airplanes />} />
               <Route path="/HomeGuest" element={<HomeGuest />} />
+
+              <Route path="/Ticket" element={<Ticket />} />
+=======
               <Route path="/FlightCard" element={<FlightCard />} />
+
             </Routes>
           </Breadcrumb>
-          
         </Content>
-       
       </Layout>
     </div>
   );
