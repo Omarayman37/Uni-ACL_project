@@ -22,17 +22,20 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 import Seat from "./Seat";
+import "../App.css";
 const Seats = ({ flight_id }) => {
   const [seats, setSeats] = useState({});
   const [error_msg, setError_msg] = useState("");
   const [SeatClass, setSeatClass] = useState("EconomySeats");
-
+  const [price, setprice] = useState(0);
   useEffect(async () => {
     const _data = await axios.post("http://localhost:5000/get-Seats", {
       flight_id: flight_id,
     });
     console.log(`retrived seats ${_data["data"]["seat"]}`);
     setSeats(_data["data"]["seat"]);
+    const ticket = { price: 123 };
+    setprice(ticket.price);
   }, []);
 
   const create_grid = (new_seat_class) => {
@@ -83,8 +86,9 @@ const Seats = ({ flight_id }) => {
     setSeats(new_seats);
   };
   return (
-    <div>
+    <div className="card-container">
       <Tabs
+        type="card"
         defaultActiveKey="EconomySeats"
         onChange={async (key) => {
           console.log(key);
@@ -103,7 +107,7 @@ const Seats = ({ flight_id }) => {
           }
           key="EconomySeats"
         >
-          Tab 1
+          {create_grid(SeatClass)}
         </Tabs.TabPane>
         <Tabs.TabPane
           tab={
@@ -114,7 +118,7 @@ const Seats = ({ flight_id }) => {
           }
           key="BusinessSeats"
         >
-          Tab 2
+          {create_grid(SeatClass)}
         </Tabs.TabPane>
         <Tabs.TabPane
           tab={
@@ -125,11 +129,9 @@ const Seats = ({ flight_id }) => {
           }
           key="FirstClassSeats"
         >
-          Tab 2
+          {create_grid(SeatClass)}
         </Tabs.TabPane>
       </Tabs>
-
-      {create_grid(SeatClass)}
 
       <Button
         type="primary"

@@ -13,28 +13,52 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AddAirplane from './components/AddAirplane';
 import ReturnTrip from './components/ReturnTrip';
 import Seat from './components/Seat'
+import Ticket from './components/Ticket'
+import ChooseSeats from './components/CSeats'
+import { Layout, Menu, Breadcrumb } from "antd";
+import Nav from './components/Nav'
+import EditUSer from './components/EditUser';
 
-import CSeats from './components/CSeats'
+const { Header, Content, Footer } = Layout;
 function App() {
   return (
     <div>
-      <header></header>
-      <Routes>
-        <Route
-          path="/"
-          element={<CSeats flight_id={"61c0a4a95d2eb7a50cd7c87c"} />}
-          exact
-        />
-        <Route path="/AddAirplane" element={<AddAirplane />} exact />
-        <Route path="/ReturnTrip" element={<ReturnTrip />} exact />
-        <Route path="/SearchPage" element={<SearchPage />} exact />
-        <Route path="/LoginUser" element={<LoginPage />} />
-        <Route path="/myFlights" element={<MyFlights />} />
-        <Route path="/userAllFlights" element={<UserAllFlights />} />
-        <Route path="/RegisterUser" element={<Guest />} />
-        <Route path="/AddAirplanes" element={<Airplanes />} />
-        <Route path="/HomeGuest" element={<HomeGuest />} />
-      </Routes>
+      <Layout className="layout">
+        <Header>
+          <div className="logo" />
+          <Nav/>
+        </Header>
+        <Content style={{ padding: "0 50px" }}>
+          <Breadcrumb style={{ margin: "16px 0" }}>
+            <Routes>
+              {/* <Route
+                path="/"
+                element={<ChooseSeats flight_id={"61c0a4a95d2eb7a50cd7c87c"} />}
+                exact
+              /> */}
+              <Route path="/"
+                element={<EditUSer user_id={"61c0a4a95d2eb7a50cd7c87c"} />}
+                exact />
+              <Route
+                path="/ChooseSeats"
+                element={<ChooseSeats flight_id={"61c0a4a95d2eb7a50cd7c87c"} />}
+                exact
+              />
+              <Route path="/AddAirplane" element={<AddAirplane />} exact />
+              <Route path="/ReturnTrip" element={<ReturnTrip />} exact />
+              <Route path="/SearchPage" element={<SearchPage />} exact />
+              <Route path="/LoginUser" element={<LoginPage />} />
+              <Route path="/myFlights" element={<MyFlights />} />
+              <Route path="/userAllFlights" element={<UserAllFlights />} />
+              <Route path="/RegisterUser" element={<Guest />} />
+              <Route path="/AddAirplanes" element={<Airplanes />} />
+              <Route path="/HomeGuest" element={<HomeGuest />} />
+            </Routes>
+          </Breadcrumb>
+          
+        </Content>
+       
+      </Layout>
     </div>
   );
 }
