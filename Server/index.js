@@ -1,14 +1,14 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import crypto, { createDecipheriv } from 'crypto';
+import crypto, { createDecipheriv } from "crypto";
 //
 import userDataSchema from "./models/UserDataSchema.js";
 import flightSchema from './models/FlgihtsSchema.js';
+import ticketSchema from './models/TicketSchema.js';
 import {timeDiffCalc} from "./util/diffrenceHours.js";
 import {create_functional_querry_from_request} from './util/querry_func.js'
-import { Console } from "console";
-//
+import CreateSeatsObject from './util/CreateSeatsObject.js'
 console.log("server is running");
 var userID;//id of signed in user
 const app = express();
@@ -49,6 +49,8 @@ mongoose
 // Data Models
 var UserData = mongoose.model("UserData", userDataSchema);
 let flightData = mongoose.model("flightData", flightSchema);
+let ticketData = mongoose.model("ticketData", ticketSchema);
+
 // GET REQUESTS
 // get request get-data to get all users
 app.get("/get-data", function (req, res) {
@@ -77,12 +79,11 @@ app.get("/myFlights",function(req, res)  {
         if (error) {
           return next(error)
         } else {
-          var toChange = dataUser.last_name;// this is the value to check (I need to change it to flights and not last name)
+          var toChange = dataUser.flightsID;// this is the value to check (I need to change it to flights and not last name)
           console.log(toChange)
           var temp = new Array();
           temp = toChange.split(",");
-          console.log("dssssssssssssss");
-          console.log(temp);
+          
           for(var i = 0 ; i < temp.length;i++){
             for(var j = 0 ; j < data.length;j++){
               
@@ -103,21 +104,90 @@ app.get("/myFlights",function(req, res)  {
     }
   })
 });
-
+app.get("/myReservedFlights",function(req, res)  {
+  ticketData.find((error, data) => {
+    if (error) {
+      return next(error)
+    } else {
+      var dataNew = new Array();
+      UserData.findById(userID, (error, dataUser) => {
+        if (error) {
+          return next(error)
+        } else {
+          var toChange = dataUser.ticketsID;// this is the value to check (I need to change it to flights and not last name)
+          console.log(toChange)
+          var temp = new Array();
+          temp = toChange.split(",");
+          for(var i = 0 ; i < temp.length;i++){
+            for(var j = 0 ; j < data.length;j++){
+              if(temp[i]== data[j]._id){
+                dataNew.push(data[j]);
+                j=data.length;
+              }
+            }
+          }
+          
+          res.json(dataNew)
+        }
+          
+        });
+        
+      
+    }
+  })
+});
 app.get("/get-all-flights", function (req, res) {
   //to get all users
   flightData.find().then(function (doc) {
     res.status(200).json({ data: doc });
   });
 });
+
+app.post('/updateUser',function(req, res, next) {
+  console.log(req.body);
+  console.log(userID);
+  var edituseremail = { $set: { email: req.body.email } };
+  var editusernickname = { $set: { email: req.body.nickname } };
+  var edituserpassword = { $set: { email: req.body.password } };
+  var edituserfirstname = { $set: { email: req.body.first_name } };
+  var edituserlastname = { $set: { email: req.body.last_name } };
+  var edituserphone = { $set: { email: req.body.telephone_number } };
+  var edituseraddress = { $set: { email: req.body.home_address } };
+  var edituserpassport = { $set: { email: req.body.passport } };
+
+          var IDold = {_id: userID};
+          
+          UserData.updateOne(IDold, edituseremail, function(err, res) {
+            if (err) throw err;});
+            UserData.updateOne(IDold, edituseraddress, function(err, res) {
+              if (err) throw err;});
+              UserData.updateOne(IDold, edituserfirstname, function(err, res) {
+                if (err) throw err;});
+                UserData.updateOne(IDold, edituserlastname, function(err, res) {
+                  if (err) throw err;});
+                  UserData.updateOne(IDold, editusernickname, function(err, res) {
+                    if (err) throw err;});
+                    UserData.updateOne(IDold, edituserpassword, function(err, res) {
+                      if (err) throw err;});
+                      UserData.updateOne(IDold, edituserpassport, function(err, res) {
+                        if (err) throw err;});
+                        UserData.updateOne(IDold, edituserphone, function(err, res) {
+                          if (err) throw err;});
+});
+app.post("/get-seats", async (req, res) => {
+  const flight_id = req.body?.flight_id;
+  const flight = await flightData.findById(flight_id);
+  console.log(flight);
+  res.status(201).send({ seat: flight["Seats"] });
+});
 app.post("/get-flights", async function (req, res) {
   //to get all users
-  console.log(req.body.querry)
+  console.log(req.body.querry);
   const querry = req.body.querry;
-  const returned_response = await create_functional_querry_from_request(querry)
+  const returned_response = await create_functional_querry_from_request(querry);
   res.status(200).send({ data: returned_response });
-  
 });
+
 // POST REQUESTS
 app.post("/", (req, res) => {
   console.log("request sent", req.body);
@@ -128,18 +198,29 @@ app.post("/RegisterUser", function (req, res) {
     "in the post method server resived post request with body:\n" +
       JSON.stringify(req.body)
   );
-  const {user_email, user_password, user_passport_number, user_first_name, user_last_name, user_home_address, user_nickname, user_contry_code, user_telephone_number} = req.body
+  const {
+    user_email,
+    user_password,
+    user_passport_number,
+    user_first_name,
+    user_last_name,
+    user_home_address,
+    user_nickname,
+    user_contry_code,
+    user_telephone_number,
+  } = req.body;
   var item = {
-    email:user_email,
+    email: user_email,
     password: user_password,
     nickname: user_nickname,
     first_name: user_first_name,
     last_name: user_last_name,
-    home_address:user_home_address,
+    home_address: user_home_address,
     contry_code: user_contry_code,
     telephone_number: user_telephone_number,
     passport: user_passport_number,
-    FlightsID : "",
+    flightsID : "",
+    ticketsID : "",
   };
   var data = new UserData(item);
   data
@@ -148,7 +229,9 @@ app.post("/RegisterUser", function (req, res) {
       console.log("saved sucess " + doc);
       res.status(200).json({ status: "ok" }); // this means that it was great and it worked quiet well if i can say so myself
     })
-    .catch((err) => {console.error(err)});
+    .catch((err) => {
+      console.error(err);
+    });
 });
 
 app.post("/RegisterFlight", function (req, res) {
@@ -170,6 +253,7 @@ app.post("/RegisterFlight", function (req, res) {
     BusinessClass_seats,
     Economy_seats,
   } = req.body;
+  // TODO: first class seats == buissness class seats
   var item = {
     id: id,
     name: name,
@@ -186,6 +270,16 @@ app.post("/RegisterFlight", function (req, res) {
     baggage_allowance: baggage_allowance,
     BusinessClass_seats: BusinessClass_seats,
     Economy_seats: Economy_seats,
+    FirstClass_seats: BusinessClass_seats,
+    SeatsLeft:
+      parseInt(BusinessClass_seats) +
+      parseInt(Economy_seats) +
+      parseInt(BusinessClass_seats),
+    Seats: CreateSeatsObject(
+      Economy_seats,
+      BusinessClass_seats,
+      BusinessClass_seats // this is not truly correct but assume # of first class seats == buissness class seats TODO:
+    ),
   };
   var data = new flightData(item);
   data
@@ -198,15 +292,12 @@ app.post("/RegisterFlight", function (req, res) {
       console.error(err);
     });
 });
- app.get("/reserveflight/:id",function(req,res){
+ app.get("/addToFavourite/:id",function(req,res){
   UserData.findById(userID, (error, data) => {
         if (error) {
           return next(error)
         } else {
-          console.log("el flights hena ");
-          //console.log(data.FlightsID);
-
-            var toChange = data.last_name;// this is the value to check (I need to change it to flights and not last name)
+            var toChange = data.flightsID;// this is the value to check (I need to change it to flights and not last name)
             var temp = new Array();
             temp = toChange.split(",");
             var duplicate = 0;
@@ -222,7 +313,7 @@ app.post("/RegisterFlight", function (req, res) {
             else{
                var flights = toChange + "," +req.params.id ;
               }
-          var flighttoAdd = { $set: { last_name: flights } };
+          var flighttoAdd = { $set: { flightsID: flights } };
           var IDold = {_id: userID};
           
           UserData.updateOne(IDold, flighttoAdd, function(err, res) {
@@ -244,10 +335,55 @@ app.post("/RegisterFlight", function (req, res) {
         if (error) {
           return next(error)
         } else {
-
-            var toChange = data.last_name;// this is the value to check (I need to change it to flights and not last name)
+            ticketData.findById(req.params.id,(error,data) =>{
+              if(error){
+                return next(error);
+              }
+              else{
+                var flight = data.IDFlight;
+                var class_cabin = data.Cabin_Class;
+                flightData.findById(flight,(error,dataf) =>{
+                    if(error){
+                      return next(error);
+                    }
+                    else{
+                      if(class_cabin == "first"){
+                        var changer = dataf.firstclass_seats +1; 
+                        var flighttoAdd = { $set: { firstclass_seats: changer } };
+          var IDold = {_id: flight};
+          
+          flightData.updateOne(IDold, flighttoAdd, function(err, res) {
+            if (err) throw err;
+          
+          });
+                      }
+                      else if(class_cabin= "economy"){
+                        var changer = dataf.Economy_seats +1;
+                        var flighttoAdd = { $set: { Economy_seats: changer } };
+                        var IDold = {_id: flight};
+                        
+                        flightData.updateOne(IDold, flighttoAdd, function(err, res) {
+                          if (err) throw err;
+                        
+                        });
+                      }
+                      else if(class_cabin = "business"){
+                        var changer = dataf.BusinessClass_seats +1;
+                        var flighttoAdd = { $set: { BusinessClass_seats: changer } };
+          var IDold = {_id: flight};
+          
+          flightData.updateOne(IDold, flighttoAdd, function(err, res) {
+            if (err) throw err;
+          
+          });
+                      }
+                    }
+                });
+              }
+            });
+            var toChange = data.ticketsID;// this is the value to check (I need to change it to flights and not last name)
             var temp = new Array();
-            temp = toChange.split(",");
+            temp = toChange.split(",");///tickets id
             var j = 0;
               for ( j=0; j<temp.length; j++) {
                   if (temp[j].match(req.params.id)) break ;
@@ -263,7 +399,7 @@ app.post("/RegisterFlight", function (req, res) {
                 }
               }
             }
-          var flighttoAdd = { $set: { last_name: flights } };
+          var flighttoAdd = { $set: { ticketsID: flights } };
           var IDold = {_id: userID};
           
           UserData.updateOne(IDold, flighttoAdd, function(err, res) {
@@ -272,15 +408,15 @@ app.post("/RegisterFlight", function (req, res) {
             //db.close();
           });
           var message="";
-          flightData.findById(req.params.id, (error, dataflight) => {
+          ticketData.findById(req.params.id, (error, dataflight) => {
             if (error) {
               return next(error)
             } else {
               var mail = data.email + "";
-               message = "Hello,"+ data.first_name + " "+data.last_name +", your flight from "+dataflight.from+"to "+dataflight.to+" has been cancelled." + "An amout of "+dataflight.price+" will be refunded within 3 working days.";
+               message = "Hello,"+ data.first_name + " "+data.last_name +", your flight from "+dataflight.from+" to "+dataflight.to+" has been cancelled." + "An amout of "+dataflight.price+" EGP will be refunded within 3 working days.";
                const options ={
                 from:"AlmazaAirport@outlook.com", //mail el sender
-                to:"ahmedelsherif04@gmail.com",//el mafrood mail
+                to:mail,//el mafrood mail
                 subject:"Flight Cancellation",
                 text:message
               };
@@ -302,13 +438,54 @@ app.post("/RegisterFlight", function (req, res) {
  })
 
  });
+ app.get("/removefromFavourite/:id",function(req,res){
+  UserData.findById(userID, (error, data) => {
+        if (error) {
+          return next(error)
+        } else {
+
+            var toChange = data.flightsID;// this is the value to check (I need to change it to flights and not last name)
+            var temp = new Array();
+            temp = toChange.split(",");
+            var j = 0;
+              for ( j=0; j<temp.length; j++) {
+                  if (temp[j].match(req.params.id)) break ;
+              }
+              var flights ="";
+            for(var i = 0 ; i < temp.length ; i++){
+              if(i!=j){
+                if(i==0){
+                    flights = temp[i] + "";
+                }
+                else{
+                  flights = flights+ ","+temp[i]
+                }
+              }
+            }
+          var flighttoAdd = { $set: { flightsID: flights } };
+          var IDold = {_id: userID};
+          
+          UserData.updateOne(IDold, flighttoAdd, function(err, res) {
+            if (err) throw err;
+          
+            //db.close();
+          });
+          
+          
+          
+          
+          res.json(data)
+        }
+ })
+
+ });
 
 app.post("/LoginUser", function (req, res) {
   console.log(
     "in the post method server resived post request with body:\n" +
       JSON.stringify(req.body)
   );
-  console.log(req.body.user_email)
+  console.log(req.body.user_email);
   console.log(req.body.user_password);
 
   let querry = {
@@ -335,7 +512,38 @@ app.post("/LoginUser", function (req, res) {
     .catch((err) => console.error(err));
 });
 
+app.post("/ReserveSeats", async (req, res) => {
+  console.log("reserving seats:\n" + JSON.stringify(req.body));
+  const { flight_id, reserved_seats, seat_class } = req.body;
+  const flight = await flightData.findById(flight_id).then((doc) => {
+    for (const reserved_seat of reserved_seats) {
+      doc.Seats[seat_class].set(reserved_seat, "taken"); // setting these seats to taken in this seat class
+    }
+    
+    doc.save().then((old_doc) => {
+      console.log(`saved seats  successfully and remaingin seats are ${doc.SeatsLeft}`);
+      res.status(200).json({ status: "ok", success: true, err: null }); // this means that it was great and it worked quiet well if i can say so myself
+    });
+    
+  });
+});
 
+app.post("/DecreaseSeats", async (req, res) => {
+  console.log("decrasing seat number by seats:\n" + JSON.stringify(req.body));
+  const { flight_id, number_of_seats } = req.body;
+  const flight = await flightData.findById(flight_id).then((doc) => {
+    doc.SeatsLeft = doc.SeatsLeft-number_of_seats;
+    if(doc.SeatsLeft<0){
+      doc.SeatsLeft = 0;
+    }
 
+    doc.save().then((old_doc) => {
+      console.log(
+        `remaining seats are now ${doc.SeatsLeft}`
+      );
+      res.status(200).json({ status: "ok", success: true, err: null }); // this means that it was great and it worked quiet well if i can say so myself
+    });
+  });
+});
 
 export default app;

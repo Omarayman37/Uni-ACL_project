@@ -41,20 +41,6 @@ export default class FlightList extends Component {
       <Table striped bordered hover style={{width:'250%'}}>
         <thead>
           <tr>
-          {/* id: String,
-    name: String,
-    seat_number: String,
-    range: String,
-    duration: Number,
-    arrival_time: Date,
-    departure_time: Date,
-    from: String, // contry name 
-    to: String,//country name
-    price: String,  // format : pricefirstclass,pricebusiness,priceeconomy
-    Economy_seats: Number,
-    BusinessClass_seats: Number,
-    firstclass_seats: Number,
-    baggage_allowance:Number, */}
           <th>Flight Number</th>
           <th>seat_number</th>
             <th>range</th>
@@ -68,7 +54,7 @@ export default class FlightList extends Component {
             <th>economy</th>
             <th>business</th>
             <th>baggage</th>
-            <th>Reserve</th>
+            <th>Add To Favourite</th>
           </tr>
         </thead>
         <tbody>

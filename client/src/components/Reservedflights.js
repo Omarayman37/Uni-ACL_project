@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
-import FlightTableRow from './FlightTableRowMyFlights';
+import FlightTableRow from './FlightTableRowReserved';
 
 
-export default class MyFlights extends Component {
+export default class Reservedflights extends Component {
 
   constructor(props) {
     super(props)
@@ -14,7 +14,7 @@ export default class MyFlights extends Component {
   }
 
   componentDidMount() {
-    axios.get("http://localhost:5000/myFlights")
+    axios.get("http://localhost:5000/myReservedFlights")
       .then(res => {
         this.setState({
           flights: res.data
@@ -44,20 +44,13 @@ export default class MyFlights extends Component {
         
           <th>Flight Number</th>
           <th>seat_number</th>
-            <th>range</th>
-            <th>duration</th>
-            <th>Arrival Time</th>
-            <th>departure Date</th>
-            <th>from</th>
+          <th>Cabin Class</th>
+          <th>from</th>
             <th>to</th>
+            <th>departure Date</th>
+            <th>Arrival Time</th>
             <th>price</th>
-            <th>First Class Seats</th>
-            <th>economy</th>
-            <th>business</th>
-            <th>baggage</th>
-            <th>Cabin Class</th>
-            <th>Cancel</th>
-            <th>Reserve the Flight</th>
+            <th>Cancel</th>       
           </tr>
         </thead>
         <tbody>

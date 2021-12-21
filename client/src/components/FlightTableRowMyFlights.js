@@ -4,21 +4,25 @@ import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 
 export default class FlightTableRowMyFlight extends Component {
-    CancelFlight(){
-        axios.get('http://localhost:5000/cancelflight/' + this.props.obj._id)
+    reserve(){
+            //here you link to the reserve flight
+            //lazem hena bardo lma y3ml reserve el reservation ytshal mn el favourites
+    }
+    removeFromFavourite(){
+        axios.get('http://localhost:5000/removefromFavourite/' + this.props.obj._id)
         .then((res) => {
           console.log(res.data)
-          console.log('Reservation Cancelled')
+          console.log('removed from favourites')
         }).catch((error) => {
           console.log(error)
         })
         window.location.reload(false);
     }
-
    
     constructor(props) {
         super(props);
-        this.CancelFlight = this.CancelFlight.bind(this);
+        this.removeFromFavourite = this.removeFromFavourite.bind(this);
+        this.reserve = this.reserve.bind(this);
         
     }
    
@@ -40,12 +44,19 @@ export default class FlightTableRowMyFlight extends Component {
                 <td>{this.props.obj.baggage_allowance}</td>
                 <td>
                     <Button onClick={(e) =>{ e.preventDefault();
-                        if (window.confirm("Are you sure you want to Cancel this Reservation?")) {
-                         this.CancelFlight();
+                        if (window.confirm("Are you sure you want to Remove this flight from favourites")) {
+                         this.removeFromFavourite();
                       } else {
                         }
                             }
-                    }size="sm" variant="danger">Cancel Flight</Button>
+                    }size="sm" variant="danger">Remove from Favourite</Button>
+                    <Button onClick={(e) =>{ e.preventDefault();
+                        if (window.confirm("Are you sure you want to reserve this flight")) {
+                         this.reserve();
+                      } else {
+                        }
+                            }
+                    }size="sm" variant="danger">Reserve</Button>
                 </td>
             </tr>
         );
