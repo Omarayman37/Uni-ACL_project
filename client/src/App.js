@@ -14,7 +14,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AddAirplane from './components/AddAirplane';
 import ReturnTrip from './components/ReturnTrip';
 import Seat from './components/Seat'
-//import Ticket from './components/Ticket'
+import Ticket from './components/Ticket'
 import ChooseSeats from './components/CSeats'
 import { Layout, Menu, Breadcrumb } from "antd";
 import Nav from './components/Nav'
@@ -38,11 +38,8 @@ function App() {
                 element={<ChooseSeats flight_id={"61c0a4a95d2eb7a50cd7c87c"} />}
                 exact
               /> */}
-              {/* <Route path="/"
+              <Route path="/"
                 element={<EditUSer user_id={"61c0a4a95d2eb7a50cd7c87c"} />}
-                exact /> */}
-                <Route path="/"
-                element={<FlightCard data = {{flight_id:'1234' , depature_time:'12:30' , arival_time:'18:30' , trip_duration:'6 Hours'}} />}
                 exact />
               <Route
                 path="/ChooseSeats"
