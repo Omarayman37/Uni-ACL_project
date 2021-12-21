@@ -4,13 +4,13 @@ import cors from "cors";
 import crypto, { createDecipheriv } from "crypto";
 //
 import userDataSchema from "./models/UserDataSchema.js";
-import flightSchema from './models/FlgihtsSchema.js';
-import ticketSchema from './models/TicketSchema.js';
-import {timeDiffCalc} from "./util/diffrenceHours.js";
-import {create_functional_querry_from_request} from './util/querry_func.js'
-import CreateSeatsObject from './util/CreateSeatsObject.js'
+import flightSchema from "./models/FlgihtsSchema.js";
+import ticketSchema from "./models/TicketSchema.js";
+import { timeDiffCalc } from "./util/diffrenceHours.js";
+import { create_functional_querry_from_request } from "./util/querry_func.js";
+import CreateSeatsObject from "./util/CreateSeatsObject.js";
 console.log("server is running");
-var userID;//id of signed in user
+var userID; //id of signed in user
 const app = express();
 const Schema = mongoose.Schema;
 
@@ -26,14 +26,12 @@ app.use(
 import nodemailer from "nodemailer";
 //const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
-  service : "hotmail" ,
-  auth:{
-    user:"AlmazaAirport@outlook.com",
-    pass: "AhmedMaherT346-3200"
-  }
+  service: "hotmail",
+  auth: {
+    user: "AlmazaAirport@outlook.com",
+    pass: "AhmedMaherT346-3200",
+  },
 });
-
-
 
 // Connect to DB and Server
 const CONNECTION_URL =
@@ -60,81 +58,74 @@ app.get("/get-data", function (req, res) {
   });
 });
 
-app.get("/userallflight",function(req, res)  {
+app.get("/userallflight", function (req, res) {
   flightData.find((error, data) => {
     if (error) {
-      return next(error)
+      return next(error);
     } else {
-      res.json(data)
+      res.json(data);
     }
-  })
+  });
 });
-app.get("/myFlights",function(req, res)  {
+app.get("/myFlights", function (req, res) {
   flightData.find((error, data) => {
     if (error) {
-      return next(error)
+      return next(error);
     } else {
       var dataNew = new Array();
       UserData.findById(userID, (error, dataUser) => {
         if (error) {
-          return next(error)
+          return next(error);
         } else {
-          var toChange = dataUser.flightsID;// this is the value to check (I need to change it to flights and not last name)
-          console.log(toChange)
+          var toChange = dataUser.flightsID; // this is the value to check (I need to change it to flights and not last name)
+          console.log(toChange);
           var temp = new Array();
           temp = toChange.split(",");
-          
-          for(var i = 0 ; i < temp.length;i++){
-            for(var j = 0 ; j < data.length;j++){
-              
-              if(temp[i]== data[j]._id){
+
+          for (var i = 0; i < temp.length; i++) {
+            for (var j = 0; j < data.length; j++) {
+              if (temp[i] == data[j]._id) {
                 dataNew.push(data[j]);
-                j=data.length;
+                j = data.length;
               }
             }
           }
-          console.log("ana henaaaa")
+          console.log("ana henaaaa");
           console.log(dataNew);
-          res.json(dataNew)
+          res.json(dataNew);
         }
-          
-        });
-        
-      
+      });
     }
-  })
+  });
 });
-app.get("/myReservedFlights",function(req, res)  {
+app.get("/myReservedFlights", function (req, res) {
   ticketData.find((error, data) => {
     if (error) {
-      return next(error)
+      return next(error);
     } else {
       var dataNew = new Array();
       UserData.findById(userID, (error, dataUser) => {
         if (error) {
-          return next(error)
+          return next(error);
         } else {
-          var toChange = dataUser.ticketsID;// this is the value to check (I need to change it to flights and not last name)
-          console.log(toChange)
+          var toChange = dataUser.ticketsID; // this is the value to check (I need to change it to flights and not last name)
+          console.log(toChange);
           var temp = new Array();
           temp = toChange.split(",");
-          for(var i = 0 ; i < temp.length;i++){
-            for(var j = 0 ; j < data.length;j++){
-              if(temp[i]== data[j]._id){
+          for (var i = 0; i < temp.length; i++) {
+            for (var j = 0; j < data.length; j++) {
+              if (temp[i] == data[j]._id) {
                 dataNew.push(data[j]);
-                j=data.length;
+                j = data.length;
               }
             }
           }
-          
-          res.json(dataNew)
+
+          res.json(dataNew);
         }
-          
-        });
-        
-      
+      });
     }
-  })
+  });
 });
 app.get("/get-all-flights", function (req, res) {
   //to get all users
@@ -143,7 +134,7 @@ app.get("/get-all-flights", function (req, res) {
   });
 });
 
-app.post('/updateUser',function(req, res, next) {
+app.post("/updateUser", function (req, res, next) {
   console.log(req.body);
   console.log(userID);
   var edituseremail = { $set: { email: req.body.email } };
@@ -155,24 +146,32 @@ app.post('/updateUser',function(req, res, next) {
   var edituseraddress = { $set: { email: req.body.home_address } };
   var edituserpassport = { $set: { email: req.body.passport } };
 
-          var IDold = {_id: userID};
-          
-          UserData.updateOne(IDold, edituseremail, function(err, res) {
-            if (err) throw err;});
-            UserData.updateOne(IDold, edituseraddress, function(err, res) {
-              if (err) throw err;});
-              UserData.updateOne(IDold, edituserfirstname, function(err, res) {
-                if (err) throw err;});
-                UserData.updateOne(IDold, edituserlastname, function(err, res) {
-                  if (err) throw err;});
-                  UserData.updateOne(IDold, editusernickname, function(err, res) {
-                    if (err) throw err;});
-                    UserData.updateOne(IDold, edituserpassword, function(err, res) {
-                      if (err) throw err;});
-                      UserData.updateOne(IDold, edituserpassport, function(err, res) {
-                        if (err) throw err;});
-                        UserData.updateOne(IDold, edituserphone, function(err, res) {
-                          if (err) throw err;});
+  var IDold = { _id: userID };
+
+  UserData.updateOne(IDold, edituseremail, function (err, res) {
+    if (err) throw err;
+  });
+  UserData.updateOne(IDold, edituseraddress, function (err, res) {
+    if (err) throw err;
+  });
+  UserData.updateOne(IDold, edituserfirstname, function (err, res) {
+    if (err) throw err;
+  });
+  UserData.updateOne(IDold, edituserlastname, function (err, res) {
+    if (err) throw err;
+  });
+  UserData.updateOne(IDold, editusernickname, function (err, res) {
+    if (err) throw err;
+  });
+  UserData.updateOne(IDold, edituserpassword, function (err, res) {
+    if (err) throw err;
+  });
+  UserData.updateOne(IDold, edituserpassport, function (err, res) {
+    if (err) throw err;
+  });
+  UserData.updateOne(IDold, edituserphone, function (err, res) {
+    if (err) throw err;
+  });
 });
 app.post("/get-seats", async (req, res) => {
   const flight_id = req.body?.flight_id;
@@ -187,6 +186,25 @@ app.post("/get-flights", async function (req, res) {
   const returned_response = await create_functional_querry_from_request(querry);
   res.status(200).send({ data: returned_response });
 });
+
+app.post("/get-ticket", async function (req, res) {
+  //to get all users
+  const ticket_id = req.body.ticket_id;
+  // Get ticket info 
+  const ticket = await ticketData.findById(ticket_id)
+  const { IDUser, IDFlight } = ticket;
+  const user = await userData.findById(IDUser)
+  const flight = await flightData.findById(IDFlight)
+
+
+  res.status(200).send({ user:user, flight:flight, ticket:ticket });
+});
+
+app.get('/get-all-tickets', async(req, res)=>{
+  console.log('get all tickets')
+  const data = await ticketData.find()
+  res.status(200).send({tickets:data})
+})
 
 // POST REQUESTS
 app.post("/", (req, res) => {
@@ -219,8 +237,8 @@ app.post("/RegisterUser", function (req, res) {
     contry_code: user_contry_code,
     telephone_number: user_telephone_number,
     passport: user_passport_number,
-    flightsID : "",
-    ticketsID : "",
+    flightsID: "",
+    ticketsID: "",
   };
   var data = new UserData(item);
   data
@@ -292,193 +310,187 @@ app.post("/RegisterFlight", function (req, res) {
       console.error(err);
     });
 });
- app.get("/addToFavourite/:id",function(req,res){
+app.get("/addToFavourite/:id", function (req, res) {
   UserData.findById(userID, (error, data) => {
-        if (error) {
-          return next(error)
-        } else {
-            var toChange = data.flightsID;// this is the value to check (I need to change it to flights and not last name)
-            var temp = new Array();
-            temp = toChange.split(",");
-            var duplicate = 0;
-            console.log(temp);
-              for (var j=0; j<temp.length; j++) {//to check if the flight is already reserved
-                  if (temp[j].match(req.params.id)) duplicate=1 ;
-              }
-              
-          if(duplicate !=1){
-            if(toChange==""){//msh 3arf leh how msh byd5ol hena
-              var flights =  req.params.id ;
-            }
-            else{
-               var flights = toChange + "," +req.params.id ;
-              }
-          var flighttoAdd = { $set: { flightsID: flights } };
-          var IDold = {_id: userID};
-          
-          UserData.updateOne(IDold, flighttoAdd, function(err, res) {
-            if (err) throw err;
-          
-            //db.close();
-          });}
-          else{
-            //hena 3ayz atl3 error en howa 3ml reserve l flight howa already kan 3mlha reserve
-          }
-          
-          res.json(data)
-        }
- })
+    if (error) {
+      return next(error);
+    } else {
+      var toChange = data.flightsID; // this is the value to check (I need to change it to flights and not last name)
+      var temp = new Array();
+      temp = toChange.split(",");
+      var duplicate = 0;
+      console.log(temp);
+      for (var j = 0; j < temp.length; j++) {
+        //to check if the flight is already reserved
+        if (temp[j].match(req.params.id)) duplicate = 1;
+      }
 
- });
- app.get("/cancelflight/:id",function(req,res){
-  UserData.findById(userID, (error, data) => {
-        if (error) {
-          return next(error)
+      if (duplicate != 1) {
+        if (toChange == "") {
+          //msh 3arf leh how msh byd5ol hena
+          var flights = req.params.id;
         } else {
-            ticketData.findById(req.params.id,(error,data) =>{
-              if(error){
-                return next(error);
-              }
-              else{
-                var flight = data.IDFlight;
-                var class_cabin = data.Cabin_Class;
-                flightData.findById(flight,(error,dataf) =>{
-                    if(error){
-                      return next(error);
-                    }
-                    else{
-                      if(class_cabin == "first"){
-                        var changer = dataf.firstclass_seats +1; 
-                        var flighttoAdd = { $set: { firstclass_seats: changer } };
-          var IDold = {_id: flight};
-          
-          flightData.updateOne(IDold, flighttoAdd, function(err, res) {
-            if (err) throw err;
-          
-          });
-                      }
-                      else if(class_cabin= "economy"){
-                        var changer = dataf.Economy_seats +1;
-                        var flighttoAdd = { $set: { Economy_seats: changer } };
-                        var IDold = {_id: flight};
-                        
-                        flightData.updateOne(IDold, flighttoAdd, function(err, res) {
-                          if (err) throw err;
-                        
-                        });
-                      }
-                      else if(class_cabin = "business"){
-                        var changer = dataf.BusinessClass_seats +1;
-                        var flighttoAdd = { $set: { BusinessClass_seats: changer } };
-          var IDold = {_id: flight};
-          
-          flightData.updateOne(IDold, flighttoAdd, function(err, res) {
-            if (err) throw err;
-          
-          });
-                      }
-                    }
+          var flights = toChange + "," + req.params.id;
+        }
+        var flighttoAdd = { $set: { flightsID: flights } };
+        var IDold = { _id: userID };
+
+        UserData.updateOne(IDold, flighttoAdd, function (err, res) {
+          if (err) throw err;
+
+          //db.close();
+        });
+      } else {
+        //hena 3ayz atl3 error en howa 3ml reserve l flight howa already kan 3mlha reserve
+      }
+
+      res.json(data);
+    }
+  });
+});
+app.get("/cancelflight/:id", function (req, res) {
+  UserData.findById(userID, (error, data) => {
+    if (error) {
+      return next(error);
+    } else {
+      ticketData.findById(req.params.id, (error, data) => {
+        if (error) {
+          return next(error);
+        } else {
+          var flight = data.IDFlight;
+          var class_cabin = data.Cabin_Class;
+          flightData.findById(flight, (error, dataf) => {
+            if (error) {
+              return next(error);
+            } else {
+              if (class_cabin == "first") {
+                var changer = dataf.firstclass_seats + 1;
+                var flighttoAdd = { $set: { firstclass_seats: changer } };
+                var IDold = { _id: flight };
+
+                flightData.updateOne(IDold, flighttoAdd, function (err, res) {
+                  if (err) throw err;
+                });
+              } else if ((class_cabin = "economy")) {
+                var changer = dataf.Economy_seats + 1;
+                var flighttoAdd = { $set: { Economy_seats: changer } };
+                var IDold = { _id: flight };
+
+                flightData.updateOne(IDold, flighttoAdd, function (err, res) {
+                  if (err) throw err;
+                });
+              } else if ((class_cabin = "business")) {
+                var changer = dataf.BusinessClass_seats + 1;
+                var flighttoAdd = { $set: { BusinessClass_seats: changer } };
+                var IDold = { _id: flight };
+
+                flightData.updateOne(IDold, flighttoAdd, function (err, res) {
+                  if (err) throw err;
                 });
               }
-            });
-            var toChange = data.ticketsID;// this is the value to check (I need to change it to flights and not last name)
-            var temp = new Array();
-            temp = toChange.split(",");///tickets id
-            var j = 0;
-              for ( j=0; j<temp.length; j++) {
-                  if (temp[j].match(req.params.id)) break ;
-              }
-              var flights ="";
-            for(var i = 0 ; i < temp.length ; i++){
-              if(i!=j){
-                if(i==0){
-                    flights = temp[i] + "";
-                }
-                else{
-                  flights = flights+ ","+temp[i]
-                }
-              }
-            }
-          var flighttoAdd = { $set: { ticketsID: flights } };
-          var IDold = {_id: userID};
-          
-          UserData.updateOne(IDold, flighttoAdd, function(err, res) {
-            if (err) throw err;
-          
-            //db.close();
-          });
-          var message="";
-          ticketData.findById(req.params.id, (error, dataflight) => {
-            if (error) {
-              return next(error)
-            } else {
-              var mail = data.email + "";
-               message = "Hello,"+ data.first_name + " "+data.last_name +", your flight from "+dataflight.from+" to "+dataflight.to+" has been cancelled." + "An amout of "+dataflight.price+" EGP will be refunded within 3 working days.";
-               const options ={
-                from:"AlmazaAirport@outlook.com", //mail el sender
-                to:mail,//el mafrood mail
-                subject:"Flight Cancellation",
-                text:message
-              };
-              transporter.sendMail(options,function(err,info){
-                if(err){
-                  console.log(err);
-                }
-                else{
-                  console.log("Sent");
-                }
-              })
             }
           });
-          
-          
-          
-          res.json(data)
         }
- })
+      });
+      var toChange = data.ticketsID; // this is the value to check (I need to change it to flights and not last name)
+      var temp = new Array();
+      temp = toChange.split(","); ///tickets id
+      var j = 0;
+      for (j = 0; j < temp.length; j++) {
+        if (temp[j].match(req.params.id)) break;
+      }
+      var flights = "";
+      for (var i = 0; i < temp.length; i++) {
+        if (i != j) {
+          if (i == 0) {
+            flights = temp[i] + "";
+          } else {
+            flights = flights + "," + temp[i];
+          }
+        }
+      }
+      var flighttoAdd = { $set: { ticketsID: flights } };
+      var IDold = { _id: userID };
 
- });
- app.get("/removefromFavourite/:id",function(req,res){
-  UserData.findById(userID, (error, data) => {
+      UserData.updateOne(IDold, flighttoAdd, function (err, res) {
+        if (err) throw err;
+
+        //db.close();
+      });
+      var message = "";
+      ticketData.findById(req.params.id, (error, dataflight) => {
         if (error) {
-          return next(error)
+          return next(error);
         } else {
-
-            var toChange = data.flightsID;// this is the value to check (I need to change it to flights and not last name)
-            var temp = new Array();
-            temp = toChange.split(",");
-            var j = 0;
-              for ( j=0; j<temp.length; j++) {
-                  if (temp[j].match(req.params.id)) break ;
-              }
-              var flights ="";
-            for(var i = 0 ; i < temp.length ; i++){
-              if(i!=j){
-                if(i==0){
-                    flights = temp[i] + "";
-                }
-                else{
-                  flights = flights+ ","+temp[i]
-                }
-              }
+          var mail = data.email + "";
+          message =
+            "Hello," +
+            data.first_name +
+            " " +
+            data.last_name +
+            ", your flight from " +
+            dataflight.from +
+            " to " +
+            dataflight.to +
+            " has been cancelled." +
+            "An amout of " +
+            dataflight.price +
+            " EGP will be refunded within 3 working days.";
+          const options = {
+            from: "AlmazaAirport@outlook.com", //mail el sender
+            to: mail, //el mafrood mail
+            subject: "Flight Cancellation",
+            text: message,
+          };
+          transporter.sendMail(options, function (err, info) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log("Sent");
             }
-          var flighttoAdd = { $set: { flightsID: flights } };
-          var IDold = {_id: userID};
-          
-          UserData.updateOne(IDold, flighttoAdd, function(err, res) {
-            if (err) throw err;
-          
-            //db.close();
           });
-          
-          
-          
-          
-          res.json(data)
         }
- })
+      });
 
- });
+      res.json(data);
+    }
+  });
+});
+app.get("/removefromFavourite/:id", function (req, res) {
+  UserData.findById(userID, (error, data) => {
+    if (error) {
+      return next(error);
+    } else {
+      var toChange = data.flightsID; // this is the value to check (I need to change it to flights and not last name)
+      var temp = new Array();
+      temp = toChange.split(",");
+      var j = 0;
+      for (j = 0; j < temp.length; j++) {
+        if (temp[j].match(req.params.id)) break;
+      }
+      var flights = "";
+      for (var i = 0; i < temp.length; i++) {
+        if (i != j) {
+          if (i == 0) {
+            flights = temp[i] + "";
+          } else {
+            flights = flights + "," + temp[i];
+          }
+        }
+      }
+      var flighttoAdd = { $set: { flightsID: flights } };
+      var IDold = { _id: userID };
+
+      UserData.updateOne(IDold, flighttoAdd, function (err, res) {
+        if (err) throw err;
+
+        //db.close();
+      });
+
+      res.json(data);
+    }
+  });
+});
 
 app.post("/LoginUser", function (req, res) {
   console.log(
@@ -497,8 +509,8 @@ app.post("/LoginUser", function (req, res) {
       if (doc) {
         console.log("found user login successfull" + doc);
         res.status(200).json({ status: "ok", success: true, err: null }); // this means that it was great and it worked quiet well if i can say so myself
-        
-        userID =doc._id;
+
+        userID = doc._id;
         console.log("the id of the user is");
         console.log(userID);
       } else {
@@ -519,12 +531,13 @@ app.post("/ReserveSeats", async (req, res) => {
     for (const reserved_seat of reserved_seats) {
       doc.Seats[seat_class].set(reserved_seat, "taken"); // setting these seats to taken in this seat class
     }
-    
+
     doc.save().then((old_doc) => {
-      console.log(`saved seats  successfully and remaingin seats are ${doc.SeatsLeft}`);
+      console.log(
+        `saved seats  successfully and remaingin seats are ${doc.SeatsLeft}`
+      );
       res.status(200).json({ status: "ok", success: true, err: null }); // this means that it was great and it worked quiet well if i can say so myself
     });
-    
   });
 });
 
@@ -532,15 +545,13 @@ app.post("/DecreaseSeats", async (req, res) => {
   console.log("decrasing seat number by seats:\n" + JSON.stringify(req.body));
   const { flight_id, number_of_seats } = req.body;
   const flight = await flightData.findById(flight_id).then((doc) => {
-    doc.SeatsLeft = doc.SeatsLeft-number_of_seats;
-    if(doc.SeatsLeft<0){
+    doc.SeatsLeft = doc.SeatsLeft - number_of_seats;
+    if (doc.SeatsLeft < 0) {
       doc.SeatsLeft = 0;
     }
 
     doc.save().then((old_doc) => {
-      console.log(
-        `remaining seats are now ${doc.SeatsLeft}`
-      );
+      console.log(`remaining seats are now ${doc.SeatsLeft}`);
       res.status(200).json({ status: "ok", success: true, err: null }); // this means that it was great and it worked quiet well if i can say so myself
     });
   });
