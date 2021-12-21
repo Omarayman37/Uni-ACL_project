@@ -48,8 +48,8 @@ function App() {
                 exact
               /> */}
               <Route
-                path="/LoginUser"
-                element={<LoginPage />}
+                path="/"
+                element={<SearchPage />}
                 exact
               />
               

@@ -25,6 +25,7 @@ import NavigateButton from "./navigate_buton";
 import moment from "moment";
 import { DownloadOutlined } from "@ant-design/icons";
 import "../App.css";
+import Flight from './Flight'
 
 const { Text, Link } = Typography;
 
@@ -285,7 +286,8 @@ class SearchPage extends Component {
         </Card>
         <Divider>Results</Divider>
         {this.state.flights.map((flight) => (
-          <h1 key={flight["_id"]}>{JSON.stringify(flight)}</h1>
+
+          <Flight key={flight["_id"]} flight={flight}/>
         ))}
       </div>
     );

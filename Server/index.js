@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import crypto, { createDecipheriv } from "crypto";
+import crypto, { createCipheriv, createHash, randomBytes } from "crypto";
 //
 import userDataSchema from "./models/UserDataSchema.js";
 import flightSchema from "./models/FlgihtsSchema.js";
@@ -51,11 +51,10 @@ let ticketData = mongoose.model("ticketData", ticketSchema);
 
 // GET REQUESTS
 // get request get-data to get all users
-app.get("/get-data", function (req, res) {
+app.get("/get-all-users", async function (req, res) {
   //to get all users
-  UserData.find().then(function (doc) {
-    console.log("all users " + doc);
-  });
+  const data = await UserData.find()
+  res.status(200).send({users:data})
 });
 
 app.get("/userallflight", function (req, res) {
@@ -209,6 +208,7 @@ app.get('/get-all-tickets', async(req, res)=>{
 // POST REQUESTS
 app.post("/", (req, res) => {
   console.log("request sent", req.body);
+
 });
 // post request to post a user
 app.post("/RegisterUser", function (req, res) {
@@ -334,7 +334,7 @@ app.get("/addToFavourite/:id", function (req, res) {
         }
         var flighttoAdd = { $set: { flightsID: flights } };
         var IDold = { _id: userID };
-
+        console.log(`updated ${userID} with ${flights}`)
         UserData.updateOne(IDold, flighttoAdd, function (err, res) {
           if (err) throw err;
 
@@ -499,11 +499,16 @@ app.post("/LoginUser", function (req, res) {
   );
   console.log(req.body.user_email);
   console.log(req.body.user_password);
+  // here 
+  let hashed_user_pass = createHash("sha256") // hash the passowrd to send it via internet
+    .update(req.body.user_password)
+    .digest("hex");
 
   let querry = {
     email: req.body.user_email,
     password: req.body.user_password,
   };
+  //console.log(querry)
   UserData.findOne(querry)
     .then(function (doc) {
       if (doc) {
