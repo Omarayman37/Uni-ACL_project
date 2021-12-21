@@ -19,6 +19,7 @@ import ChooseSeats from './components/CSeats'
 import { Layout, Menu, Breadcrumb } from "antd";
 import Nav from './components/Nav'
 import EditUSer from './components/EditUser';
+import FlightCard from './components/FlightCrad';
 
 const { Header, Content, Footer } = Layout;
 function App() {
@@ -62,7 +63,11 @@ function App() {
               <Route path="/RegisterUser" element={<Guest />} />
               <Route path="/AddAirplanes" element={<Airplanes />} />
               <Route path="/HomeGuest" element={<HomeGuest />} />
+
               <Route path="/Ticket" element={<Ticket />} />
+=======
+              <Route path="/FlightCard" element={<FlightCard />} />
+
             </Routes>
           </Breadcrumb>
         </Content>
