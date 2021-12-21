@@ -16,19 +16,22 @@ import {
   DatePicker,
   Slider,
   Divider,
-  Typography
+  Typography,
+  Space,
 } from "antd";
 import "antd/dist/antd.css";
 import axios from "axios";
 import NavigateButton from "./navigate_buton";
 import moment from "moment";
-import {DownloadOutlined} from '@ant-design/icons'
+import { DownloadOutlined } from "@ant-design/icons";
+import "../App.css";
+
 const { Text, Link } = Typography;
 
 class SearchPage extends Component {
   state = {
     flights: [],
-    number_of_seats:0,
+    number_of_seats: 0,
   };
   async componentWillMount(props) {
     if (this.props.querry) {
@@ -36,9 +39,9 @@ class SearchPage extends Component {
         "Search page was given an initial querry of ",
         this.props.querry
       );
-      
+
       const inital_state = Object.assign(this.state, this.props.querry);
-      
+
       inital_state["start_date"] = new Date("2021-12-02"); // ! TODO: remove this and put the pnae arrival time here
       await this.setState(inital_state);
       console.log("date format", inital_state["end_date"]);
@@ -119,155 +122,167 @@ class SearchPage extends Component {
   };
   render() {
     return (
-      <div>
-        <Form
-          name="search from"
-          layout="inline"
-          onSubmit={this.handleSubmit}
-          initialValues={{
-            end_date:
-              this.state["end_date"] != undefined
-                ? moment(this.state["end_date"])
-                : null,
-            start_date:
-              this.state["start_date"] != undefined
-                ? moment(this.state["start_date"])
-                : null,
-          }}
+      <div className="card-container">
+        <Card
+          title="Search Flights"
+          extra={<a href="#">More</a>}
+          style={{ width: 900 }}
         >
-          <Row>
-            <Col span={8}>
-              <Form.Item name="start_date" label="Start Date">
-                <DatePicker
-                  onChange={this.handleChangeStartDate}
-                  showTime
-                  format="YYYY-MM-DD"
-                  //defaultValue={this.state["start_date"]}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item name="end_date" label="End Date">
-                <DatePicker
-                  onChange={this.handleChangeEndDate}
-                  showTime
-                  // value={moment(this.state["end_date"])}
-                  format={"YYYY-MM-DD"}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row>
-            <Col span={8}>
-              <Form.Item label="from">
-                <Input
-                  value={this.state["from"]}
-                  name="from"
-                  onChange={this.handleChange}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item label="to">
-                <Input
-                  value={this.state["to"]}
-                  name="to"
-                  onChange={this.handleChange}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
+          <Form
+            name="search from"
+            layout="inline"
+            onSubmit={this.handleSubmit}
+            initialValues={{
+              end_date:
+                this.state["end_date"] != undefined
+                  ? moment(this.state["end_date"])
+                  : null,
+              start_date:
+                this.state["start_date"] != undefined
+                  ? moment(this.state["start_date"])
+                  : null,
+            }}
+          >
+            <Row>
+              <Col span={10} align="center">
+                <Form.Item name="start_date" label="Start Date">
+                  <DatePicker
+                    onChange={this.handleChangeStartDate}
+                    showTime
+                    format="YYYY-MM-DD"
+                    //defaultValue={this.state["start_date"]}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={10} align="center">
+                <Form.Item name="end_date" label="End Date">
+                  <DatePicker
+                    onChange={this.handleChangeEndDate}
+                    showTime
+                    // value={moment(this.state["end_date"])}
+                    format={"YYYY-MM-DD"}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={10} align="center">
+                <Form.Item label="from">
+                  <Input
+                    value={this.state["from"]}
+                    name="from"
+                    onChange={this.handleChange}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={10} align="center">
+                <Form.Item label="to">
+                  <Input
+                    value={this.state["to"]}
+                    name="to"
+                    onChange={this.handleChange}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
 
-          <Row>
-            <Col span={8}>
-              <Form.Item label="trip duration">
-                <Input name="duration" onChange={this.handleChange} />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item label="flight number">
-                <Input name="id" onChange={this.handleChange} />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row justify="center">
-            <Col span={4}>
-              <Button
-                type="primary"
-                shape="circle"
-                icon={<DownloadOutlined />}
-                size="large"
-                onClick={(evt)=>{
-                  let new_number_of_state= (this.state.number_of_seats>0)? this.state.number_of_seats-1 : 0
-                  //this.setState({ number_of_seats: new_number_of_state });
-                  this.handleChange({target:{
-                    name:'number_of_seats',
-                    value:new_number_of_state
-                  }})
-                }}
-               
-              />
-            </Col>
-            <Col span={4}>
-              <Text type="secondary">{this.state.number_of_seats || 0}</Text>
-            </Col>
-            <Col span={4}>
-              <Button
-                type="primary"
-                shape="circle"
-                icon={<DownloadOutlined />}
-                size="large"
-                onClick={(evt)=>{
-                  let new_number_of_state = this.state.number_of_seats + 1;
-                  //this.setState({ number_of_seats: new_number_of_state });
-                  this.handleChange({
-                    target: {
-                      name: "number_of_seats",
-                      value: new_number_of_state,
-                    },
-                  });
-                }
-              }
-              />
-            </Col>
-          </Row>
+            <Row>
+              <Col span={10} align="center">
+                <Form.Item label="trip duration">
+                  <Input name="duration" onChange={this.handleChange} />
+                </Form.Item>
+              </Col>
+              <Col span={10} align="center">
+                <Form.Item label="flight number">
+                  <Input name="id" onChange={this.handleChange} />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row justify="center">
+              <Col span={24}>
+                <Card title="Default size card" style={{ width: "500px" }}>
+                  <Space align="center">
+                    <Button
+                      type="primary"
+                      shape="circle"
+                      icon={<DownloadOutlined />}
+                      size="large"
+                      onClick={(evt) => {
+                        let new_number_of_state =
+                          this.state.number_of_seats > 0
+                            ? this.state.number_of_seats - 1
+                            : 0;
+                        //this.setState({ number_of_seats: new_number_of_state });
+                        this.handleChange({
+                          target: {
+                            name: "number_of_seats",
+                            value: new_number_of_state,
+                          },
+                        });
+                      }}
+                    />
+                    <Text type="secondary">
+                      {this.state.number_of_seats || 0}
+                    </Text>
+                    <Button
+                      type="primary"
+                      shape="circle"
+                      icon={<DownloadOutlined />}
+                      size="large"
+                      onClick={(evt) => {
+                        let new_number_of_state =
+                          this.state.number_of_seats + 1;
+                        //this.setState({ number_of_seats: new_number_of_state });
+                        this.handleChange({
+                          target: {
+                            name: "number_of_seats",
+                            value: new_number_of_state,
+                          },
+                        });
+                      }}
+                    />
+                  </Space>
+                </Card>
+              </Col>
+            </Row>
 
-          <Row>
-            <Col span={24}>
-              <Form.Item name="price" label="Price">
-                <Slider
-                  onChange={this.handleChangePrice}
-                  marks={{
-                    0: "100",
-                    20: "200",
-                    40: "400",
-                    60: "600",
-                    80: "800",
-                    100: "1000",
-                  }}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row>
-            <Col span={12}>
-              <Form.Item>
-                <Button type="primary" onClick={this.handleSubmit}>
-                  Submit
-                </Button>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item>
-                <NavigateButton
-                  func={() => {
-                    return this.state;
-                  }}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form>
+            <Row>
+              <Col span={24}>
+                <Form.Item name="price" label="Price">
+                  <Slider
+                    onChange={this.handleChangePrice}
+                    marks={{
+                      0: "100",
+                      20: "200",
+                      40: "400",
+                      60: "600",
+                      80: "800",
+                      100: "1000",
+                    }}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={12}>
+                <Form.Item>
+                  <Button type="primary" onClick={this.handleSubmit}>
+                    Submit
+                  </Button>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item>
+                  <NavigateButton
+                    func={() => {
+                      return this.state;
+                    }}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+        </Card>
         <Divider>Results</Divider>
         {this.state.flights.map((flight) => (
           <h1 key={flight["_id"]}>{JSON.stringify(flight)}</h1>
