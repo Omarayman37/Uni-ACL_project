@@ -23,6 +23,7 @@ import FavFlights from './components/FavFlights';
 import PayPage from './components/Pay';
 import FlightCard from './components/FlightCrad';
 import MyTickets from "./components/MyTickets";
+import Admin from './components/Admin';
 const { Header, Content, Footer } = Layout;
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
               <Route path="/Ticket" element={<Ticket />} />
 
               <Route path="/FlightCard" element={<FlightCard />} />
+              <Route path="/Admin" element={<Admin />} />
             </Routes>
           
         </Content>

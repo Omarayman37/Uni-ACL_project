@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Layout, Menu, Breadcrumb, Avatar } from "antd";
-import { UserOutlined } from "@ant-design/icons";
+import { UserOutlined, VerticalLeftOutlined } from "@ant-design/icons";
 import Title from "antd/lib/skeleton/Title";
 
 const { Header, Content, Footer } = Layout;
@@ -13,7 +13,6 @@ const Nav = ({}) => {
         <Menu.Item>
           <Title>{location.pathname || "Home"}</Title>
         </Menu.Item>
-
         <Menu.Item>
           <Link to="/SearchPage">Search Flights</Link>
         </Menu.Item>
@@ -26,9 +25,9 @@ const Nav = ({}) => {
         <Menu.Item>
           <Link to="/Fav"></Link>
         </Menu.Item>
-        <Menu.Item>
+        <Menu.Item >
           <Avatar
-            style={{ backgroundColor: "#87d068" }}
+            style={{marginLeft : 850, backgroundColor: "#87d068" }}
             icon={<UserOutlined />}
           />
         </Menu.Item>

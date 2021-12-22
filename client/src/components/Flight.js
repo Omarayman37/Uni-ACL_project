@@ -36,9 +36,8 @@ const Flight = ({ flight }) => {
         <Menu mode="inline" style={{ height: "100%", width: "100%" }}>
           <Menu.SubMenu title={"details"} key={"details"}>
             <p style={{ height: 20 }}>Trip Duration: {flight.cabin_class} </p>
-            <p style={{ height: 20 }}>
-              Baggage Allowance: {flight.baggage_allowance}
-              <p>Seats Left: {flight.SeatsLeft}</p>
+            <p style={{ height: 20 }}>Baggage Allowance: {flight.baggage_allowance}
+              <p style={{ height: 20 }}>Seats Left: {flight.SeatsLeft}</p>
             </p>
           </Menu.SubMenu>
         </Menu>
