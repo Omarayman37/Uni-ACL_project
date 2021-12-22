@@ -19,6 +19,8 @@ import ChooseSeats from './components/CSeats'
 import { Layout, Menu, Breadcrumb } from "antd";
 import Nav from './components/Nav'
 import EditUSer from './components/EditUser';
+import FavFlights from './components/FavFlights';
+import PayPage from './components/Pay';
 import FlightCard from './components/FlightCrad';
 
 const { Header, Content, Footer } = Layout;
@@ -48,12 +50,11 @@ function App() {
                 element={<ChooseSeats flight_id={"61c0a4a95d2eb7a50cd7c87c"} />}
                 exact
               /> */}
-              <Route
-                path="/LoginUser"
-                element={<LoginPage />}
-                exact
-              />
-              
+              <Route path="/FavFlights" element={<FavFlights />} exact />
+              <Route path="/ChooseSeats" element={<ChooseSeats />} exact />
+              <Route path="/Pay" element={<PayPage />} exact />
+
+              <Route path="/" element={<FavFlights />} exact />
               <Route path="/AddAirplane" element={<AddAirplane />} exact />
               <Route path="/ReturnTrip" element={<ReturnTrip />} exact />
               <Route path="/SearchPage" element={<SearchPage />} exact />
@@ -65,7 +66,7 @@ function App() {
               <Route path="/HomeGuest" element={<HomeGuest />} />
 
               <Route path="/Ticket" element={<Ticket />} />
-=======
+
               <Route path="/FlightCard" element={<FlightCard />} />
 
             </Routes>
