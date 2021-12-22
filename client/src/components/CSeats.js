@@ -1,4 +1,5 @@
 import React, { Component, useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Form,
   Input,
@@ -23,12 +24,21 @@ import {
 import axios from "axios";
 import Seat from "./Seat";
 import "../App.css";
-const Seats = ({ flight_id }) => {
+const Seats = ({}) => {
   const [seats, setSeats] = useState({});
   const [error_msg, setError_msg] = useState("");
   const [SeatClass, setSeatClass] = useState("EconomySeats");
   const [price, setprice] = useState(0);
+  const location = useLocation();
+  const [flight_id, setFlight_id] = useState("");
+  const [flight, setFlight] = useState({})
+  const navigate = useNavigate()
   useEffect(async () => {
+    console.log("show seats");
+    let flight = location.state.flight;
+    setFlight(flight)
+    let flight_id = flight._id
+    setFlight_id(flight_id);
     const _data = await axios.post("http://localhost:5000/get-Seats", {
       flight_id: flight_id,
     });
@@ -205,7 +215,18 @@ const Seats = ({ flight_id }) => {
             })
             .then((res) => console.log(`changed remaing seats`))
             .catch((err) => setError_msg(err.message));
+
+            let params = {
+              flight_id: flight_id,
+              flight: flight,
+              reserved_seats_business: reserved_seats_business,
+              reserved_seats_eco:reserved_seats_eco,
+              reserved_seats_first:reserved_seats_first
+            };
+          navigate("../Pay", { state: params });
         }}
+
+        // Nav to the server at the end
       >
         Checkout
       </Button>
