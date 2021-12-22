@@ -26,7 +26,7 @@ import moment from "moment";
 import { DownloadOutlined } from "@ant-design/icons";
 import "../App.css";
 import Flight from './Flight'
-
+import FavButton from './FavButton'
 const { Text, Link } = Typography;
 
 class SearchPage extends Component {
@@ -285,9 +285,11 @@ class SearchPage extends Component {
           </Form>
         </Card>
         <Divider>Results</Divider>
-        {this.state.flights.map((flight) => (
-
-          <Flight key={flight["_id"]} flight={flight}/>
+        {this.state.flights.map((flight, index) => (
+          <Card key={index}>
+            <Flight flight={flight} />
+            <FavButton  flight={flight} />
+          </Card>
         ))}
       </div>
     );

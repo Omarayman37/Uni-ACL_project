@@ -53,8 +53,8 @@ let ticketData = mongoose.model("ticketData", ticketSchema);
 // get request get-data to get all users
 app.get("/get-all-users", async function (req, res) {
   //to get all users
-  const data = await UserData.find()
-  res.status(200).send({users:data})
+  const data = await UserData.find();
+  res.status(200).send({ users: data });
 });
 
 app.get("/userallflight", function (req, res) {
@@ -189,26 +189,30 @@ app.post("/get-flights", async function (req, res) {
 app.post("/get-ticket", async function (req, res) {
   //to get all users
   const ticket_id = req.body.ticket_id;
-  // Get ticket info 
-  const ticket = await ticketData.findById(ticket_id)
+  // Get ticket info
+  const ticket = await ticketData.findById(ticket_id);
   const { IDUser, IDFlight } = ticket;
-  const user = await userData.findById(IDUser)
-  const flight = await flightData.findById(IDFlight)
+  const user = await userData.findById(IDUser);
+  const flight = await flightData.findById(IDFlight);
 
+  res.status(200).send({ user: user, flight: flight, ticket: ticket });
+});
+app.post("/get-user-tickets", async function (req, res) {
+  //to get all users
+  const tickets = ticketData.find({ IDUser : userID});
 
-  res.status(200).send({ user:user, flight:flight, ticket:ticket });
+  res.status(200).send({ tickets:tickets });
 });
 
-app.get('/get-all-tickets', async(req, res)=>{
-  console.log('get all tickets')
-  const data = await ticketData.find()
-  res.status(200).send({tickets:data})
-})
+app.get("/get-all-tickets", async (req, res) => {
+  console.log("get all tickets");
+  const data = await ticketData.find();
+  res.status(200).send({ tickets: data });
+});
 
 // POST REQUESTS
 app.post("/", (req, res) => {
   console.log("request sent", req.body);
-
 });
 // post request to post a user
 app.post("/RegisterUser", function (req, res) {
@@ -334,7 +338,7 @@ app.get("/addToFavourite/:id", function (req, res) {
         }
         var flighttoAdd = { $set: { flightsID: flights } };
         var IDold = { _id: userID };
-        console.log(`updated ${userID} with ${flights}`)
+        console.log(`updated ${userID} with ${flights}`);
         UserData.updateOne(IDold, flighttoAdd, function (err, res) {
           if (err) throw err;
 
@@ -491,7 +495,141 @@ app.get("/removefromFavourite/:id", function (req, res) {
     }
   });
 });
+app.get("/cancelflight/:id", function (req, res) {
+  UserData.findById(userID, (error, data) => {
+    if (error) {
+      return next(error);
+    } else {
+      ticketData.findById(req.params.id, (error, data) => {
+        if (error) {
+          return next(error);
+        } else {
+          var flight = data.IDFlight;
+          //var seat = data.Cabin_Class;
+          flightData.findById(flight, (error, dataf) => {
+            if (error) {
+              return next(error);
+            } else {
+              //TODO Karim Samir to be able to free seats
+              var changer = dataf.seat_number + 1;
+              var flighttoAdd = { $set: { seat_number: changer } };
+              var IDold = { _id: flight };
 
+              flightData.updateOne(IDold, flighttoAdd, function (err, res) {
+                if (err) throw err;
+              });
+            }
+          });
+        }
+      });
+      var toChange = data.ticketsID; // this is the value to check (I need to change it to flights and not last name)
+      var temp = new Array();
+      temp = toChange.split(","); ///tickets id
+      var j = 0;
+      for (j = 0; j < temp.length; j++) {
+        if (temp[j].match(req.params.id)) break;
+      }
+      var flights = "";
+      for (var i = 0; i < temp.length; i++) {
+        if (i != j) {
+          if (i == 0) {
+            flights = temp[i] + "";
+          } else {
+            flights = flights + "," + temp[i];
+          }
+        }
+      }
+      var flighttoAdd = { $set: { ticketsID: flights } };
+      var IDold = { _id: userID };
+
+      UserData.updateOne(IDold, flighttoAdd, function (err, res) {
+        if (err) throw err;
+
+        //db.close();
+      });
+      var message = "";
+      ticketData.findById(req.params.id, (error, dataflight) => {
+        if (error) {
+          return next(error);
+        } else {
+          var mail = data.email + "";
+          message =
+            "Hello," +
+            data.first_name +
+            " " +
+            data.last_name +
+            ", your flight from " +
+            dataflight.from +
+            " to " +
+            dataflight.to +
+            " has been cancelled." +
+            "An amout of " +
+            dataflight.price +
+            " EGP will be refunded within 3 working days.";
+          const options = {
+            from: "AlmazaAirport@outlook.com", //mail el sender
+            to: mail, //el mafrood mail
+            subject: "Flight Cancellation",
+            text: message,
+          };
+          transporter.sendMail(options, function (err, info) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log("Sent");
+            }
+          });
+        }
+      });
+
+      res.json(data);
+    }
+  });
+});
+
+app.post("/createTicket", async (req, res) => {
+  const { flight_id, seat_nr, price } = req.body;
+  console.log(`create ticket from user ${userID} from ${flight_id}`);
+  const flight_data = await flightData.findById(flight_id);
+  const { flightNr, from, to, arrival_time, departure_time } = flight_data;
+  let item = {
+    IDUser: userID,
+    IDFlight: flight_id,
+    flightNr: flightNr,
+    seat_number: seat_nr, //dy msh 3arf 3yznha wla l2
+    from: from, // contry name
+    to: to, //country name
+    arrival_time: arrival_time,
+    departure_time: departure_time,
+    price: price,
+  };
+
+  const ticket = await new ticketData(item)
+  ticket.save();
+  console.log(`saved ticket ${ticket}`)
+  const user = await UserData.findById(userID);
+  // Changeing the user data
+  var toChange = user.ticketsID;
+  var temp = new Array();
+  var newtickets = "";
+  temp = toChange.split(",");
+  if (temp.length == 0) {
+    newtickets = ticket._id;
+  } else {
+    for (var i = 0; i < temp.length; i++) {
+      if (i == 0) {
+        newtickets = temp[i];
+      } else {
+        newtickets = newtickets + "," + temp[i];
+      }
+    }
+  }
+  let ticketsUpdated = { $set: { ticketsID: newtickets } }; // update tickets with new tickets
+  var IDold = { _id: userID };
+  const user_new = await UserData.updateOne(IDold, ticketsUpdated);
+  console.log(`updated user and created ticket ${user_new["ticketsID"]}`);
+  res.status(200).send({status:'ok', msg:'seats booked'})
+});
 app.post("/LoginUser", function (req, res) {
   console.log(
     "in the post method server resived post request with body:\n" +
@@ -499,7 +637,7 @@ app.post("/LoginUser", function (req, res) {
   );
   console.log(req.body.user_email);
   console.log(req.body.user_password);
-  // here 
+  // here
   let hashed_user_pass = createHash("sha256") // hash the passowrd to send it via internet
     .update(req.body.user_password)
     .digest("hex");

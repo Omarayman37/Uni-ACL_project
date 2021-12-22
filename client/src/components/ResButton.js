@@ -4,7 +4,8 @@ import {
   DingdingOutlined,
   ShoppingOutlined,
   HeartOutlined,
-  HeartFilled
+  HeartFilled,
+  DollarCircleFilled
 } from "@ant-design/icons";
 import { Button } from "antd";
 import axios from "axios";
@@ -12,11 +13,17 @@ import { useLocation, useNavigate } from "react-router-dom";
 const Flight = ({ flight }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [Fav, setFav] = useState(false)
   return (
     <div>
-      <h1>{JSON.stringify(flight)}</h1>
-
+      <Button
+        onClick={() => {
+          let params = { flight: flight, flight_id: flight["_id"] };
+             navigate("../ChooseSeats", { state: params });
+         
+        }}
+      >
+        <DollarCircleFilled /> Pay
+      </Button>
     </div>
   );
 };
