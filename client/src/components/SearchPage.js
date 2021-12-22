@@ -23,7 +23,7 @@ import "antd/dist/antd.css";
 import axios from "axios";
 import NavigateButton from "./navigate_buton";
 import moment from "moment";
-import { DownloadOutlined } from "@ant-design/icons";
+import { DownloadOutlined, PlusCircleOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import "../App.css";
 import Flight from './Flight'
 import FavButton from './FavButton'
@@ -207,7 +207,7 @@ class SearchPage extends Component {
                     <Button
                       type="primary"
                       shape="circle"
-                      icon={<DownloadOutlined />}
+                      icon={<MinusCircleOutlined />}
                       size="large"
                       onClick={(evt) => {
                         let new_number_of_state =
@@ -229,7 +229,7 @@ class SearchPage extends Component {
                     <Button
                       type="primary"
                       shape="circle"
-                      icon={<DownloadOutlined />}
+                      icon={<PlusCircleOutlined />}
                       size="large"
                       onClick={(evt) => {
                         let new_number_of_state =
@@ -289,13 +289,12 @@ class SearchPage extends Component {
         {this.state.flights.map((flight, index) => (
           <Card key={index}>
             <Flight flight={flight} />
-            <FavButton  flight={flight} />
+            <FavButton flight={flight} />
           </Card>
         ))}
         {/* {this.state.flights.map((flight, index)=>{
           <FlightCard key={index} flight={flight}/>
         })} */}
-
       </div>
     );
   }
