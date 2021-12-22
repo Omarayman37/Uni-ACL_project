@@ -22,7 +22,7 @@ import EditUSer from './components/EditUser';
 import FavFlights from './components/FavFlights';
 import PayPage from './components/Pay';
 import FlightCard from './components/FlightCrad';
-
+import MyTickets from "./components/MyTickets";
 const { Header, Content, Footer } = Layout;
 function App() {
   return (
@@ -55,6 +55,7 @@ function App() {
               <Route path="/Pay" element={<PayPage />} exact />
 
               <Route path="/" element={<FavFlights />} exact />
+              <Route path="/MyTickets" element={<MyTickets />} exact />
               <Route path="/AddAirplane" element={<AddAirplane />} exact />
               <Route path="/ReturnTrip" element={<ReturnTrip />} exact />
               <Route path="/SearchPage" element={<SearchPage />} exact />
@@ -68,7 +69,6 @@ function App() {
               <Route path="/Ticket" element={<Ticket />} />
 
               <Route path="/FlightCard" element={<FlightCard />} />
-
             </Routes>
           </Breadcrumb>
         </Content>

@@ -4,9 +4,10 @@ import {
   DingdingOutlined,
   ShoppingOutlined,
   HeartOutlined,
-  HeartFilled
+  HeartFilled,
+  EllipsisOutlined,
 } from "@ant-design/icons";
-import { Button } from "antd";
+import { Button, Card } from "antd";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 const Flight = ({ flight }) => {
@@ -15,8 +16,27 @@ const Flight = ({ flight }) => {
   const [Fav, setFav] = useState(false)
   return (
     <div>
-      <h1>{JSON.stringify(flight)}</h1>
-
+      <Card
+        title={"Flight Number: " + flight.id}
+        extra={
+          <a>
+            <HeartOutlined />
+          </a>
+        }
+        style={{}}
+        actions={[<EllipsisOutlined key="tab2" />]}
+        hoverable="true"
+      >
+        <p>Departure Time: {flight.departure_time} </p>
+        <p>Arrival Time: {flight.arrival_time} </p>
+        <p>Trip Duration: {flight.duration} </p>
+        <p>Cabin Class: {flight.cabin_class} </p>
+        <p>Baggage Allowance: {flight.baggage_allowance} </p>
+        <p>Price: {flight.price} </p>
+        <p>Seats Left: {flight.SeatsLeft}</p>
+        <p>from: {flight.from}</p>
+        <p>to: {flight.to}</p>
+      </Card>
     </div>
   );
 };

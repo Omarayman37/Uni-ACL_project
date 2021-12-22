@@ -27,6 +27,7 @@ import { DownloadOutlined } from "@ant-design/icons";
 import "../App.css";
 import Flight from './Flight'
 import FavButton from './FavButton'
+import FlightCard from "./FlightCrad";
 const { Text, Link } = Typography;
 
 class SearchPage extends Component {
@@ -291,6 +292,10 @@ class SearchPage extends Component {
             <FavButton  flight={flight} />
           </Card>
         ))}
+        {this.state.flights.map((flight, index)=>{
+          <FlightCard key={index} flight={flight}/>
+        })}
+
       </div>
     );
   }
