@@ -66,7 +66,7 @@ function App() {
               <Route path="/HomeGuest" element={<HomeGuest />} />
 
               <Route path="/Ticket" element={<Ticket />} />
-=======
+
               <Route path="/FlightCard" element={<FlightCard />} />
 
             </Routes>
