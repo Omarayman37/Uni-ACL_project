@@ -292,9 +292,9 @@ class SearchPage extends Component {
             <FavButton  flight={flight} />
           </Card>
         ))}
-        {this.state.flights.map((flight, index)=>{
+        {/* {this.state.flights.map((flight, index)=>{
           <FlightCard key={index} flight={flight}/>
-        })}
+        })} */}
 
       </div>
     );
