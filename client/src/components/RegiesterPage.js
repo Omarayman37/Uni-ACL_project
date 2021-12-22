@@ -108,7 +108,7 @@ const RegistrationForm = () => {
         }}
       >
         <Option value="49">+49</Option>
-        <Option value="02">+02</Option>
+        <Option value="20">+20</Option>
       </Select>
     </Form.Item>
   );
@@ -336,7 +336,7 @@ const RegistrationForm = () => {
         <Select placeholder="select your gender">
           <Option value="male">Male</Option>
           <Option value="female">Female</Option>
-          <Option value="other">Other</Option>
+        
         </Select>
       </Form.Item>
       <Form.Item

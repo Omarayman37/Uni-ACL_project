@@ -115,12 +115,12 @@ const PayPage = () => {
               
               
               // navigate
-              //navigate.navigate("../PaySuccess");
+              navigate("../PaySuccess");
             }}
             okText="Yes Pay"
             cancelText="Wait"
           >
-            <Button>Bottom</Button>
+            <Button>Pay</Button>
           </Popconfirm>
         </Col>
       </Row>

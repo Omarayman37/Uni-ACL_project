@@ -24,6 +24,7 @@ import PayPage from './components/Pay';
 import FlightCard from './components/FlightCrad';
 import MyTickets from "./components/MyTickets";
 import RegisterPage from './components/RegiesterPage'
+import PaySuccess from './components/PaySuccess'
 const { Header, Content, Footer } = Layout;
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
             <Route path="/FavFlights" element={<FavFlights />} exact />
             <Route path="/ChooseSeats" element={<ChooseSeats />} exact />
             <Route path="/EditUser" element={<EditUSer />} exact />
+            <Route path="/PaySuccess" element={<PaySuccess />} exact />
 
             <Route path="/Pay" element={<PayPage />} exact />
             <Route path="/MyTickets" element={<MyTickets />} exact />
