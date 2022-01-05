@@ -17,16 +17,19 @@ import {
 import "antd/dist/antd.css";
 import axios from "axios";
 import crypto, {AES, createCipheriv, createHash, randomBytes} from "crypto";
-
+import Contexts , {Context} from './Contexts'
 const FormItem = Form.Item;
 // const { getFieldDecorator } = this.props.form;
+// const {setLoggedInUser} = useContext(Context)
 class LoginPage extends Component {
+  static contextType = Contexts;
+
   // state
   state = {
     user_email: "",
     show_error: false,
     error: "",
-    user_password:""
+    user_password: "",
   };
   // functions to controll input
   handleChange = (evt) => {
@@ -35,14 +38,10 @@ class LoginPage extends Component {
       [evt.target.name]: value.trim(),
     });
   };
-  
- 
 
   handleSubmit = (e) => {
-    
-
-    // Here we encrypt using a super scret key and and initialization vector 
-    let login_request_object = this.state
+    // Here we encrypt using a super scret key and and initialization vector
+    let login_request_object = this.state;
     login_request_object["user_password_"] = createHash("sha256")
       .update(login_request_object["user_password"])
       .digest("hex");
@@ -53,11 +52,13 @@ class LoginPage extends Component {
       .then((res) => {
         const { success, err } = res.data;
         if (success) {
-
           console.log(
             "successfull login with credentials : " + JSON.stringify(this.state)
           );
-          window.location.href = "http://localhost:3000/"; // TODO: FIX THIS TRASH LATER
+          
+          this.props.user_logged_in();
+
+         // window.location.href = "http://localhost:3000/"; // TODO: FIX THIS TRASH LATER
         } else {
           console.log("invalud credentails :" + JSON.stringify(this.state));
           // here we tell the UI to display an error we keda
@@ -105,7 +106,7 @@ class LoginPage extends Component {
         /* style={{ width: "600px" }}*/
         style={{
           height: "1200px",
-         
+
           backgroundPosition: "center",
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
@@ -124,7 +125,7 @@ class LoginPage extends Component {
           </Button>
         </FormItem>
         <FormItem {...tailFormItemLayout}>
-          <Link type="primary" to='/RegisterUser' onClick={this.handleSubmit}>
+          <Link type="primary" to="/RegisterUser" onClick={this.handleSubmit}>
             Register
           </Link>
         </FormItem>

@@ -4,10 +4,13 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Switch } from "react-router-dom";
+import Contexts from './components/Contexts';
 
 ReactDOM.render(
   <BrowserRouter>
+    <Contexts>
       <App />
+    </Contexts>
   </BrowserRouter>,
   document.getElementById("root")
 );

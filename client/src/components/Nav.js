@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Layout, Menu, Breadcrumb, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import Title from "antd/lib/skeleton/Title";
+import { Context } from "./Contexts";
 
 const { Header, Content, Footer } = Layout;
 const Nav = ({}) => {
   const location = useLocation();
+  const { user } = useContext(Context);
   return (
     <div>
       <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["2"]}>
@@ -27,8 +29,7 @@ const Nav = ({}) => {
           <Link to="/Fav"></Link>
         </Menu.Item>
         <Menu.Item>
-          <Link to={'/EditUser'}>
-            {" "}
+          <Link to={"/EditUser"} style={{ marginLeft: "auto" }}>
             <Avatar
               style={{ backgroundColor: "#87d068" }}
               icon={<UserOutlined />}

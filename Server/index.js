@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import crypto, { createCipheriv, createHash, randomBytes } from "crypto";
-//
 import userDataSchema from "./models/UserDataSchema.js";
 import flightSchema from "./models/FlgihtsSchema.js";
 import ticketSchema from "./models/TicketSchema.js";
