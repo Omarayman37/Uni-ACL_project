@@ -69,7 +69,10 @@ const RegistrationForm = () => {
   
     
     axios
-      .post("http://localhost:5000/EditUser", updated_obj)
+      .post("http://localhost:5000/EditUser", {
+        ...updated_obj,
+        token: window.localStorage.getItem("token"),
+      })
       .then((response) =>
         console.log(
           "updated Successfully saved\n" + JSON.stringify(updated_obj)

@@ -8,6 +8,9 @@ import ticketSchema from "./models/TicketSchema.js";
 import { timeDiffCalc } from "./util/diffrenceHours.js";
 import { create_functional_querry_from_request } from "./util/querry_func.js";
 import CreateSeatsObject from "./util/CreateSeatsObject.js";
+import { register_user } from "./routes/user.routes.js";
+import nodemailer from "nodemailer";
+import { create_token } from "./util/jwt.js";
 console.log("server is running");
 var userID; //id of signed in user
 const app = express();
@@ -28,7 +31,30 @@ app.use(
     optionSuccessStatus: 200,
   })
 );
-import nodemailer from "nodemailer";
+// MIDDLE WARE
+const router = express.Router();
+router.use(function (req, res, next) {
+  console.log(req.path)
+  const nonSecurePaths = ["/get-flights", "/LoginUser", "/RegisterUser"];
+  if (nonSecurePaths.includes(req.path)) return next();
+  else{
+    const {token} = req.body
+  if(!token){
+    console.log(
+      `can not satisfy request as user not logged in body${req.body} `
+    )
+  }else{
+    let user = get_user_from_token(token)
+    req.user = user
+    console.log(`user from middleware is ${user}`)
+    next()
+  }
+  }
+});
+
+// mount the router on the app
+app.use("/", router);
+
 //const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
   service: "hotmail",
@@ -87,10 +113,7 @@ app.get("/userallflight", function (req, res) {
   });
 });
 app.get("/myFlights", async function (req, res) {
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
+ 
   flightData.find((error, data) => {
     if (error) {
       return next(error);
@@ -699,10 +722,10 @@ app.post("/CancelTicket", async (req, res) => {
   } else if (seat_nr.includes("F")) {
     seat_type = "FirstClassSeats";
   }
-  flight["Seats"][seat_type][seat_nr] = 'free'
-  await flight.save()
-  console.log(`changed seat ${seat_nr} to free from ${seat_type}`)
-  res.status(200).send({success:true})
+  flight["Seats"][seat_type][seat_nr] = "free";
+  await flight.save();
+  console.log(`changed seat ${seat_nr} to free from ${seat_type}`);
+  res.status(200).send({ success: true });
 });
 app.post("/LoginUser", function (req, res) {
   console.log(
@@ -725,7 +748,11 @@ app.post("/LoginUser", function (req, res) {
     .then(function (doc) {
       if (doc) {
         console.log("found user login successfull" + doc);
-        res.status(200).json({ status: "ok", success: true, err: null }); // this means that it was great and it worked quiet well if i can say so myself
+        let token = create_token(doc);
+        console.log('create token', token)
+        res
+          .status(200)
+          .json({ status: "ok", success: true, err: null, token: token }); // this means that it was great and it worked quiet well if i can say so myself
 
         userID = doc._id;
         console.log("the id of the user is");
@@ -774,19 +801,19 @@ app.post("/DecreaseSeats", async (req, res) => {
   });
 });
 
-app.post('/EditUser', async (req, res)=>{
+app.post("/EditUser", async (req, res) => {
   if (userID == undefined) {
     await res.status(403).send({ error: "not-logged in" });
     return;
   }
-  let updated_user_info = req.body
-  
-  await UserData.updateOne({_id:userID}, updated_user_info)
+  let updated_user_info = req.body;
+
+  await UserData.updateOne({ _id: userID }, updated_user_info);
   console.log(
     `updating user ${userID} with ${JSON.stringify(updated_user_info)}`
   );
 
-  res.status(200).send({msg:'User Updated'})
-})
+  res.status(200).send({ msg: "User Updated" });
+});
 
 export default app;

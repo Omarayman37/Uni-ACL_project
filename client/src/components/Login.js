@@ -17,12 +17,12 @@ import {
 import "antd/dist/antd.css";
 import axios from "axios";
 import crypto, {AES, createCipheriv, createHash, randomBytes} from "crypto";
-import Contexts , {Context} from './Contexts'
+import {Context} from './Contexts'
 const FormItem = Form.Item;
 // const { getFieldDecorator } = this.props.form;
 // const {setLoggedInUser} = useContext(Context)
 class LoginPage extends Component {
-  static contextType = Contexts;
+  static contextType = Context;
 
   // state
   state = {
@@ -55,10 +55,13 @@ class LoginPage extends Component {
           console.log(
             "successfull login with credentials : " + JSON.stringify(this.state)
           );
-          
-          this.props.user_logged_in();
 
-         // window.location.href = "http://localhost:3000/"; // TODO: FIX THIS TRASH LATER
+          this.props.user_logged_in();
+          console.dir(res.data)
+          window.localStorage.setItem("token", res.data.token);
+          let tok = window.localStorage.getItem("token");
+          console.log(tok, typeof tok);
+          window.location.href = "http://localhost:3000/"; // TODO: FIX THIS TRASH LATER
         } else {
           console.log("invalud credentails :" + JSON.stringify(this.state));
           // here we tell the UI to display an error we keda
