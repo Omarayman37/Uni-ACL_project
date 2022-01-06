@@ -10,7 +10,7 @@ import { create_functional_querry_from_request } from "./util/querry_func.js";
 import CreateSeatsObject from "./util/CreateSeatsObject.js";
 import { register_user } from "./routes/user.routes.js";
 import nodemailer from "nodemailer";
-import { create_token } from "./util/jwt.js";
+import { create_token, get_user_from_token } from "./util/jwt.js";
 console.log("server is running");
 var userID; //id of signed in user
 const app = express();
@@ -34,21 +34,22 @@ app.use(
 // MIDDLE WARE
 const router = express.Router();
 router.use(function (req, res, next) {
-  console.log(req.path)
+  console.log(req.path);
   const nonSecurePaths = ["/get-flights", "/LoginUser", "/RegisterUser"];
   if (nonSecurePaths.includes(req.path)) return next();
-  else{
-    const {token} = req.body
-  if(!token){
-    console.log(
-      `can not satisfy request as user not logged in body${req.body} `
-    )
-  }else{
-    let user = get_user_from_token(token)
-    req.user = user
-    console.log(`user from middleware is ${user}`)
-    next()
-  }
+  else {
+    let body = req.body || {};
+    const { token } = body;
+    if (token == undefined) {
+      console.log(
+        `can not satisfy request as user not logged in body${req.body} `
+      );
+    } else {
+      let user = get_user_from_token(token);
+      req.user = user;
+      console.log(`user from middleware is ${user["_id"]}`);
+      next();
+    }
   }
 });
 
@@ -112,11 +113,17 @@ app.get("/userallflight", function (req, res) {
     }
   });
 });
-app.get("/myFlights", async function (req, res) {
- 
+app.post("/myFlights", async function (req, res) {
+  const { token } = req.body;
+  console.log(token);
+  const user = get_user_from_token(token);
+  console.log(user);
+  let userID = user["_id"];
+  console.log("getting flight data");
   flightData.find((error, data) => {
     if (error) {
-      return next(error);
+      console.error(error)
+      res.status(200).send({error:true, message:"failed to get Favorited Flights please refresh the tab"})
     } else {
       var dataNew = new Array();
       UserData.findById(userID, (error, dataUser) => {
@@ -138,7 +145,7 @@ app.get("/myFlights", async function (req, res) {
           }
           console.log("ana henaaaa");
           console.log(dataNew);
-          res.json(dataNew);
+          res.status(200).json({flights:dataNew, error:false});
         }
       });
     }
@@ -372,14 +379,17 @@ app.post("/RegisterFlight", async function (req, res) {
       console.error(err);
     });
 });
-app.get("/addToFavourite/:id", async function (req, res) {
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
+app.post("/addToFavourite", async function (req, res) {
+
+  let {token} = req.body
+  let user = get_user_from_token(token)
+  let userID = user['_id']
+  let {flight_id} = req.body
+  console.log('Adding to favorite with id', flight_id)
   UserData.findById(userID, (error, data) => {
     if (error) {
-      return next(error);
+      console.log('error in add flights to fav ', error)
+      return res.status(200).send({error:true, msg:"could not be added to fav"});
     } else {
       var toChange = data.flightsID; // this is the value to check (I need to change it to flights and not last name)
       var temp = new Array();
@@ -388,7 +398,7 @@ app.get("/addToFavourite/:id", async function (req, res) {
       console.log(temp);
       for (var j = 0; j < temp.length; j++) {
         //to check if the flight is already reserved
-        if (temp[j].match(req.params.id)) duplicate = 1;
+        if (temp[j].match(flight_id)) duplicate = 1;
       }
 
       if (duplicate != 1) {
@@ -396,7 +406,7 @@ app.get("/addToFavourite/:id", async function (req, res) {
           //msh 3arf leh how msh byd5ol hena
           var flights = req.params.id;
         } else {
-          var flights = toChange + "," + req.params.id;
+          var flights = toChange + "," + flight_id;
         }
         var flighttoAdd = { $set: { flightsID: flights } };
         var IDold = { _id: userID };
@@ -410,7 +420,7 @@ app.get("/addToFavourite/:id", async function (req, res) {
         //hena 3ayz atl3 error en howa 3ml reserve l flight howa already kan 3mlha reserve
       }
 
-      res.json(data);
+      res.status(200).json(data);
     }
   });
 });
@@ -732,16 +742,16 @@ app.post("/LoginUser", function (req, res) {
     "in the post method server resived post request with body:\n" +
       JSON.stringify(req.body)
   );
-  console.log(req.body.user_email);
-  console.log(req.body.user_password);
+  console.log(req.body.email);
+  console.log(req.body.password);
   // here
   let hashed_user_pass = createHash("sha256") // hash the passowrd to send it via internet
-    .update(req.body.user_password)
+    .update(req.body.password)
     .digest("hex");
 
   let querry = {
-    email: req.body.user_email,
-    password: req.body.user_password,
+    email: req.body.email,
+    password: req.body.password,
   };
   //console.log(querry)
   UserData.findOne(querry)
@@ -749,10 +759,17 @@ app.post("/LoginUser", function (req, res) {
       if (doc) {
         console.log("found user login successfull" + doc);
         let token = create_token(doc);
-        console.log('create token', token)
+        console.log("create token", token);
         res
           .status(200)
-          .json({ status: "ok", success: true, err: null, token: token }); // this means that it was great and it worked quiet well if i can say so myself
+          .json({
+            status: "ok",
+            success: true,
+            err: null,
+            token: token,
+            error: false,
+            msg: "logged in succesfluly",
+          }); // this means that it was great and it worked quiet well if i can say so myself
 
         userID = doc._id;
         console.log("the id of the user is");
@@ -760,9 +777,7 @@ app.post("/LoginUser", function (req, res) {
       } else {
         //nothing found then return bad
         console.log("no user found with " + querry);
-        res
-          .status(200)
-          .json({ status: "ok", success: false, err: "Invalid Credentials" });
+        res.status(200).json({ error: true, msg: "Invalid Credentials" });
       }
     })
     .catch((err) => console.error(err));

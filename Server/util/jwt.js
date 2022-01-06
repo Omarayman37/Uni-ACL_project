@@ -1,11 +1,13 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
-export const get_user_from_token = async (token) => {
+export const get_user_from_token = (token) => {
   try {
-    const user = await jwt.verify(token, process.env.TOKEN_SECRET);
+    console.log(process.env.TOKEN_SECRET)
+    const user = jwt.verify(token, process.env.TOKEN_SECRET);
     return user;
   } catch (error) {
+    console.error(error)
     return null;
   }
 };

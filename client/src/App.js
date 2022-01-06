@@ -34,6 +34,13 @@ function App() {
   const { userLoggedIn, setUserLoggedIn } = useContext(Context);
  
   const navigate = useNavigate();
+  const user_exists=()=>{
+    let token = localStorage.getItem('token')
+    if(token==undefined || token == 'undefined'){
+      return false
+    }
+    return true
+  }
   return (
     <div>
       <Layout className="layout">
@@ -42,7 +49,7 @@ function App() {
           <Nav />
         </Header>
         <Content style={{ padding: "50px 50px" }}>
-          {!userLoggedIn &&
+          {!user_exists() &&
             (function nonLoggedIn() {
               return (
                 <Routes>
@@ -73,7 +80,7 @@ function App() {
               );
             })()}
 
-          {userLoggedIn && (
+          {user_exists() && (
             <Routes>
               <Route path="/" element={<SearchPage />} exact />
               <Route path="/FavFlights" element={<FavFlights />} exact />

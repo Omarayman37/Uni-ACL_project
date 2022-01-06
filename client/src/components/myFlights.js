@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 import FlightTableRow from './FlightTableRowMyFlights';
+import Send_request from "../util/send_request";
 
 
 export default class MyFlights extends Component {
@@ -24,6 +25,7 @@ export default class MyFlights extends Component {
         console.log(error);
         
       })
+      
   }
 
   DataTable() {

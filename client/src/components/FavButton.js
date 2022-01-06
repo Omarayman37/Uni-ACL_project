@@ -9,6 +9,7 @@ import {
 import { Button } from "antd";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
+import Send_request from "../util/send_request";
 const Flight = ({ flight }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -22,14 +23,9 @@ const Flight = ({ flight }) => {
           setFav(!Fav);
 
           // sent axios Fav request
-          axios
-            .get("http://localhost:5000/addToFavourite/" + flight["_id"])
-            .then((res) => {
-              console.log(res.data);
-              console.log("Flight added to favourite.");
-            })
-            .catch((error) => {
-              console.log(error);
+
+            const { error, msg } = Send_request("addToFavourite", {
+              flight_id: flight["_id"],
             });
         }}
       >
