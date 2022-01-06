@@ -61,7 +61,7 @@ class LoginPage extends Component {
           window.localStorage.setItem("token", res.data.token);
           let tok = window.localStorage.getItem("token");
           console.log(tok, typeof tok);
-          window.location.href = "http://localhost:3000/"; // TODO: FIX THIS TRASH LATER
+          //window.location.href = "http://localhost:3000/"; // TODO: FIX THIS TRASH LATER
         } else {
           console.log("invalud credentails :" + JSON.stringify(this.state));
           // here we tell the UI to display an error we keda

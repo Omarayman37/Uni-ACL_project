@@ -42,7 +42,7 @@ function App() {
           <Nav />
         </Header>
         <Content style={{ padding: "50px 50px" }}>
-          {!true &&
+          {!userLoggedIn &&
             (function nonLoggedIn() {
               return (
                 <Routes>
@@ -73,7 +73,7 @@ function App() {
               );
             })()}
 
-          {true && (
+          {userLoggedIn && (
             <Routes>
               <Route path="/" element={<SearchPage />} exact />
               <Route path="/FavFlights" element={<FavFlights />} exact />
