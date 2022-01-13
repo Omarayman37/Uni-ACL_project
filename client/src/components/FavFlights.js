@@ -11,22 +11,21 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import Flight from "./Flight";
 import ResButton from './ResButton'
+import Send_request from "../util/send_request";
 const FavFlights = ({  }) => {
   const [flights, setFlights] = useState([]);
   const location = useLocation()
-  useEffect(() => {
+  useEffect(async () => {
       //const user_id = location.state['user_id']
       console.log('retrving fav flights')
-    axios
-      .get("http://localhost:5000/myFlights")
-      .then((res) => {
-        setFlights(res.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    
-    
+      
+       let data= await Send_request('myFlights')
+       console.dir(data)
+       const {error, msg, flights=[]} =data
+      setFlights(flights)
+      if(error){
+        console.error('there is an error retreving the flights') // Here we can handel custom messages from server
+      }
   }, []);
   return (
     <div>

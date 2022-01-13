@@ -1,0 +1,82 @@
+POST http://localhost:5000/RegisterFlight
+content-type: application/json
+
+{
+   "id":"A56",
+   "name":"Boeing1",
+   "seat_number":"20",
+
+   "duration":"5",
+   "arrival_time":"Thu Jan 27 2022 10:55:12 GMT+0100 (Central European Standard Time)",
+   "departure_time":"Fri Jan 14 2022 10:55:07 GMT+0100 (Central European Standard Time)",
+   "from":"Berlin",
+   "to":"Cairo",
+   "price":"300",
+   "baggage_allowance":"3",
+   "BusinessClass_seats":"20",
+   "Economy_seats":"30"
+}
+
+###
+
+POST http://localhost:5000/RegisterFlight
+content-type: application/json
+
+{
+   "id":"A59",
+   "name":"Boeing105",
+   "seat_number":"30",
+
+   "duration":"6",
+   "arrival_time":"Thu Jan 28 2022 10:55:12 GMT+0100 (Central European Standard Time)",
+   "departure_time":"Fri Jan 27 2022 10:55:07 GMT+0100 (Central European Standard Time)",
+   "from":"Berlin",
+   "to":"Cairo",
+   "price":"800",
+   "baggage_allowance":"3",
+   "BusinessClass_seats":"20",
+   "Economy_seats":"30"
+}
+
+###
+POST http://localhost:5000/RegisterFlight
+content-type: application/json
+
+{
+   "id":"A56",
+   "name":"Boeing1",
+   "seat_number":"20",
+
+   "duration":"5",
+   "arrival_time":"Thu Jan 27 2022 10:55:12 GMT+0100 (Central European Standard Time)",
+   "departure_time":"Fri Jan 14 2022 10:55:07 GMT+0100 (Central European Standard Time)",
+   "from":"Berlin",
+   "to":"Cairo",
+   "price":"600",
+   "baggage_allowance":"3",
+   "BusinessClass_seats":"20",
+   "Economy_seats":"30"
+}
+
+###
+POST http://localhost:5000/RegisterFlight
+content-type: application/json
+
+{
+   "id":"A56",
+   "name":"Boeing1",
+   "seat_number":"20",
+
+   "duration":"5",
+   "arrival_time":"Thu Jan 27 2022 10:55:12 GMT+0100 (Central European Standard Time)",
+   "departure_time":"Fri Jan 14 2022 10:55:07 GMT+0100 (Central European Standard Time)",
+   "from":"Berlin",
+   "to":"Cairo",
+   "price":"700",
+   "baggage_allowance":"3",
+   "BusinessClass_seats":"20",
+   "Economy_seats":"30"
+}
+
+###
+  

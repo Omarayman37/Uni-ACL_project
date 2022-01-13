@@ -1,0 +1,36 @@
+POST http://localhost:5000/RegisterUser
+content-type: application/json
+
+{
+    "email":"user1@email.com",
+    "password":"123",
+    "passport_number":"A56",
+    "first_name":"first",
+    "last_name":"last",
+    "home_address":"Berlin",
+    "nickname":"lolo",
+    "username":"user1",
+    "contry_code":"egypt",
+    "telephone_number":"123456"
+}
+
+###
+
+POST http://localhost:5000/RegisterUser
+content-type: application/json
+
+{
+    "email":"a",
+    "password":"a",
+    "passport_number":"A56",
+    "first_name":"first",
+    "last_name":"last",
+    "home_address":"Berlin",
+    "nickname":"lolo",
+    "username":"user1",
+    "contry_code":"egypt",
+    "telephone_number":"123456"
+}
+
+
+  
