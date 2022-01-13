@@ -6,10 +6,12 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Contexts from './components/Contexts';
 import StripPayPage from './components/StripPayPage';
+import EditFlight from './components/EditFlight';
+
 ReactDOM.render(
   <BrowserRouter>
     <Contexts>
-      <App />
+      <EditFlight />
     </Contexts>
   </BrowserRouter>,
   document.getElementById("root")

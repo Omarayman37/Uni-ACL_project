@@ -757,10 +757,9 @@ app.post("/DecreaseSeats", async (req, res) => {
 });
 
 app.post("/EditUser", async (req, res) => {
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
+   const { token } = req.body;
+   const user = get_user_from_token(token);
+   const userID = user["_id"];
   let updated_user_info = req.body;
 
   await UserData.updateOne({ _id: userID }, updated_user_info);
@@ -803,4 +802,22 @@ app.post('/StripePay', async (req, res)=>{
   })
 
 })
+
+app.post("/EditFlight", async (req, res) => {
+ 
+  const { _Flight, id, _id } = req.body;
+  const { token } = req.body;
+  const user = get_user_from_token(token);
+  const userID = user["id"];
+  let updated_Flight_info = req.body;
+  console.log(req.body);
+
+  await flightData.updateOne({ _id: _id }, updated_Flight_info);
+
+  let a = await flightData.findById(_id);
+  console.log(a)
+  res.status(200).send({ msg: "User Updated" });
+});
+
+
 export default app;

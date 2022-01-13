@@ -27,6 +27,7 @@ import RegisterPage from "./components/RegiesterPage";
 import PaySuccess from "./components/PaySuccess";
 import Contexts, { Context } from "./components/Contexts";
 import StripePayPage from "./components/StripPayPage";
+import EditFlight from './components/EditFlight'
 // These are global Variables 
 
 const { Header, Content, Footer } = Layout;
@@ -49,7 +50,7 @@ function App() {
           <Nav />
         </Header>
         <Content style={{ padding: "50px 50px" }}>
-          {!user_exists() &&
+          {false &&
             (function nonLoggedIn() {
               return (
                 <Routes>
@@ -80,9 +81,9 @@ function App() {
               );
             })()}
 
-          {user_exists() && (
+          {true && (
             <Routes>
-              <Route path="/" element={<SearchPage />} exact />
+              <Route path="/" element={<EditUSer />} exact />
               <Route path="/FavFlights" element={<FavFlights />} exact />
               <Route path="/ChooseSeats" element={<ChooseSeats />} exact />
               <Route path="/EditUser" element={<EditUSer />} exact />
