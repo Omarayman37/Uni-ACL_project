@@ -9,7 +9,7 @@ import Reservedflights from './components/Reservedflights'
 import HomeGuest from './components/HomeGuest'//home page that the guest gets to see when he logs in
 import MyFlights from './components/myFlights'//page containing the flights of the user signed in
 import UserAllFlights from './components/UserAllFlights'//contains all flights with an option to reserve it
-import EditUser from './components/EditUser'
+import EditUser from './components/RegiesterPage'
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AddAirplane from './components/AddAirplane';
 import ReturnTrip from './components/ReturnTrip';
@@ -23,7 +23,9 @@ import FavFlights from './components/FavFlights';
 import PayPage from './components/Pay';
 import FlightCard from './components/FlightCrad';
 import MyTickets from "./components/MyTickets";
-import Admin from './components/Admin';
+import RegisterPage from './components/RegiesterPage'
+import PaySuccess from './components/PaySuccess'
+
 const { Header, Content, Footer } = Layout;
 function App() {
   return (
@@ -34,29 +36,28 @@ function App() {
           <Nav />
         </Header>
         <Content style={{ padding: "50px 50px" }}>
-          
-            <Routes>
-              <Route path="/" element={<SearchPage />} exact />
-              <Route path="/FavFlights" element={<FavFlights />} exact />
-              <Route path="/ChooseSeats" element={<ChooseSeats />} exact />
-              <Route path="/Pay" element={<PayPage />} exact />
-              <Route path="/MyTickets" element={<MyTickets />} exact />
-              <Route path="/AddAirplane" element={<AddAirplane />} exact />
-              <Route path="/ReturnTrip" element={<ReturnTrip />} exact />
-              <Route path="/SearchPage" element={<SearchPage />} exact />
-              <Route path="/LoginUser" element={<LoginPage />} />
-              <Route path="/myFlights" element={<MyFlights />} />
-              <Route path="/userAllFlights" element={<UserAllFlights />} />
-              <Route path="/RegisterUser" element={<Guest />} />
-              <Route path="/AddAirplanes" element={<Airplanes />} />
-              <Route path="/HomeGuest" element={<HomeGuest />} />
+          <Routes>
+            <Route path="/" element={<SearchPage />} exact />
+            <Route path="/FavFlights" element={<FavFlights />} exact />
+            <Route path="/ChooseSeats" element={<ChooseSeats />} exact />
+            <Route path="/EditUser" element={<EditUSer />} exact />
+            <Route path="/PaySuccess" element={<PaySuccess />} exact />
 
-              <Route path="/Ticket" element={<Ticket />} />
+            <Route path="/Pay" element={<PayPage />} exact />
+            <Route path="/MyTickets" element={<MyTickets />} exact />
+            <Route path="/AddAirplane" element={<AddAirplane />} exact />
+            <Route path="/ReturnTrip" element={<ReturnTrip />} exact />
+            <Route path="/SearchPage" element={<SearchPage />} exact />
+            <Route path="/LoginUser" element={<LoginPage />} />
+            <Route path="/myFlights" element={<MyFlights />} />
+            <Route path="/userAllFlights" element={<UserAllFlights />} />
+            <Route path="/RegisterUser" element={<RegisterPage />} />
+            <Route path="/AddAirplanes" element={<Airplanes />} />
+            <Route path="/HomeGuest" element={<HomeGuest />} />
+            <Route path="/Ticket" element={<Ticket />} />
 
-              <Route path="/FlightCard" element={<FlightCard />} />
-              <Route path="/Admin" element={<Admin />} />
-            </Routes>
-          
+            <Route path="/FlightCard" element={<FlightCard />} />
+          </Routes>
         </Content>
       </Layout>
     </div>

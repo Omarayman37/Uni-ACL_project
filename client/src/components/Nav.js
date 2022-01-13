@@ -25,11 +25,15 @@ const Nav = ({}) => {
         <Menu.Item>
           <Link to="/Fav"></Link>
         </Menu.Item>
-        <Menu.Item >
-          <Avatar
-            style={{marginLeft : 850, backgroundColor: "#87d068" }}
-            icon={<UserOutlined />}
-          />
+        <Menu.Item>
+          <Link to={'/EditUser'}>
+            {" "}
+            <Avatar
+              style={{ backgroundColor: "#87d068" }}
+              icon={<UserOutlined />}
+            />
+          </Link>
+
         </Menu.Item>
       </Menu>
     </div>

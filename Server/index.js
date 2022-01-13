@@ -257,26 +257,26 @@ app.post("/RegisterUser", function (req, res) {
       JSON.stringify(req.body)
   );
   const {
-    user_email,
-    user_password,
-    user_passport_number,
-    user_first_name,
-    user_last_name,
-    user_home_address,
-    user_nickname,
-    user_contry_code,
-    user_telephone_number,
+    email,
+    password,
+    passport_number,
+    first_name,
+    last_name,
+    home_address,
+    nickname,
+    contry_code,
+    telephone_number,
   } = req.body;
   var item = {
-    email: user_email,
-    password: user_password,
-    nickname: user_nickname,
-    first_name: user_first_name,
-    last_name: user_last_name,
-    home_address: user_home_address,
-    contry_code: user_contry_code,
-    telephone_number: user_telephone_number,
-    passport: user_passport_number,
+    email: email,
+    password: password,
+    nickname: nickname,
+    first_name: first_name,
+    last_name: last_name,
+    home_address: home_address,
+    contry_code: contry_code,
+    telephone_number: telephone_number,
+    passport: passport_number,
     flightsID: "",
     ticketsID: "",
   };
@@ -774,5 +774,20 @@ app.post("/DecreaseSeats", async (req, res) => {
     });
   });
 });
+
+app.post('/EditUser', async (req, res)=>{
+  if (userID == undefined) {
+    await res.status(403).send({ error: "not-logged in" });
+    return;
+  }
+  let updated_user_info = req.body
+  
+  await UserData.updateOne({_id:userID}, updated_user_info)
+  console.log(
+    `updating user ${userID} with ${JSON.stringify(updated_user_info)}`
+  );
+
+  res.status(200).send({msg:'User Updated'})
+})
 
 export default app;

@@ -1,181 +1,204 @@
-import React, { Component } from "react";
-import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import {
+  Form,
+  Input,
+  InputNumber,
+  Cascader,
+  Select,
+  Row,
+  Col,
+  Checkbox,
+  Button,
+  Typography,
+  AutoComplete,
+  
+} from "antd";
+import crypto, { AES, createCipheriv, createHash, randomBytes } from "crypto";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-export default class EditUser extends Component {
-
-  constructor(props) {
-    super(props)
+const { Option } = Select;
+const { Paragraph } = Typography;
 
 
-    this.onChangeemail = this.onChangeemail.bind(this);
+const formItemLayout = {
+  labelCol: {
+    xs: {
+      span: 24,
+    },
+    sm: {
+      span: 8,
+    },
+  },
+  wrapperCol: {
+    xs: {
+      span: 24,
+    },
+    sm: {
+      span: 16,
+    },
+  },
+};
+const tailFormItemLayout = {
+  wrapperCol: {
+    xs: {
+      span: 24,
+      offset: 0,
+    },
+    sm: {
+      span: 16,
+      offset: 8,
+    },
+  },
+};
 
-    this.onChangepassword = this.onChangepassword.bind(this);
-    this.onChangefirst_name = this.onChangefirst_name.bind(this);
+const RegistrationForm = () => {
+  const [form] = Form.useForm();
+
+  const onFinish = (values) => {
+      let updated_obj = {
+          first_name:first_name,
+          email:email,
+          password:password,
+          home_address:home_address,
+          last_name:last_name,
+          contry_code:contry_code,
+          telephone_number:telephone_number,
+          passport:passport
+      }
+  
     
-    this.onChangelast_name = this.onChangelast_name.bind(this);
-    this.onChangehome_address=this.onChangehome_address.bind(this);
-    
-    this.onChangenickname=this.onChangenickname.bind(this);
-    this.onChangepassport=this.onChangepassport.bind(this);
+    axios
+      .post("http://localhost:5000/EditUser", updated_obj)
+      .then((response) =>
+        console.log(
+          "updated Successfully saved\n" + JSON.stringify(updated_obj)
+        )
+      );
+  };
 
-    this.onChangetelephone_number = this.onChangetelephone_number.bind(this);
-    
-   
-    this.onSubmit = this.onSubmit.bind(this);
+  const prefixSelector = (
+    <Form.Item name="prefix" noStyle>
+      <Select
+        style={{
+          width: 70,
+        }}
+      >
+        <Option value="49">+49</Option>
+        <Option value="02">+02</Option>
+      </Select>
+    </Form.Item>
+  );
+  const suffixSelector = (
+    <Form.Item name="suffix" noStyle>
+      <Select
+        style={{
+          width: 70,
+        }}
+      >
+        <Option value="USD">$</Option>
+        <Option value="CNY">¥</Option>
+      </Select>
+    </Form.Item>
+  );
 
-    // Setting up state
-    this.state = {
-      email:'',
-      password: '',
-      nickname: '',
-      first_name: '',
-      last_name: '',
-      home_address: '',
-      telephone_number:'',
-      passport:''
 
+  const [autoCompleteResult, setAutoCompleteResult] = useState([]);
+
+  const onWebsiteChange = (value) => {
+    if (!value) {
+      setAutoCompleteResult([]);
+    } else {
+      setAutoCompleteResult(
+        ["A52", "L01"].map((domain) => `${domain}${value}`)
+      );
     }
-  }
+  };
 
-//   componentDidMount() {
-//     axios.get('http://localhost:4000/flights/edit-flight/' + this.props.match.params.id)
-//       .then(res => {
-//         this.setState({
-//           flightNum:res.data.flightNum,
-//           airportFrom: res.data.airportFrom,
-//           airportTo: res.data.airportTo,
-//           leaveAt:res.data.leaveAt,
-//           arriveAt:res.data.arriveAt,
-//           economy: res.data.economy,
-//           business: res.data.business,
-//           first: res.data.first,
-//           date: res.data.date,
-//           arrivalDate:res.data.arrivalDate
-
-//         });
-//       })
-//       .catch((error) => {
-//         console.log(error);
-//       })
-//   }
-
-  onChangeemail(e){
-    this.setState({email:e.target.value})
-  }
- 
-  onChangepassword(e) {
-     this.setState({password: e.target.value})
-   }
-   onChangenickname(e) {
-     this.setState({nickname: e.target.value})
-   }
- 
-   onChangefirst_name(e) {
-     this.setState({first_name: e.target.value})
-   }
-   onChangelast_name(e){
-     this.setState({last_name: e.target.value})
-   }
- 
-   onChangehome_address(e){
-     this.setState({home_address: e.target.value})
-   }
-   onChangetelephone_number(e){
-     this.setState({telephone_number: e.target.value})
-   }
- 
-   onChangepassport(e) {
-     this.setState({passport: e.target.value})
-   }
-   
-   
-   
-  onSubmit(e) {
-    console.log("ana d5lt henad");
-
-    e.preventDefault()
-        console.log("ana d5lt hena");
-    const flightObject = {
-      email:this.state.email,
-    
-      password: this.state.password,
-      nickname: this.state.nickname,
-
-      first_name:this.state.first_name,
-      last_name:this.state.last_name,
-
-      home_address: this.state.home_address,
-      telephone_number: this.state.telephone_number,
-      passport: this.state.passport
-    };
-
-    axios.post('http://localhost:5000/updateUser' , flightObject)
-      .then((res) => {
-        console.log(res.data)
-        console.log(' User succesfully updated')
-      }).catch((error) => {
-          console.log("ya bdany");
-        console.log(error)
-      })
-    // Redirect to Flight List 
-    //this.props.history.push('/flight-list')
-    //window.location.reload(false);
-  }
+  const websiteOptions = autoCompleteResult.map((website) => ({
+    label: website,
+    value: website,
+  }));
 
 
-  render() {
-    return (<div className="form-wrapper">
-      <Form onSubmit={this.onSubmit}>
-      <b style={{color: 'black',fontSize:'50px',position: 'absolute',left: '50%',transform: 'translate(-50%, -40%)'}}>Edit Flight</b>
-      <br></br>
-      <br></br>
 
-      <Form.Group controlId="email">
-          <Form.Label>Email Address</Form.Label>
-          <Form.Control type="text" value={this.state.email} onChange={this.onChangeemail} placeholder ="Email-Address"required/>
-        </Form.Group>
+const [user, setUser] = useState({})
+const [first_name, setFirst_name] = useState("")
+const [last_name, setLast_name] = useState("")
+const [email, setEmail] = useState("")
+const [password, setPassword] = useState("")
+const [telephone_number, settelephone_number] = useState("")
+const [contry_code, setContry_code] = useState("")
+const [home_address, setHome_address] = useState("")
+const [passport, setPassport] = useState("")
+const navigate = useNavigate()
+  /// States for all the fields from the initial User
+  useEffect( async() => {
+      try {
+          const data = await axios.post("http://localhost:5000/get-user");
+          const _user = data["data"]["user"];
+          console.log(`initial user data ${JSON.stringify(_user)}`);
+          setFirst_name(_user["first_name"]);
+          setLast_name(_user.last_name);
+          setEmail(_user["email"]);
+          setPassword(_user["password"]);
+          settelephone_number(_user["telephone_number"]);
+          setHome_address(_user["home_address"]);
+      } catch (error) {
+          navigate('/LoginUser')
+      }
+     
+  }, [])
+  return (
+    <Form {...formItemLayout} form={form} name="register" onFinish={onFinish}>
+      <Form.Item name="email" label="E-mail">
+        <Paragraph editable={{ onChange: setEmail }}>{email}</Paragraph>
+      </Form.Item>
 
-        <Form.Group controlId="password">
-          <Form.Label>Password</Form.Label>
-          <Form.Control type="text" value={this.state.password} onChange={this.onChangepassword} placeholder ="Passcode"required/>
-        </Form.Group>
+      <Form.Item name="password" label="Password">
+        <Paragraph editable={{ onChange: setPassword }}>{password}</Paragraph>
+      </Form.Item>
 
-        <Form.Group controlId="nickname">
-          <Form.Label>Nickname</Form.Label>
-          <Form.Control type="text" value={this.state.nickname} onChange={this.onChangenickname} placeholder ="Nickname" required/>
-        </Form.Group>
+      <Form.Item name="first_name" label="First Name">
+        <Paragraph editable={{ onChange: setFirst_name }}>
+          {first_name}
+        </Paragraph>
+      </Form.Item>
 
-        <Form.Group controlId="first_name">
-          <Form.Label>First Name</Form.Label>
-          <Form.Control type="text" value={this.state.first_name} onChange={this.onChangefirst_name} placeholder ="First Name" required/>
-        </Form.Group>
-        
-        <Form.Group controlId="last_name">
-          <Form.Label>Last Name</Form.Label>
-          <Form.Control type="text" value={this.state.last_name} onChange={this.onChangelast_name} placeholder ="Last Name" required/>
-        </Form.Group>
+      <Form.Item name="last_name" label="Last Name">
+        <Paragraph editable={{ onChange: setLast_name }}>{last_name}</Paragraph>
+      </Form.Item>
 
-        <Form.Group controlId="home_address">
-          <Form.Label>Home Address</Form.Label>
-          <Form.Control type="text" value={this.state.home_address} onChange={this.onChangehome_address} placeholder ="Home Address" required/>
-        </Form.Group>
+      <Form.Item name="telephone_number" label="Phone Number">
+        <Paragraph editable={{ onChange: settelephone_number }}>
+          {telephone_number}
+        </Paragraph>
+      </Form.Item>
 
-        <Form.Group controlId="telephone_number">
-          <Form.Label>Phone Number</Form.Label>
-          <Form.Control type="text" value={this.state.telephone_number} onChange={this.onChangetelephone_number} placeholder ="Phone Number" required/>
-        </Form.Group>
+      <Form.Item name="home_address" label="Address">
+        <Paragraph editable={{ onChange: setHome_address }}>
+          {home_address}
+        </Paragraph>
+      </Form.Item>
 
-        <Form.Group controlId="passport">
-          <Form.Label>Passport Number</Form.Label>
-          <Form.Control type="text" value={this.state.passport} onChange={this.onChangepassport} placeholder ="Passport Number" required/>
-        </Form.Group>
+      <Form.Item name="contry_code" label="Country Code">
+        <Paragraph editable={{ onChange: setContry_code }}>
+          {contry_code}
+        </Paragraph>
+      </Form.Item>
+      <Form.Item name="passport" label="Passprot Number">
+        <Paragraph editable={{ onChange: setPassport }}>
+          {passport}
+        </Paragraph>
+      </Form.Item>
 
-        <Button variant="danger" size="lg" block="block" type="submit">
-          Update User
+      <Form.Item {...tailFormItemLayout}>
+        <Button type="primary" htmlType="submit">
+          Edit
         </Button>
-      </Form>
-    </div>);
-  }
-}
+      </Form.Item>
+    </Form>
+  );
+};
+
+export default RegistrationForm;

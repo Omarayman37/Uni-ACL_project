@@ -7,38 +7,44 @@ import {
   HeartFilled,
   EllipsisOutlined,
 } from "@ant-design/icons";
-import { Button, Card, Menu } from "antd";
+import { Button, Card, Menu, Typography } from "antd";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
+
+const { Text, Paragraph } = Typography;
 const Flight = ({ flight }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [Fav, setFav] = useState(false)
+  const [Fav, setFav] = useState(false);
   return (
     <div>
       <Card
         title={"Flight Number: " + flight.id}
-        extra={
-          <a>
-            <HeartOutlined />
-          </a>
-        }
-        style={{}}
         actions={[<EllipsisOutlined key="tab2" />]}
         hoverable="true"
       >
-        <p>Departure Time: {flight.departure_time} </p>
-        <p>Arrival Time: {flight.arrival_time} </p>
-        <p>Trip Duration: {flight.duration} </p>
-        <p>Price: {flight.price} </p>
-        <p>from: {flight.from}</p>
-        <p>to: {flight.to}</p>
+        <Paragraph>Departure Time: {flight.departure_time} </Paragraph>
+        <Paragraph>Arrival Time: {flight.arrival_time} </Paragraph>
+        <Paragraph>Price: {flight.price} </Paragraph>
+        <Paragraph>From: {flight.from}</Paragraph>
+        <Paragraph>To: {flight.to}</Paragraph>
+
         <Menu mode="inline" style={{ height: "100%", width: "100%" }}>
           <Menu.SubMenu title={"details"} key={"details"}>
-            <p style={{ height: 20 }}>Trip Duration: {flight.cabin_class} </p>
-            <p style={{ height: 20 }}>Baggage Allowance: {flight.baggage_allowance}
-              <p style={{ height: 20 }}>Seats Left: {flight.SeatsLeft}</p>
-            </p>
+            <Menu.Item key={"seats left"}>
+              <Text style={{ height: 20 }}>
+                <Text>Seats Left: {flight.SeatsLeft}</Text>
+              </Text>
+            </Menu.Item>
+            <Menu.Item key={"baggage"}>
+              <Text style={{ height: 20 }}>
+                Baggage Allowance: {flight.baggage_allowance}
+              </Text>
+            </Menu.Item>
+            <Menu.Item key={"duration"}>
+              <Paragraph>Trip Duration: {flight.duration} </Paragraph>
+            </Menu.Item>
+
           </Menu.SubMenu>
         </Menu>
       </Card>
