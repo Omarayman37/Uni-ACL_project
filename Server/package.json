@@ -20,6 +20,7 @@
     "mongoose": "^6.0.13",
     "nodemailer": "^6.7.2",
     "nodemon": "^2.0.15",
-    "qrcode": "^1.5.0"
+    "qrcode": "^1.5.0",
+    "stripe": "^8.197.0"
   }
 }

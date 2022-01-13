@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Contexts from './components/Contexts';
-
+import StripPayPage from './components/StripPayPage';
 ReactDOM.render(
   <BrowserRouter>
     <Contexts>

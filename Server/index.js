@@ -11,6 +11,14 @@ import CreateSeatsObject from "./util/CreateSeatsObject.js";
 import { register_user } from "./routes/user.routes.js";
 import nodemailer from "nodemailer";
 import { create_token, get_user_from_token } from "./util/jwt.js";
+import Stripe from 'stripe';
+import dotenv from 'dotenv'
+dotenv.config();
+const STRIPE_PUBLIC_KEY =
+  "pk_test_51KHWXsLgiWcF7ZDaZjtY4a30WCMKUnX94ZJ0oRmtEsmcvddajlMkXaX9jfW5OhkcsUS8xz1EZRXb7dBPc4UYRiEa00D3YyVwsE";
+const PRIVATE_KEY =
+  "sk_test_51KHWXsLgiWcF7ZDafaMlq9FWUT5jo8jU6kP0tgomJm3lKfkUvyVMabgWq5e8ODY4X9jXei2ryfLQWYkNpj2DzDT700ahwa474v"; 
+const stripe = await Stripe(PRIVATE_KEY);
 console.log("server is running");
 var userID; //id of signed in user
 const app = express();
@@ -763,4 +771,36 @@ app.post("/EditUser", async (req, res) => {
   res.status(200).send({ msg: "User Updated" });
 });
 
+app.post('/StripePay', async (req, res)=>{
+  
+  const {items, token} = req.body
+  let stripe = await Stripe(PRIVATE_KEY);
+  console.log("paying with stripe", stripe.checkout);
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    mode: "payment",
+    success_url: `http://localhost:3000/PaySuccess`,
+    cancel_url: `http://localhost:3000/Payfailure`,
+    line_items: items.map((item) => {
+      return {
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: "item name 1",
+          },
+          unit_amount: 10000,
+        },
+        quantity: 1,
+      };
+    }),
+  });
+
+  console.log(session)
+  res.status(200).json({
+    error:false,
+    msg:"redirect to payment isa",
+    url:session.url
+  })
+
+})
 export default app;

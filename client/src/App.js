@@ -16,7 +16,7 @@ import ReturnTrip from "./components/ReturnTrip";
 import Seat from "./components/Seat";
 import Ticket from "./components/Ticket";
 import ChooseSeats from "./components/CSeats";
-import { Layout, Menu, Breadcrumb } from "antd";
+import { Layout, Menu, Breadcrumb, Result, Button } from "antd";
 import Nav from "./components/Nav";
 import EditUSer from "./components/EditUser";
 import FavFlights from "./components/FavFlights";
@@ -26,7 +26,7 @@ import MyTickets from "./components/MyTickets";
 import RegisterPage from "./components/RegiesterPage";
 import PaySuccess from "./components/PaySuccess";
 import Contexts, { Context } from "./components/Contexts";
-
+import StripePayPage from "./components/StripPayPage";
 // These are global Variables 
 
 const { Header, Content, Footer } = Layout;
@@ -112,6 +112,21 @@ function App() {
               <Route path="/Ticket" element={<Ticket />} />
 
               <Route path="/FlightCard" element={<FlightCard />} />
+              <Route path="/StripePay" element={<StripePayPage />} />
+              <Route
+                path="/Payfailure"
+                element={
+                  <Result
+                    status="403"
+                    title="403"
+                    subTitle="Sorry, you are not authorized to access this page."
+                    extra={<Button type="primary" onClick={()=>{
+                      navigate('../')
+                    }}>Back Home</Button>}
+                  />
+                }
+              />
+              
             </Routes>
           )}
         </Content>
