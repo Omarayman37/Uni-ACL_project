@@ -35,9 +35,9 @@ class HelloWorld extends Component {
   };
 
   handleSubmit = (e) => {
-    console.log(this.state);
+    
     let login_request_object = this.state;
-    login_request_object["user_password"] = createHash("sha256") // hash the passowrd to send it via internet
+    login_request_object["user_password_hashed"] = createHash("sha256") // hash the passowrd to send it via internet
       .update(login_request_object["user_password"])
       .digest("hex");
 

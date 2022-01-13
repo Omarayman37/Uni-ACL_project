@@ -17,6 +17,8 @@ export const create_functional_querry_from_request = async (querry)=>{
       search_function.where("departure_time").gte(querry["start_date"]);
       if (querry["end_date"])
         search_function.where("departure_time").lte(querry["end_date"]);
+    if(querry['number_of_seats'])
+        search_function.where("SeatsLeft").gte(querry["number_of_seats"]);
 
     // price 
 

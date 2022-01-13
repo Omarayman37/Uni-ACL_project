@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { useNavigate, useHistory, browserHistory } from "react-router-dom";
+import {Link } from "react-router-dom";
 import {
   Form,
   Input,
@@ -20,7 +20,6 @@ import crypto, {AES, createCipheriv, createHash, randomBytes} from "crypto";
 
 const FormItem = Form.Item;
 // const { getFieldDecorator } = this.props.form;
-
 class LoginPage extends Component {
   // state
   state = {
@@ -40,9 +39,11 @@ class LoginPage extends Component {
  
 
   handleSubmit = (e) => {
+    
+
     // Here we encrypt using a super scret key and and initialization vector 
     let login_request_object = this.state
-    login_request_object["user_password"] = createHash("sha256")
+    login_request_object["user_password_"] = createHash("sha256")
       .update(login_request_object["user_password"])
       .digest("hex");
     console.log(login_request_object);
@@ -52,10 +53,11 @@ class LoginPage extends Component {
       .then((res) => {
         const { success, err } = res.data;
         if (success) {
+
           console.log(
             "successfull login with credentials : " + JSON.stringify(this.state)
           );
-          window.location.href = "http://localhost:3000/AddAirplanes"; // TODO: FIX THIS TRASH LATER
+          window.location.href = "http://localhost:3000/"; // TODO: FIX THIS TRASH LATER
         } else {
           console.log("invalud credentails :" + JSON.stringify(this.state));
           // here we tell the UI to display an error we keda
@@ -103,10 +105,7 @@ class LoginPage extends Component {
         /* style={{ width: "600px" }}*/
         style={{
           height: "1200px",
-          backgroundImage:
-            "url(" +
-            "https://cdn.jetphotos.com/full/5/60768_1635979380.jpg" +
-            ")",
+         
           backgroundPosition: "center",
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
@@ -123,6 +122,11 @@ class LoginPage extends Component {
           <Button type="primary" onClick={this.handleSubmit}>
             Login
           </Button>
+        </FormItem>
+        <FormItem {...tailFormItemLayout}>
+          <Link type="primary" to='/RegisterUser' onClick={this.handleSubmit}>
+            Register
+          </Link>
         </FormItem>
         {this.state.show_error && (
           <FormItem {...tailFormItemLayout}>
