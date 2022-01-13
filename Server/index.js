@@ -35,7 +35,12 @@ app.use(
 const router = express.Router();
 router.use(function (req, res, next) {
   console.log(req.path);
-  const nonSecurePaths = ["/get-flights", "/LoginUser", "/RegisterUser"];
+  const nonSecurePaths = [
+    "/get-flights",
+    "/LoginUser",
+    "/RegisterUser",
+    "/RegisterFlight",
+  ];
   if (nonSecurePaths.includes(req.path)) return next();
   else {
     let body = req.body || {};
@@ -120,84 +125,46 @@ app.post("/myFlights", async function (req, res) {
   console.log(user);
   let userID = user["_id"];
   console.log("getting flight data");
-  flightData.find((error, data) => {
-    if (error) {
-      console.error(error)
-      res.status(200).send({error:true, message:"failed to get Favorited Flights please refresh the tab"})
-    } else {
-      var dataNew = new Array();
-      UserData.findById(userID, (error, dataUser) => {
-        if (error) {
-          return next(error);
-        } else {
-          var toChange = dataUser.flightsID; // this is the value to check (I need to change it to flights and not last name)
-          console.log(toChange);
-          var temp = new Array();
-          temp = toChange.split(",");
-
-          for (var i = 0; i < temp.length; i++) {
-            for (var j = 0; j < data.length; j++) {
-              if (temp[i] == data[j]._id) {
-                dataNew.push(data[j]);
-                j = data.length;
-              }
-            }
-          }
-          console.log("ana henaaaa");
-          console.log(dataNew);
-          res.status(200).json({flights:dataNew, error:false});
-        }
-      });
-    }
+  let flights = (await UserData.findById(userID)).flightsID;
+  console.log(flights)
+  const records = await flightData.find({
+    _id: { $in: flights },
   });
+  console.log(`current user fav flights `, JSON.stringify(records))
+  res.status(200).json({
+    error:false, msg:'success', flights:records
+  })
 });
-app.get("/myReservedFlights", async function (req, res) {
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
-  ticketData.find((error, data) => {
-    if (error) {
-      return next(error);
-    } else {
-      var dataNew = new Array();
-      UserData.findById(userID, (error, dataUser) => {
-        if (error) {
-          return next(error);
-        } else {
-          var toChange = dataUser.ticketsID; // this is the value to check (I need to change it to flights and not last name)
-          console.log(toChange);
-          var temp = new Array();
-          temp = toChange.split(",");
-          for (var i = 0; i < temp.length; i++) {
-            for (var j = 0; j < data.length; j++) {
-              if (temp[i] == data[j]._id) {
-                dataNew.push(data[j]);
-                j = data.length;
-              }
-            }
-          }
+app.post("/myReservedFlights", async function (req, res) {
+  const { token } = req.body;
+  console.log(token);
+  const user = get_user_from_token(token);
+  console.log(user);
+  let userID = user["_id"];
+  console.log("getting tickets data for ", userID);
 
-          res.json(dataNew);
-        }
-      });
-    }
-  });
+  // rewrite
+  // const records = await .find().where("_id").in(ids);
+  //TODO FIX THE TICKETS SYSTEM
 });
 app.get("/get-all-flights", async function (req, res) {
   //to get all users
   flightData.find().then(function (doc) {
-    res.status(200).json({ data: doc });
+    res.status(200).json({ data: doc, error: false, msg: "success" });
   });
 });
 
 app.post("/updateUser", async function (req, res, next) {
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
+  const { token } = req.body;
+  console.group();
+  console.log(token);
+  const user = get_user_from_token(token);
+  console.log(user);
+  let userID = user["_id"];
+  console.log("updating user data");
   console.log(req.body);
   console.log(userID);
+
   var edituseremail = { $set: { email: req.body.email } };
   var editusernickname = { $set: { email: req.body.nickname } };
   var edituserpassword = { $set: { email: req.body.password } };
@@ -208,31 +175,34 @@ app.post("/updateUser", async function (req, res, next) {
   var edituserpassport = { $set: { email: req.body.passport } };
 
   var IDold = { _id: userID };
-
-  UserData.updateOne(IDold, edituseremail, function (err, res) {
-    if (err) throw err;
-  });
-  UserData.updateOne(IDold, edituseraddress, function (err, res) {
-    if (err) throw err;
-  });
-  UserData.updateOne(IDold, edituserfirstname, function (err, res) {
-    if (err) throw err;
-  });
-  UserData.updateOne(IDold, edituserlastname, function (err, res) {
-    if (err) throw err;
-  });
-  UserData.updateOne(IDold, editusernickname, function (err, res) {
-    if (err) throw err;
-  });
-  UserData.updateOne(IDold, edituserpassword, function (err, res) {
-    if (err) throw err;
-  });
-  UserData.updateOne(IDold, edituserpassport, function (err, res) {
-    if (err) throw err;
-  });
-  UserData.updateOne(IDold, edituserphone, function (err, res) {
-    if (err) throw err;
-  });
+  try {
+    UserData.updateOne(IDold, edituseremail, function (err, res) {
+      if (err) throw err;
+    });
+    UserData.updateOne(IDold, edituseraddress, function (err, res) {
+      if (err) throw err;
+    });
+    UserData.updateOne(IDold, edituserfirstname, function (err, res) {
+      if (err) throw err;
+    });
+    UserData.updateOne(IDold, edituserlastname, function (err, res) {
+      if (err) throw err;
+    });
+    UserData.updateOne(IDold, editusernickname, function (err, res) {
+      if (err) throw err;
+    });
+    UserData.updateOne(IDold, edituserpassword, function (err, res) {
+      if (err) throw err;
+    });
+    UserData.updateOne(IDold, edituserpassport, function (err, res) {
+      if (err) throw err;
+    });
+    UserData.updateOne(IDold, edituserphone, function (err, res) {
+      if (err) throw err;
+    });
+  } catch (e) {
+    res.status(200).json({ error: true, msg: "something went wrong" });
+  }
 });
 app.post("/get-seats", async (req, res) => {
   const flight_id = req.body?.flight_id;
@@ -260,10 +230,12 @@ app.post("/get-ticket", async function (req, res) {
   res.status(200).send({ user: user, flight: flight, ticket: ticket });
 });
 app.post("/get-user-tickets", async function (req, res) {
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
+  const { token } = req.body;
+  console.group();
+  console.log(token);
+  const user = get_user_from_token(token);
+  console.log(user);
+  let userID = user["_id"];
   const data = await ticketData.find({ IDUser: userID });
   console.log(userID, data);
   res.status(200).send({ tickets: data });
@@ -306,8 +278,8 @@ app.post("/RegisterUser", function (req, res) {
     contry_code: contry_code,
     telephone_number: telephone_number,
     passport: passport_number,
-    flightsID: "",
-    ticketsID: "",
+    flightsID: [],
+    ticketsID: [],
   };
   var data = new UserData(item);
   data
@@ -380,55 +352,23 @@ app.post("/RegisterFlight", async function (req, res) {
     });
 });
 app.post("/addToFavourite", async function (req, res) {
+  let { token } = req.body;
+  let user = get_user_from_token(token);
+  let userID = user["_id"];
+  let { flight_id } = req.body;
+  let a = await UserData.findById(userID);
+  
+  await UserData.updateOne({ _id: userID }, { $push: { flightsID: flight_id } }).exec();
+  let f = (await UserData.findById(userID)).flightsID;
+  console.log("Addded to favorite with id", f, " to user ", userID);
 
-  let {token} = req.body
-  let user = get_user_from_token(token)
-  let userID = user['_id']
-  let {flight_id} = req.body
-  console.log('Adding to favorite with id', flight_id)
-  UserData.findById(userID, (error, data) => {
-    if (error) {
-      console.log('error in add flights to fav ', error)
-      return res.status(200).send({error:true, msg:"could not be added to fav"});
-    } else {
-      var toChange = data.flightsID; // this is the value to check (I need to change it to flights and not last name)
-      var temp = new Array();
-      temp = toChange.split(",");
-      var duplicate = 0;
-      console.log(temp);
-      for (var j = 0; j < temp.length; j++) {
-        //to check if the flight is already reserved
-        if (temp[j].match(flight_id)) duplicate = 1;
-      }
-
-      if (duplicate != 1) {
-        if (toChange == "") {
-          //msh 3arf leh how msh byd5ol hena
-          var flights = req.params.id;
-        } else {
-          var flights = toChange + "," + flight_id;
-        }
-        var flighttoAdd = { $set: { flightsID: flights } };
-        var IDold = { _id: userID };
-        console.log(`updated ${userID} with ${flights}`);
-        UserData.updateOne(IDold, flighttoAdd, function (err, res) {
-          if (err) throw err;
-
-          //db.close();
-        });
-      } else {
-        //hena 3ayz atl3 error en howa 3ml reserve l flight howa already kan 3mlha reserve
-      }
-
-      res.status(200).json(data);
-    }
-  });
 });
-app.get("/cancelflight/:id", async function (req, res) {
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
+app.post("/cancelflight", async function (req, res) {
+  let { token } = req.body;
+  let user = get_user_from_token(token);
+  let userID = user["_id"];
+  let { ticket_id } = req.body;
+  console.log(`canceling ticket for ${userID} with ticket ${ticket_id}`);
   UserData.findById(userID, (error, data) => {
     if (error) {
       return next(error);
@@ -672,10 +612,13 @@ app.get("/cancelflight/:id", async function (req, res) {
 });
 
 app.post("/createTicket", async (req, res) => {
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
+  const { token } = req.body;
+  console.log(token);
+  const user = get_user_from_token(token);
+  console.log(user);
+  let userID = user["_id"];
+  console.log("getting flight data");
+
   const { flight_id, seat_nr, price } = req.body;
   console.log(`create ticket from user ${userID} from ${flight_id}`);
   const flight_data = await flightData.findById(flight_id);
@@ -693,33 +636,22 @@ app.post("/createTicket", async (req, res) => {
   };
 
   const ticket = await new ticketData(item);
-  ticket.save();
+  await ticket.save();
+  const ticket_id = ticket['_id']
   console.log(`saved ticket ${ticket}`);
-  //const user = await UserData.findById(userID);
-  // // Changeing the user data
-  // var toChange = user.ticketsID;
-  // var temp = new Array();
-  // var newtickets = "";
-  // temp = toChange.split(",");
-  // if (temp.length == 0) {
-  //   newtickets = ticket._id;
-  // } else {
-  //   for (var i = 0; i < temp.length; i++) {
-  //     if (i == 0) {
-  //       newtickets = temp[i];
-  //     } else {
-  //       newtickets = newtickets + "," + temp[i];
-  //     }
-  //   }
-  // }
-  // let ticketsUpdated = { $set: { ticketsID: newtickets } }; // update tickets with new tickets
-  // var IDold = { _id: userID };
-  // const user_new = await UserData.updateOne(IDold, ticketsUpdated);
-  // console.log(`updated user and created ticket ${user_new["ticketsID"]}`);
+  await UserData.updateOne(
+    { _id: userID },
+    { $push: { ticketsID: ticket_id } },
+  );
+  let conf = await UserData.findById(userID)
+  console.log(conf.flightsID)
   res.status(200).send({ status: "ok", msg: "seats booked" });
 });
 
 app.post("/CancelTicket", async (req, res) => {
+  const {token} = req.body;
+  const user = get_user_from_token(token);
+  const userID = user['_id']
   const { ticket_id, seat_nr, flight_id } = req.body;
   await ticketData.findOneAndRemove({ _id: ticket_id });
   console.log(`deleted ticket ${ticket_id}`);
@@ -735,6 +667,8 @@ app.post("/CancelTicket", async (req, res) => {
   flight["Seats"][seat_type][seat_nr] = "free";
   await flight.save();
   console.log(`changed seat ${seat_nr} to free from ${seat_type}`);
+  await UserData.findOneAndUpdate({_id:userID}, { $pull: { ticketsID: ticket_id } }  )
+  console.log('removed from the user ticketsID')
   res.status(200).send({ success: true });
 });
 app.post("/LoginUser", function (req, res) {
@@ -760,16 +694,14 @@ app.post("/LoginUser", function (req, res) {
         console.log("found user login successfull" + doc);
         let token = create_token(doc);
         console.log("create token", token);
-        res
-          .status(200)
-          .json({
-            status: "ok",
-            success: true,
-            err: null,
-            token: token,
-            error: false,
-            msg: "logged in succesfluly",
-          }); // this means that it was great and it worked quiet well if i can say so myself
+        res.status(200).json({
+          status: "ok",
+          success: true,
+          err: null,
+          token: token,
+          error: false,
+          msg: "logged in succesfluly",
+        }); // this means that it was great and it worked quiet well if i can say so myself
 
         userID = doc._id;
         console.log("the id of the user is");

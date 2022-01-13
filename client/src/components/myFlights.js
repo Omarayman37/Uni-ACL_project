@@ -17,13 +17,17 @@ export default class MyFlights extends Component {
   componentDidMount() {
     axios.get("http://localhost:5000/myFlights")
       .then(res => {
+        console.group();
+        console.log('recived data from server')
+        console.dir(res.data)
+        console.groupCollapsed()
         this.setState({
           flights: res.data
         });
       })
       .catch((error) => {
         console.log(error);
-        
+  
       })
       
   }

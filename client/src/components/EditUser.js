@@ -16,6 +16,7 @@ import {
 import crypto, { AES, createCipheriv, createHash, randomBytes } from "crypto";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Send_request from "../util/send_request";
 
 const { Option } = Select;
 const { Paragraph } = Typography;
@@ -138,7 +139,7 @@ const navigate = useNavigate()
   /// States for all the fields from the initial User
   useEffect( async() => {
       try {
-          const data = await axios.post("http://localhost:5000/get-user");
+          const data = await Send_request('get-user')
           const _user = data["data"]["user"];
           console.log(`initial user data ${JSON.stringify(_user)}`);
           setFirst_name(_user["first_name"]);
