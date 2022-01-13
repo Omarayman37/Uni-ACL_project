@@ -5,6 +5,7 @@ import Airplanes from './components/Airplanes.js';
 import AllAirplanes from './components/AllAirplanes.js';
 import LoginPage from './components/Login';
 import SearchPage from './components/SearchPage'
+import UpdateFlights from './components/UpdateFlights'
 import Reservedflights from './components/Reservedflights'
 import HomeGuest from './components/HomeGuest'//home page that the guest gets to see when he logs in
 import MyFlights from './components/myFlights'//page containing the flights of the user signed in
@@ -48,6 +49,7 @@ function App() {
             <Route path="/AddAirplane" element={<AddAirplane />} exact />
             <Route path="/ReturnTrip" element={<ReturnTrip />} exact />
             <Route path="/SearchPage" element={<SearchPage />} exact />
+            <Route path="/UpdateFlights" element={<UpdateFlights />} exact />
             <Route path="/LoginUser" element={<LoginPage />} />
             <Route path="/myFlights" element={<MyFlights />} />
             <Route path="/userAllFlights" element={<UserAllFlights />} />
