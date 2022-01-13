@@ -749,10 +749,9 @@ app.post("/DecreaseSeats", async (req, res) => {
 });
 
 app.post("/EditUser", async (req, res) => {
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
+   const { token } = req.body;
+   const user = get_user_from_token(token);
+   const userID = user["_id"];
   let updated_user_info = req.body;
 
   await UserData.updateOne({ _id: userID }, updated_user_info);
@@ -762,5 +761,24 @@ app.post("/EditUser", async (req, res) => {
 
   res.status(200).send({ msg: "User Updated" });
 });
+
+
+app.post("/EditFlight", async (req, res) => {
+ 
+  const { _Flight, id } = req.body;
+  const { token } = req.body;
+  const user = get_user_from_token(token);
+  const userID = _Flight["id"];
+  let updated_Flight_info = req.body;
+  console.log(req.body);
+
+  await UserData.updateOne({ id: id }, updated_Flight_info);
+  console.log(
+    `updating user ${_id} with ${JSON.stringify(updated_Flight_info)}`
+  );
+
+  res.status(200).send({ msg: "User Updated" });
+});
+
 
 export default app;
