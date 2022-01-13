@@ -14,7 +14,7 @@ import {
 } from "antd";
 import crypto, { AES, createCipheriv, createHash, randomBytes } from "crypto";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Send_request from "../util/send_request";
 
 
@@ -53,6 +53,9 @@ const tailFormItemLayout = {
 };
 const EditFlight = () => {
   const [form] = Form.useForm();
+  const location = useLocation();
+  let {_id} = location.state;
+  
 
   const onFinish = (values) => {
     let updated_obj = {
@@ -63,16 +66,10 @@ const EditFlight = () => {
       from: from,
       to: to,
     };
-    axios
-      .post("http://localhost:5000/EditFlight", {
-        ...updated_obj,
-        token: window.localStorage.getItem("token"),
-      })
-      .then((response) =>
-        console.log(
-          "updated Successfully saved\n" + JSON.stringify(updated_obj)
-        )
-      );
+    Send_request("EditFlight", {
+      ...updated_obj,
+      _id:_id,
+    });
   };
   const prefixSelector = (
     <Form.Item name="prefix" noStyle>
@@ -98,28 +95,22 @@ const EditFlight = () => {
       </Select>
     </Form.Item>
   );
-  const flight_id = 0 
-const flight_departure_time = 2; 
-const flight_price = 4; 
-const flight_arrival_time = 4; 
-const flight_from = 5; 
-const flight_to = 6; 
-const _id = "abc"
+
+
 
   const [Flight, setFlight] = useState({});
-  const [id, setid] = useState(flight_id);
-  const [departure_time, setdeparture_time] = useState(flight_departure_time);
-  const [arrival_time, setarrival_time] =useState(flight_arrival_time);
-  const [price, setprice] = useState(flight_price);
-  const [from, setfrom] = useState(flight_from);
-  const [to, setto] = useState(flight_to);
-  const [_id1, set_id1] = useState();
+  const [id, setid] = useState('');
+  const [departure_time, setdeparture_time] = useState('');
+  const [arrival_time, setarrival_time] =useState('');
+  const [price, setprice] = useState(0);
+  const [from, setfrom] = useState('');
+  const [to, setto] = useState('');
   const navigate = useNavigate();
   /// States for all the fields from the initial User
   useEffect(async () => {
     try {
-      const data = await Send_request("get-Flight");
-      const _Flight = data["data"]["Flight"];
+      const data = await Send_request("get-Flight",{flight_id:_id});
+      const _Flight = data["Flight"];
       console.log(`initial Flight data ${JSON.stringify(_Flight)}`);
       setid(_Flight["id"]);
       setdeparture_time(_Flight.departure_time);
@@ -127,7 +118,6 @@ const _id = "abc"
       setprice(_Flight["price"]);
       setfrom(_Flight["from"]);
       setto(_Flight["to"]);
-      set_id1(_Flight["_id1"]);
     } catch (error) {
       navigate("/LoginUser");
     }
