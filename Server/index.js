@@ -765,18 +765,17 @@ app.post("/EditUser", async (req, res) => {
 
 app.post("/EditFlight", async (req, res) => {
  
-  const { _Flight, id } = req.body;
+  const { _Flight, id, _id } = req.body;
   const { token } = req.body;
   const user = get_user_from_token(token);
-  const userID = _Flight["id"];
+  const userID = user["id"];
   let updated_Flight_info = req.body;
   console.log(req.body);
 
-  await UserData.updateOne({ id: id }, updated_Flight_info);
-  console.log(
-    `updating user ${_id} with ${JSON.stringify(updated_Flight_info)}`
-  );
+  await flightData.updateOne({ _id: _id }, updated_Flight_info);
 
+  let a = await flightData.findById(_id);
+  console.log(a)
   res.status(200).send({ msg: "User Updated" });
 });
 
