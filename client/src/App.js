@@ -29,8 +29,8 @@ import PaySuccess from './components/PaySuccess'
 import LoginAdmin from './components/LoginAdmin'
 import AdminPage from './components/AdminPage'
 
-import RegisterPage from "./components/RegiesterPage";
-import PaySuccess from "./components/PaySuccess";
+
+
 import Contexts, { Context } from "./components/Contexts";
 import StripePayPage from "./components/StripPayPage";
 import EditFlight from './components/EditFlight'
