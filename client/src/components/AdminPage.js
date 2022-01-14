@@ -26,7 +26,7 @@ import UsersAdminButton from "./UsersAdminButton";
 
 
 
-class HomeGuest extends Component {
+class AdminPage extends Component {
     render() {
         return(
         <div>
@@ -42,4 +42,4 @@ class HomeGuest extends Component {
     }
 }
 
-export default HomeGuest;
+export default AdminPage;

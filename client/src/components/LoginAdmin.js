@@ -18,6 +18,7 @@ import "antd/dist/antd.css";
 import axios from "axios";
 import crypto, {AES, createCipheriv, createHash, randomBytes} from "crypto";
 import { useHistory } from 'react-router-dom';
+import LoginAdminButton from "./LoginAdminButton";
 const FormItem = Form.Item;
 // const { getFieldDecorator } = this.props.form;
 class LoginAdmin extends Component {
@@ -116,6 +117,15 @@ class LoginAdmin extends Component {
         <Input.Password name="user_password" onChange={this.handleChange} />
         </FormItem>
 
+        <div>
+
+<Col span={15}>
+              <Form.Item><LoginAdminButton/></Form.Item>
+           
+            </Col>
+             </div>
+             
+    
       
         
         {this.state.show_error && (
