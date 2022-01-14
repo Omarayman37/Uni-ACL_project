@@ -44,6 +44,7 @@ const Flight = ({ flight }) => {
             <Menu.Item key={"duration"}>
               <Paragraph>Trip Duration: {flight.duration} </Paragraph>
             </Menu.Item>
+
           </Menu.SubMenu>
         </Menu>
       </Card>

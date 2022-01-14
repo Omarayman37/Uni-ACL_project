@@ -13,6 +13,7 @@ import {
 } from "antd";
 import crypto, { AES, createCipheriv, createHash, randomBytes } from "crypto";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 const residences = [
@@ -82,7 +83,7 @@ const tailFormItemLayout = {
 
 const RegistrationForm = () => {
   const [form] = Form.useForm();
-
+  const navigate = useNavigate();
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
     let login_request_object = values;
@@ -93,11 +94,12 @@ const RegistrationForm = () => {
     delete login_request_object["confirm_password"]; // remove the confirm password field
     axios
       .post("http://localhost:5000/RegisterUser", login_request_object)
-      .then((response) =>
+      .then((response) => {
         console.log(
           "sucessfully saved\n" + JSON.stringify(login_request_object)
-        )
-      );
+        );
+        navigate("/");
+      });
   };
 
   const prefixSelector = (
@@ -284,7 +286,6 @@ const RegistrationForm = () => {
         ]}
       >
         <Input
-          
           style={{
             width: "100%",
           }}
@@ -307,8 +308,6 @@ const RegistrationForm = () => {
           }}
         />
       </Form.Item>
-
-  
 
       {/* <Form.Item
         name="intro"
@@ -336,7 +335,6 @@ const RegistrationForm = () => {
         <Select placeholder="select your gender">
           <Option value="male">Male</Option>
           <Option value="female">Female</Option>
-        
         </Select>
       </Form.Item>
       <Form.Item
@@ -349,7 +347,7 @@ const RegistrationForm = () => {
           },
         ]}
       >
-       <Input/>
+        <Input />
       </Form.Item>
 
       {/* <Form.Item

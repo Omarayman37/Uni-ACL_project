@@ -1,0 +1,30 @@
+
+POST http://localhost:5000/LoginUser
+content-type: application/json
+
+{
+   "email":"a",
+   "password":"a"
+}
+
+###
+POST http://localhost:5000/EditFlight
+content-type: application/json
+
+{
+    "token":"eyJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MWRmZjk1YTNmZmIxMGM0NzNiYWMwMGQiLCJlbWFpbCI6ImEiLCJwYXNzd29yZCI6ImEiLCJuaWNrbmFtZSI6ImxvbG8iLCJmaXJzdF9uYW1lIjoiZmlyc3QiLCJsYXN0X25hbWUiOiJsYXN0IiwiaG9tZV9hZGRyZXNzIjoiQmVybGluIiwiY29udHJ5X2NvZGUiOiJlZ3lwdCIsInRlbGVwaG9uZV9udW1iZXIiOiIxMjM0NTYiLCJwYXNzcG9ydCI6IkE1NiIsImZsaWdodHNJRCI6WyI2MWRmZmJlN2NhYjQ1ZTQ1YWJjN2I0ZDQiLCI2MWRmZmJlN2NhYjQ1ZTQ1YWJjN2I0ZDQiLCI2MWRmZmJlN2NhYjQ1ZTQ1YWJjN2I0ZDQiLCI2MWRmZmJlN2NhYjQ1ZTQ1YWJjN2I0ZDQiLCI2MWRmZmJlN2NhYjQ1ZTQ1YWJjN2I0ZDQiLCI2MWRmZmJlN2NhYjQ1ZTQ1YWJjN2I0ZDQiLCI2MWRmZjkyMTNmZmIxMGM0NzNiYWMwMDIiLCI2MWRmZjkyMzNmZmIxMGM0NzNiYWMwMDQiXSwidGlja2V0c0lEIjpbIjYxZTAwM2RmM2UwNTRmN2IxNTJiMDFkYSIsIjYxZTAwM2ZkM2UwNTRmN2IxNTJiMDFkZiIsIjYxZTAwNDA0M2UwNTRmN2IxNTJiMDFlNCJdLCJfX3YiOjB9.xz_2G-Kro061Z2rUFVVCoIeqSQ5Aa1JXG9tg9wZZYbo",
+   "id":"A56",
+   "name":"Boeing1",
+   "seat_number":"20",
+    "_id":"61dff9213ffb10c473bac002",
+   "duration":"5",
+   "arrival_time":"Thu Jan 27 2022 10:55:12 GMT+0100 (Central European Standard Time)",
+   "departure_time":"Fri Jan 14 2022 10:55:07 GMT+0100 (Central European Standard Time)",
+   "from":"edited",
+   "to":"",
+   "price":"300",
+   "baggage_allowance":"3",
+   "BusinessClass_seats":"20",
+   "Economy_seats":"30"
+
+}

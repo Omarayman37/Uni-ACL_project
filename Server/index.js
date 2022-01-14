@@ -2,13 +2,23 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import crypto, { createCipheriv, createHash, randomBytes } from "crypto";
-//
 import userDataSchema from "./models/UserDataSchema.js";
 import flightSchema from "./models/FlgihtsSchema.js";
 import ticketSchema from "./models/TicketSchema.js";
 import { timeDiffCalc } from "./util/diffrenceHours.js";
 import { create_functional_querry_from_request } from "./util/querry_func.js";
 import CreateSeatsObject from "./util/CreateSeatsObject.js";
+import { register_user } from "./routes/user.routes.js";
+import nodemailer from "nodemailer";
+import { create_token, get_user_from_token } from "./util/jwt.js";
+import Stripe from 'stripe';
+import dotenv from 'dotenv'
+dotenv.config();
+const STRIPE_PUBLIC_KEY =
+  "pk_test_51KHWXsLgiWcF7ZDaZjtY4a30WCMKUnX94ZJ0oRmtEsmcvddajlMkXaX9jfW5OhkcsUS8xz1EZRXb7dBPc4UYRiEa00D3YyVwsE";
+const PRIVATE_KEY =
+  "sk_test_51KHWXsLgiWcF7ZDafaMlq9FWUT5jo8jU6kP0tgomJm3lKfkUvyVMabgWq5e8ODY4X9jXei2ryfLQWYkNpj2DzDT700ahwa474v"; 
+const stripe = await Stripe(PRIVATE_KEY);
 console.log("server is running");
 var userID; //id of signed in user
 const app = express();
@@ -29,7 +39,36 @@ app.use(
     optionSuccessStatus: 200,
   })
 );
-import nodemailer from "nodemailer";
+// MIDDLE WARE
+const router = express.Router();
+router.use(function (req, res, next) {
+  console.log(req.path);
+  const nonSecurePaths = [
+    "/get-flights",
+    "/LoginUser",
+    "/RegisterUser",
+    "/RegisterFlight",
+  ];
+  if (nonSecurePaths.includes(req.path)) return next();
+  else {
+    let body = req.body || {};
+    const { token } = body;
+    if (token == undefined) {
+      console.log(
+        `can not satisfy request as user not logged in body${req.body} `
+      );
+    } else {
+      let user = get_user_from_token(token);
+      req.user = user;
+      console.log(`user from middleware is ${user["_id"]}`);
+      next();
+    }
+  }
+});
+
+// mount the router on the app
+app.use("/", router);
+
 //const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
   service: "hotmail",
@@ -87,88 +126,53 @@ app.get("/userallflight", function (req, res) {
     }
   });
 });
-app.get("/myFlights", async function (req, res) {
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
-  flightData.find((error, data) => {
-    if (error) {
-      return next(error);
-    } else {
-      var dataNew = new Array();
-      UserData.findById(userID, (error, dataUser) => {
-        if (error) {
-          return next(error);
-        } else {
-          var toChange = dataUser.flightsID; // this is the value to check (I need to change it to flights and not last name)
-          console.log(toChange);
-          var temp = new Array();
-          temp = toChange.split(",");
-
-          for (var i = 0; i < temp.length; i++) {
-            for (var j = 0; j < data.length; j++) {
-              if (temp[i] == data[j]._id) {
-                dataNew.push(data[j]);
-                j = data.length;
-              }
-            }
-          }
-          console.log("ana henaaaa");
-          console.log(dataNew);
-          res.json(dataNew);
-        }
-      });
-    }
+app.post("/myFlights", async function (req, res) {
+  const { token } = req.body;
+  console.log(token);
+  const user = get_user_from_token(token);
+  console.log(user);
+  let userID = user["_id"];
+  console.log("getting flight data");
+  let flights = (await UserData.findById(userID)).flightsID;
+  console.log(flights)
+  const records = await flightData.find({
+    _id: { $in: flights },
   });
+  console.log(`current user fav flights `, JSON.stringify(records))
+  res.status(200).json({
+    error:false, msg:'success', flights:records
+  })
 });
-app.get("/myReservedFlights", async function (req, res) {
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
-  ticketData.find((error, data) => {
-    if (error) {
-      return next(error);
-    } else {
-      var dataNew = new Array();
-      UserData.findById(userID, (error, dataUser) => {
-        if (error) {
-          return next(error);
-        } else {
-          var toChange = dataUser.ticketsID; // this is the value to check (I need to change it to flights and not last name)
-          console.log(toChange);
-          var temp = new Array();
-          temp = toChange.split(",");
-          for (var i = 0; i < temp.length; i++) {
-            for (var j = 0; j < data.length; j++) {
-              if (temp[i] == data[j]._id) {
-                dataNew.push(data[j]);
-                j = data.length;
-              }
-            }
-          }
+app.post("/myReservedFlights", async function (req, res) {
+  const { token } = req.body;
+  console.log(token);
+  const user = get_user_from_token(token);
+  console.log(user);
+  let userID = user["_id"];
+  console.log("getting tickets data for ", userID);
 
-          res.json(dataNew);
-        }
-      });
-    }
-  });
+  // rewrite
+  // const records = await .find().where("_id").in(ids);
+  //TODO FIX THE TICKETS SYSTEM
 });
 app.get("/get-all-flights", async function (req, res) {
   //to get all users
   flightData.find().then(function (doc) {
-    res.status(200).json({ data: doc });
+    res.status(200).json({ data: doc, error: false, msg: "success" });
   });
 });
 
 app.post("/updateUser", async function (req, res, next) {
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
+  const { token } = req.body;
+  console.group();
+  console.log(token);
+  const user = get_user_from_token(token);
+  console.log(user);
+  let userID = user["_id"];
+  console.log("updating user data");
   console.log(req.body);
   console.log(userID);
+
   var edituseremail = { $set: { email: req.body.email } };
   var editusernickname = { $set: { email: req.body.nickname } };
   var edituserpassword = { $set: { email: req.body.password } };
@@ -179,31 +183,34 @@ app.post("/updateUser", async function (req, res, next) {
   var edituserpassport = { $set: { email: req.body.passport } };
 
   var IDold = { _id: userID };
-
-  UserData.updateOne(IDold, edituseremail, function (err, res) {
-    if (err) throw err;
-  });
-  UserData.updateOne(IDold, edituseraddress, function (err, res) {
-    if (err) throw err;
-  });
-  UserData.updateOne(IDold, edituserfirstname, function (err, res) {
-    if (err) throw err;
-  });
-  UserData.updateOne(IDold, edituserlastname, function (err, res) {
-    if (err) throw err;
-  });
-  UserData.updateOne(IDold, editusernickname, function (err, res) {
-    if (err) throw err;
-  });
-  UserData.updateOne(IDold, edituserpassword, function (err, res) {
-    if (err) throw err;
-  });
-  UserData.updateOne(IDold, edituserpassport, function (err, res) {
-    if (err) throw err;
-  });
-  UserData.updateOne(IDold, edituserphone, function (err, res) {
-    if (err) throw err;
-  });
+  try {
+    UserData.updateOne(IDold, edituseremail, function (err, res) {
+      if (err) throw err;
+    });
+    UserData.updateOne(IDold, edituseraddress, function (err, res) {
+      if (err) throw err;
+    });
+    UserData.updateOne(IDold, edituserfirstname, function (err, res) {
+      if (err) throw err;
+    });
+    UserData.updateOne(IDold, edituserlastname, function (err, res) {
+      if (err) throw err;
+    });
+    UserData.updateOne(IDold, editusernickname, function (err, res) {
+      if (err) throw err;
+    });
+    UserData.updateOne(IDold, edituserpassword, function (err, res) {
+      if (err) throw err;
+    });
+    UserData.updateOne(IDold, edituserpassport, function (err, res) {
+      if (err) throw err;
+    });
+    UserData.updateOne(IDold, edituserphone, function (err, res) {
+      if (err) throw err;
+    });
+  } catch (e) {
+    res.status(200).json({ error: true, msg: "something went wrong" });
+  }
 });
 app.post("/get-seats", async (req, res) => {
   const flight_id = req.body?.flight_id;
@@ -231,10 +238,12 @@ app.post("/get-ticket", async function (req, res) {
   res.status(200).send({ user: user, flight: flight, ticket: ticket });
 });
 app.post("/get-user-tickets", async function (req, res) {
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
+  const { token } = req.body;
+  console.group();
+  console.log(token);
+  const user = get_user_from_token(token);
+  console.log(user);
+  let userID = user["_id"];
   const data = await ticketData.find({ IDUser: userID });
   console.log(userID, data);
   res.status(200).send({ tickets: data });
@@ -277,8 +286,8 @@ app.post("/RegisterUser", function (req, res) {
     contry_code: contry_code,
     telephone_number: telephone_number,
     passport: passport_number,
-    flightsID: "",
-    ticketsID: "",
+    flightsID: [],
+    ticketsID: [],
   };
   var data = new UserData(item);
   data
@@ -350,53 +359,24 @@ app.post("/RegisterFlight", async function (req, res) {
       console.error(err);
     });
 });
-app.get("/addToFavourite/:id", async function (req, res) {
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
-  UserData.findById(userID, (error, data) => {
-    if (error) {
-      return next(error);
-    } else {
-      var toChange = data.flightsID; // this is the value to check (I need to change it to flights and not last name)
-      var temp = new Array();
-      temp = toChange.split(",");
-      var duplicate = 0;
-      console.log(temp);
-      for (var j = 0; j < temp.length; j++) {
-        //to check if the flight is already reserved
-        if (temp[j].match(req.params.id)) duplicate = 1;
-      }
+app.post("/addToFavourite", async function (req, res) {
+  let { token } = req.body;
+  let user = get_user_from_token(token);
+  let userID = user["_id"];
+  let { flight_id } = req.body;
+  let a = await UserData.findById(userID);
+  
+  await UserData.updateOne({ _id: userID }, { $push: { flightsID: flight_id } }).exec();
+  let f = (await UserData.findById(userID)).flightsID;
+  console.log("Addded to favorite with id", f, " to user ", userID);
 
-      if (duplicate != 1) {
-        if (toChange == "") {
-          //msh 3arf leh how msh byd5ol hena
-          var flights = req.params.id;
-        } else {
-          var flights = toChange + "," + req.params.id;
-        }
-        var flighttoAdd = { $set: { flightsID: flights } };
-        var IDold = { _id: userID };
-        console.log(`updated ${userID} with ${flights}`);
-        UserData.updateOne(IDold, flighttoAdd, function (err, res) {
-          if (err) throw err;
-
-          //db.close();
-        });
-      } else {
-        //hena 3ayz atl3 error en howa 3ml reserve l flight howa already kan 3mlha reserve
-      }
-
-      res.json(data);
-    }
-  });
 });
-app.get("/cancelflight/:id", async function (req, res) {
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
+app.post("/cancelflight", async function (req, res) {
+  let { token } = req.body;
+  let user = get_user_from_token(token);
+  let userID = user["_id"];
+  let { ticket_id } = req.body;
+  console.log(`canceling ticket for ${userID} with ticket ${ticket_id}`);
   UserData.findById(userID, (error, data) => {
     if (error) {
       return next(error);
@@ -640,10 +620,13 @@ app.get("/cancelflight/:id", async function (req, res) {
 });
 
 app.post("/createTicket", async (req, res) => {
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
+  const { token } = req.body;
+  console.log(token);
+  const user = get_user_from_token(token);
+  console.log(user);
+  let userID = user["_id"];
+  console.log("getting flight data");
+
   const { flight_id, seat_nr, price } = req.body;
   console.log(`create ticket from user ${userID} from ${flight_id}`);
   const flight_data = await flightData.findById(flight_id);
@@ -661,33 +644,22 @@ app.post("/createTicket", async (req, res) => {
   };
 
   const ticket = await new ticketData(item);
-  ticket.save();
+  await ticket.save();
+  const ticket_id = ticket['_id']
   console.log(`saved ticket ${ticket}`);
-  //const user = await UserData.findById(userID);
-  // // Changeing the user data
-  // var toChange = user.ticketsID;
-  // var temp = new Array();
-  // var newtickets = "";
-  // temp = toChange.split(",");
-  // if (temp.length == 0) {
-  //   newtickets = ticket._id;
-  // } else {
-  //   for (var i = 0; i < temp.length; i++) {
-  //     if (i == 0) {
-  //       newtickets = temp[i];
-  //     } else {
-  //       newtickets = newtickets + "," + temp[i];
-  //     }
-  //   }
-  // }
-  // let ticketsUpdated = { $set: { ticketsID: newtickets } }; // update tickets with new tickets
-  // var IDold = { _id: userID };
-  // const user_new = await UserData.updateOne(IDold, ticketsUpdated);
-  // console.log(`updated user and created ticket ${user_new["ticketsID"]}`);
+  await UserData.updateOne(
+    { _id: userID },
+    { $push: { ticketsID: ticket_id } },
+  );
+  let conf = await UserData.findById(userID)
+  console.log(conf.flightsID)
   res.status(200).send({ status: "ok", msg: "seats booked" });
 });
 
 app.post("/CancelTicket", async (req, res) => {
+  const {token} = req.body;
+  const user = get_user_from_token(token);
+  const userID = user['_id']
   const { ticket_id, seat_nr, flight_id } = req.body;
   await ticketData.findOneAndRemove({ _id: ticket_id });
   console.log(`deleted ticket ${ticket_id}`);
@@ -700,33 +672,44 @@ app.post("/CancelTicket", async (req, res) => {
   } else if (seat_nr.includes("F")) {
     seat_type = "FirstClassSeats";
   }
-  flight["Seats"][seat_type][seat_nr] = 'free'
-  await flight.save()
-  console.log(`changed seat ${seat_nr} to free from ${seat_type}`)
-  res.status(200).send({success:true})
+  flight["Seats"][seat_type][seat_nr] = "free";
+  await flight.save();
+  console.log(`changed seat ${seat_nr} to free from ${seat_type}`);
+  await UserData.findOneAndUpdate({_id:userID}, { $pull: { ticketsID: ticket_id } }  )
+  console.log('removed from the user ticketsID')
+  res.status(200).send({ success: true });
 });
 app.post("/LoginUser", function (req, res) {
   console.log(
     "in the post method server resived post request with body:\n" +
       JSON.stringify(req.body)
   );
-  console.log(req.body.user_email);
-  console.log(req.body.user_password);
+  console.log(req.body.email);
+  console.log(req.body.password);
   // here
   let hashed_user_pass = createHash("sha256") // hash the passowrd to send it via internet
-    .update(req.body.user_password)
+    .update(req.body.password)
     .digest("hex");
 
   let querry = {
-    email: req.body.user_email,
-    password: req.body.user_password,
+    email: req.body.email,
+    password: req.body.password,
   };
   //console.log(querry)
   UserData.findOne(querry)
     .then(function (doc) {
       if (doc) {
         console.log("found user login successfull" + doc);
-        res.status(200).json({ status: "ok", success: true, err: null }); // this means that it was great and it worked quiet well if i can say so myself
+        let token = create_token(doc);
+        console.log("create token", token);
+        res.status(200).json({
+          status: "ok",
+          success: true,
+          err: null,
+          token: token,
+          error: false,
+          msg: "logged in succesfluly",
+        }); // this means that it was great and it worked quiet well if i can say so myself
 
         userID = doc._id;
         console.log("the id of the user is");
@@ -734,9 +717,7 @@ app.post("/LoginUser", function (req, res) {
       } else {
         //nothing found then return bad
         console.log("no user found with " + querry);
-        res
-          .status(200)
-          .json({ status: "ok", success: false, err: "Invalid Credentials" });
+        res.status(200).json({ error: true, msg: "Invalid Credentials" });
       }
     })
     .catch((err) => console.error(err));
@@ -777,20 +758,70 @@ app.post("/DecreaseSeats", async (req, res) => {
   });
 });
 
-app.post('/EditUser', async (req, res)=>{
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
-  let updated_user_info = req.body
-  
-  await UserData.updateOne({_id:userID}, updated_user_info)
+app.post("/EditUser", async (req, res) => {
+   const { token } = req.body;
+   const user = get_user_from_token(token);
+   const userID = user["_id"];
+  let updated_user_info = req.body;
+
+  await UserData.updateOne({ _id: userID }, updated_user_info);
   console.log(
     `updating user ${userID} with ${JSON.stringify(updated_user_info)}`
   );
 
-  res.status(200).send({msg:'User Updated'})
+  res.status(200).send({ msg: "User Updated" });
+});
+
+app.post('/StripePay', async (req, res)=>{
+  
+  const {items, token} = req.body
+  let stripe = await Stripe(PRIVATE_KEY);
+  console.log("paying with stripe", stripe.checkout);
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    mode: "payment",
+    success_url: `http://localhost:3000/PaySuccess`,
+    cancel_url: `http://localhost:3000/Payfailure`,
+    line_items: items.map((item) => {
+      return {
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: "item name 1",
+          },
+          unit_amount: 10000,
+        },
+        quantity: 1,
+      };
+    }),
+  });
+
+  console.log(session)
+  res.status(200).json({
+    error:false,
+    msg:"redirect to payment isa",
+    url:session.url
+  })
+
 })
+
+
+
+app.post("/EditFlight", async (req, res) => {
+ 
+  const { _Flight, id, _id } = req.body;
+  const { token } = req.body;
+  const user = get_user_from_token(token);
+  const userID = user["id"];
+  let updated_Flight_info = req.body;
+  console.log(req.body);
+
+  await flightData.updateOne({ _id: _id }, updated_Flight_info);
+
+  let a = await flightData.findById(_id);
+  console.log(a)
+  res.status(200).send({ msg: "User Updated" });
+});
 
 
 
