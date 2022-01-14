@@ -4,7 +4,7 @@ import "antd/dist/antd.css";
 import { useNavigate } from "react-router-dom";
 
 
-const AllFlights_button = (props) => {
+const UsersAdminButton = (props) => {
     let navigate = useNavigate();
   
     return (
@@ -14,9 +14,9 @@ const AllFlights_button = (props) => {
           onClick={(e) => {
             navigate("../userAllFlights", { replace: true });
           }}
-        >All Flights</Button>
+        >Users</Button>
       </div>
     );
   };
   
-  export default AllFlights_button;
+  export default UsersAdminButton;

@@ -741,7 +741,9 @@ app.post("/LoginUser", function (req, res) {
     })
     .catch((err) => console.error(err));
 });
-
+app.post("/LoginAdmin",async (req, res) => {
+  res.redirect('/');
+})
 app.post("/ReserveSeats", async (req, res) => {
   console.log("reserving seats:\n" + JSON.stringify(req.body));
   const { flight_id, reserved_seats, seat_class } = req.body;
@@ -789,5 +791,7 @@ app.post('/EditUser', async (req, res)=>{
 
   res.status(200).send({msg:'User Updated'})
 })
+
+
 
 export default app;
