@@ -210,7 +210,22 @@ const RegistrationForm = () => {
       >
         <Input.Password />
       </Form.Item>
+      <Form.Item
+        name="username"
+        label="Username"
+        tooltip="this will be used to login"
+        rules={[
+          {
+            required: true,
+            message: "Please input your nickname!",
+            whitespace: true,
+          },
+        ]}
+      >
 
+        
+        <Input />
+      </Form.Item>
       <Form.Item
         name="first_name"
         label="First Name"
@@ -223,6 +238,8 @@ const RegistrationForm = () => {
           },
         ]}
       >
+
+        
         <Input />
       </Form.Item>
 

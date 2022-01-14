@@ -10,6 +10,7 @@ export default class EditUser extends Component {
 
 
     this.onChangeemail = this.onChangeemail.bind(this);
+    this.onChangeusername = this.onChangeusername.bind(this);
 
     this.onChangepassword = this.onChangepassword.bind(this);
     this.onChangefirst_name = this.onChangefirst_name.bind(this);
@@ -29,6 +30,7 @@ export default class EditUser extends Component {
     this.state = {
       email:'',
       password: '',
+      username: '',
       nickname: '',
       first_name: '',
       last_name: '',
@@ -64,7 +66,10 @@ export default class EditUser extends Component {
   onChangeemail(e){
     this.setState({email:e.target.value})
   }
- 
+  onChangeusername(e){
+    this.setState({username:e.target.value})
+  }
+
   onChangepassword(e) {
      this.setState({password: e.target.value})
    }
@@ -102,6 +107,7 @@ export default class EditUser extends Component {
     
       password: this.state.password,
       nickname: this.state.nickname,
+      username: this.state.username,
 
       first_name:this.state.first_name,
       last_name:this.state.last_name,
@@ -145,6 +151,11 @@ export default class EditUser extends Component {
         <Form.Group controlId="nickname">
           <Form.Label>Nickname</Form.Label>
           <Form.Control type="text" value={this.state.nickname} onChange={this.onChangenickname} placeholder ="Nickname" required/>
+        </Form.Group>
+
+        <Form.Group controlId="username">
+          <Form.Label>Username</Form.Label>
+          <Form.Control type="text" value={this.state.username} onChange={this.onChangeusername} placeholder ="Username" required/>
         </Form.Group>
 
         <Form.Group controlId="first_name">

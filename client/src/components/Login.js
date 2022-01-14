@@ -45,29 +45,12 @@ export default function Login2() {
         onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
-        <Form.Item
-          label="E-mail"
-          name="email"
-          rules={[{ required: true, message: "Please input your username!" }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: "Please input your password!" }]}
-        >
-          <Input.Password />
-        </Form.Item>
-
-        <Form.Item
-          name="remember"
-          valuePropName="checked"
-          wrapperCol={{ offset: 8, span: 16 }}
-        >
-          <Checkbox>Remember me</Checkbox>
-        </Form.Item>
+        <FormItem type="primary" {...formItemLayout} label="Username" hasFeedback>
+          <Input name="user_email" onChange={this.handleChange} />
+        </FormItem>
+        <FormItem label="Password" hasFeedback>
+          <Input.Password name="user_password" onChange={this.handleChange} />
+        </FormItem>
 
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit">
