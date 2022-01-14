@@ -111,7 +111,7 @@ class LoginPage extends Component {
           backgroundRepeat: "no-repeat",
         }}
       >
-        <FormItem type="primary" {...formItemLayout} label="E-mail" hasFeedback>
+        <FormItem type="primary" {...formItemLayout} label="Username" hasFeedback>
           <Input name="user_email" onChange={this.handleChange} />
         </FormItem>
         <FormItem label="Password" hasFeedback>

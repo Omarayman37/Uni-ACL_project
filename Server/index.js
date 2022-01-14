@@ -169,14 +169,15 @@ app.post("/updateUser", async function (req, res, next) {
   }
   console.log(req.body);
   console.log(userID);
+  var editusername = { $set: { username: req.body.username } };///fee ehhhhhhhh 5555555555
   var edituseremail = { $set: { email: req.body.email } };
-  var editusernickname = { $set: { email: req.body.nickname } };
-  var edituserpassword = { $set: { email: req.body.password } };
-  var edituserfirstname = { $set: { email: req.body.first_name } };
-  var edituserlastname = { $set: { email: req.body.last_name } };
-  var edituserphone = { $set: { email: req.body.telephone_number } };
-  var edituseraddress = { $set: { email: req.body.home_address } };
-  var edituserpassport = { $set: { email: req.body.passport } };
+  var editusernickname = { $set: { nickname: req.body.nickname } };
+  var edituserpassword = { $set: { password: req.body.password } };
+  var edituserfirstname = { $set: { first_name: req.body.first_name } };
+  var edituserlastname = { $set: { last_name: req.body.last_name } };
+  var edituserphone = { $set: { telephone_number: req.body.telephone_number } };
+  var edituseraddress = { $set: { home_address: req.body.home_address } };
+  var edituserpassport = { $set: { passport: req.body.passport } };
 
   var IDold = { _id: userID };
 
@@ -184,6 +185,9 @@ app.post("/updateUser", async function (req, res, next) {
     if (err) throw err;
   });
   UserData.updateOne(IDold, edituseraddress, function (err, res) {
+    if (err) throw err;
+  });
+  UserData.updateOne(IDold, editusername, function (err, res) {
     if (err) throw err;
   });
   UserData.updateOne(IDold, edituserfirstname, function (err, res) {
@@ -259,6 +263,7 @@ app.post("/RegisterUser", function (req, res) {
   const {
     email,
     password,
+    username,
     passport_number,
     first_name,
     last_name,
@@ -270,6 +275,7 @@ app.post("/RegisterUser", function (req, res) {
   var item = {
     email: email,
     password: password,
+    username: username,
     nickname: nickname,
     first_name: first_name,
     last_name: last_name,
@@ -718,7 +724,7 @@ app.post("/LoginUser", function (req, res) {
     .digest("hex");
 
   let querry = {
-    email: req.body.user_email,
+    username: req.body.user_email,
     password: req.body.user_password,
   };
   //console.log(querry)

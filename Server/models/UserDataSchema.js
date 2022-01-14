@@ -4,6 +4,7 @@ var userDataSchema = new Schema(
   {
     email: { type: String, required: true },
     password: { type: String, required: false },
+    username: { type: String, required: false },
     nickname: String,
     first_name: { type: String, required: false },
     last_name: { type: String, required: false },

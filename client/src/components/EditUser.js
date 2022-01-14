@@ -59,6 +59,7 @@ const RegistrationForm = () => {
       let updated_obj = {
           first_name:first_name,
           email:email,
+          username:username,
           password:password,
           home_address:home_address,
           last_name:last_name,
@@ -124,6 +125,7 @@ const RegistrationForm = () => {
 
 const [user, setUser] = useState({})
 const [first_name, setFirst_name] = useState("")
+const [username, setUsername] = useState("")
 const [last_name, setLast_name] = useState("")
 const [email, setEmail] = useState("")
 const [password, setPassword] = useState("")
@@ -140,6 +142,7 @@ const navigate = useNavigate()
           console.log(`initial user data ${JSON.stringify(_user)}`);
           setFirst_name(_user["first_name"]);
           setLast_name(_user.last_name);
+          setUsername(_user.username);
           setEmail(_user["email"]);
           setPassword(_user["password"]);
           settelephone_number(_user["telephone_number"]);
@@ -157,6 +160,12 @@ const navigate = useNavigate()
 
       <Form.Item name="password" label="Password">
         <Paragraph editable={{ onChange: setPassword }}>{password}</Paragraph>
+      </Form.Item>
+
+      <Form.Item name="username" label="username">
+        <Paragraph editable={{ onChange: setUsername }}>
+          {username}
+        </Paragraph>
       </Form.Item>
 
       <Form.Item name="first_name" label="First Name">

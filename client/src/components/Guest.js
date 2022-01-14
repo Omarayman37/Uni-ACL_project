@@ -128,12 +128,20 @@ class HelloWorld extends Component {
             }
             hasFeedback
           >
+             <Input name="user_username" onChange={this.handleChange} />
+          </FormItem>
+          <FormItem
+            type="primary"
+            {...formItemLayout}
+            label="username"
+            hasFeedback
+          >
             <Input name="user_nickname" onChange={this.handleChange} />
           </FormItem>
           <FormItem
             type="primary"
             {...formItemLayout}
-            label="First Name"
+            label="Nickname"
             hasFeedback
           >
             <Input name="user_first_name" onChange={this.handleChange} />
