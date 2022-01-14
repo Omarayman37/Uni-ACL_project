@@ -29,9 +29,30 @@ import axios from "axios";
 import Seat from "./Seat";
 import "../App.css";
 import Flight from "./Flight";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import StripPayPage from "./StripPayPage";
+import {
+  useStripe,
+  useElements,
+  PaymentElement,
+} from "@stripe/react-stripe-js";
+
+
+
 const { Title } = Typography;
 
+   const  options = {
+      // passing the client secret obtained from the server
+      clientSecret:
+        "sk_test_51KHWXsLgiWcF7ZDafaMlq9FWUT5jo8jU6kP0tgomJm3lKfkUvyVMabgWq5e8ODY4X9jXei2ryfLQWYkNpj2DzDT700ahwa474v",
+    };
+   const stripe = loadStripe(
+      "pk_test_51KHWXsLgiWcF7ZDaZjtY4a30WCMKUnX94ZJ0oRmtEsmcvddajlMkXaX9jfW5OhkcsUS8xz1EZRXb7dBPc4UYRiEa00D3YyVwsE"
+    );
+
 const PayPage = () => {
+
   const [flight, setFlight] = useState({});
   const [eco, setEco] = useState([]);
   const [business, setBusiness] = useState([]);
@@ -52,7 +73,7 @@ const PayPage = () => {
           )
         );
   }
-  useEffect(() => {
+  useEffect( async () => {
     const f = location.state.flight;
     setFlight(f);
     console.log(`paying for flight ${f}`);
@@ -68,19 +89,25 @@ const PayPage = () => {
       res_bui.length * (price * 1.2) +
       res_fir.length * (price * 1.4);
     setPrice(Math.floor(total_price));
+
+    // 
+
+    
   }, []);
   return (
     <div>
       <Flight flight={flight} />
 
       <Divider>First Class</Divider>
-      {first.map((seat) => (
-        <Tag color="magenta">{seat}</Tag>
+      {first.map((seat, index) => (
+        <Tag key={index} color="magenta">
+          {seat}
+        </Tag>
       ))}
       <Divider>Buisness</Divider>
 
-      {business.map((seat) => (
-        <Tag color="cyan">{seat}</Tag>
+      {business.map((seat, index) => (
+        <Tag key={index} color="cyan">{seat}</Tag>
       ))}
       <Divider>Economy</Divider>
 
@@ -104,27 +131,70 @@ const PayPage = () => {
               //
               // here we update database
               for (const seat of eco) {
-                  reserve_seat(flight['_id'], seat, price);
+                reserve_seat(flight["_id"], seat, price);
               }
               for (const seat of business) {
-                reserve_seat(flight["_id"], seat, price*1.2);
+                reserve_seat(flight["_id"], seat, price * 1.2);
               }
               for (const seat of first) {
-                reserve_seat(flight["_id"], seat, price*1.4);
+                reserve_seat(flight["_id"], seat, price * 1.4);
               }
-              
-              
+
               // navigate
-              navigate("../PaySuccess");
+              navigate("../StripePay");
             }}
             okText="Yes Pay"
             cancelText="Wait"
           >
+            <Elements stripe={stripe} options={options}>
+              <StripPayPage />
+            </Elements>
+
             <Button>Pay</Button>
           </Popconfirm>
         </Col>
       </Row>
     </div>
+  );
+};
+const CheckoutForm = () => {
+  const stripe = useStripe();
+  const elements = useElements();
+
+  const handleSubmit = async (event) => {
+    // We don't want to let default form submission happen here,
+    // which would refresh the page.
+    event.preventDefault();
+
+    if (!stripe || !elements) {
+      // Stripe.js has not yet loaded.
+      // Make sure to disable form submission until Stripe.js has loaded.
+      return;
+    }
+
+    const result = await stripe.confirmPayment({
+      //`Elements` instance that was used to create the Payment Element
+      elements,
+      confirmParams: {
+        return_url: "https://my-site.com/order/123/complete",
+      },
+    });
+
+    if (result.error) {
+      // Show error to your customer (for example, payment details incomplete)
+      console.log(result.error.message);
+    } else {
+      // Your customer will be redirected to your `return_url`. For some payment
+      // methods like iDEAL, your customer will be redirected to an intermediate
+      // site first to authorize the payment, then redirected to the `return_url`.
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <PaymentElement />
+      <button disabled={!stripe}>Submit</button>
+    </form>
   );
 };
 
