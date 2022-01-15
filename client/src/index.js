@@ -7,11 +7,12 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Contexts from './components/Contexts';
 import StripPayPage from './components/StripPayPage';
 import EditFlight from './components/EditFlight';
-
+import Admin1 from './components/Admin1';
+import AdminPage from './components/AdminPage';
 ReactDOM.render(
   <BrowserRouter>
     <Contexts>
-      <EditFlight />
+      <AdminPage />
     </Contexts>
   </BrowserRouter>,
   document.getElementById("root")

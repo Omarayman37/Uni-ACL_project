@@ -12,7 +12,7 @@ const FlightsAdminButton = (props) => {
         <Button
           type="primary"
           onClick={(e) => {
-            navigate("../userAllFlights", { replace: true });
+            navigate("../AdminEditFlights", { replace: true });//write here the correct isa
           }}
         >Flights</Button>
       </div>

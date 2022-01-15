@@ -13,12 +13,16 @@ import {
   Button,
   AutoComplete,
   Alert,
+  FormGroup,
 } from "antd";
 import "antd/dist/antd.css";
 import axios from "axios";
 import crypto, { AES, createCipheriv, createHash, randomBytes } from "crypto";
 import { Context } from "./Contexts";
 import send_request from "../util/send_request";
+
+const FormItem = Form.Item;
+
 export default function Login2() {
     const navigate = useNavigate()
     const context = useContext(Context);
@@ -45,7 +49,7 @@ export default function Login2() {
         onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
-        <FormItem type="primary" {...formItemLayout} label="Username" hasFeedback>
+        <FormItem type="primary" label="Username" hasFeedback>
           <Input name="user_email" onChange={this.handleChange} />
         </FormItem>
         <FormItem label="Password" hasFeedback>
