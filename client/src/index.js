@@ -9,6 +9,12 @@ import StripPayPage from './components/StripPayPage';
 import EditFlight from './components/EditFlight';
 import Admin1 from './components/Admin1';
 import AdminPage from './components/AdminPage';
+import HomeGuest from './components/HomeGuest';
+import Login2 from './components/Login';
+import LoginAdmin from './components/LoginAdmin';
+import AddAirplane from './components/AddAirplane';
+
+
 ReactDOM.render(
   <BrowserRouter>
     <Contexts>

@@ -11,6 +11,13 @@ const UsersAdminButton = (props) => {
       <div>
         <Button
           type="primary"
+          style={{
+            width: '60%', 
+            height: 30,
+            position: 'absolute',
+            right: 300,
+            top: 10,
+      }}
           onClick={(e) => {
             navigate("../userAllFlights", { replace: true });//put the correct URL here
           }}
