@@ -18,7 +18,7 @@ import AddAirplane from './components/AddAirplane';
 ReactDOM.render(
   <BrowserRouter>
     <Contexts>
-      <AdminPage />
+      <App />
     </Contexts>
   </BrowserRouter>,
   document.getElementById("root")

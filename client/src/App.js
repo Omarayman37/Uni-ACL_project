@@ -30,7 +30,7 @@ import PaySuccess from './components/PaySuccess'
 import LoginAdmin from './components/LoginAdmin'
 import AdminPage from './components/AdminPage'
 
-
+import UpdateFlights from "./components/UpdateFlights";
 
 import Contexts, { Context } from "./components/Contexts";
 import StripePayPage from "./components/StripPayPage";
@@ -60,29 +60,7 @@ function App() {
         <Content style={{ padding: "50px 50px" }}>
 
         
-            <Route path="/" element={<SearchPage />} exact />
-            <Route path="/FavFlights" element={<FavFlights />} exact />
-            <Route path="/ChooseSeats" element={<ChooseSeats />} exact />
-            <Route path="/EditUser" element={<EditUSer />} exact />
-            <Route path="/PaySuccess" element={<PaySuccess />} exact />
-            
-            <Route path="/Pay" element={<PayPage />} exact />
-            <Route path="/MyTickets" element={<MyTickets />} exact />
-            <Route path="/AddAirplane" element={<AddAirplane />} exact />
-            <Route path="/ReturnTrip" element={<ReturnTrip />} exact />
-            <Route path="/SearchPage" element={<SearchPage />} exact />
-            <Route path="/UpdateFlights" element={<UpdateFlights />} exact />
-            <Route path="/LoginUser" element={<LoginPage />} />
-            <Route path="/myFlights" element={<MyFlights />} />
-            <Route path="/userAllFlights" element={<UserAllFlights />} />
-            <Route path="/RegisterUser" element={<RegisterPage />} />
-            <Route path="/AddAirplanes" element={<Airplanes />} />
-            <Route path="/HomeGuest" element={<HomeGuest />} />
-
-            <Route path="/Ticket" element={<Ticket />} />
-            <Route path="/LoginAdmin" element={<LoginAdmin />} />
-            <Route path="/AdminPage" element={<AdminPage />} />
-
+ 
           {false &&
             (function nonLoggedIn() {
               return (
@@ -143,9 +121,7 @@ function App() {
               <Route path="/RegisterUser" element={<RegisterPage />} />
               <Route path="/AddAirplanes" element={<Airplanes />} />
               <Route path="/HomeGuest" element={<HomeGuest />} />
-
               <Route path="/Ticket" element={<Ticket />} />
-
               <Route path="/FlightCard" element={<FlightCard />} />
               <Route path="/StripePay" element={<StripePayPage />} />
               <Route
