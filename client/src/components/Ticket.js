@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import {
   Form,
   Input,
@@ -19,6 +19,7 @@ import {
   Typography,
   Space,
   PageHeader,
+  Alert,
 } from "antd";
 import "antd/dist/antd.css";
 import axios from "axios";
@@ -28,6 +29,7 @@ import { DownloadOutlined } from "@ant-design/icons";
 import "../App.css";
 import { useState, useEffect } from "react";
 import QRCode from "react-qr-code";
+import Send_request from "../util/send_request";
 
 const { Text, Link } = Typography;
 
@@ -44,15 +46,15 @@ const Ticket = ({  }) => {
   const [ticket, setTicket] = useState({})
   const [flight, setFlight] = useState({})
   const location = useLocation();
+  const navigate = useNavigate();
+  
+  const [msg, setMsg] = useState("")
   useEffect(async () => {
-    let ticket = location.state.ticket;
-    /**ticket {"ticket":{"_id":"61c25920b8e359b01280b828","IDUser":"61c1e11fe14ea80392b8ade5","IDFlight":"61c0a4a95d2eb7a50cd7c87c","from":"testing","to":"Testing 2 again","arrival_time":"2022-01-01T15:40:34.059Z","departure_time":"2022-01-01T15:40:29.650Z","__v":0}} */
-    const data = await axios.post("http://localhost:5000/get-flight", {
-      flight_id: ticket.IDFlight,
-    });
-    let flight = data["data"]["flight"];
-    const user_data = await axios.post("http://localhost:5000/get-user");
-    let user = user_data["data"]["user"];
+    let ticket = location.state.ticket; // get from nav
+    let {flight} = await Send_request("get-flight", { flight_id: ticket.IDFlight });
+   console.log('got flight data = ', flight);
+    const { user } =  await Send_request("get-user");
+    
     console.log(
       `ticket ${JSON.stringify(location.state)}, flight:${JSON.stringify(
         flight
@@ -67,7 +69,6 @@ const Ticket = ({  }) => {
     setUser_email(user["email"]);
     setPrice(ticket["price"]);
     setSeat_nr(ticket["seat_number"]);
-
     setFlight(flight)
     setTicket(ticket)
   }, []);
@@ -111,14 +112,25 @@ const Ticket = ({  }) => {
             </Col>
           </Row>
 
-          <Button type="primary" onClick={async ()=>{
-            await axios.post("http://localhost:5000/CancelTicket", {
-              ticket_id: ticket["_id"],
-              seat_nr: seat_nr,
-              flight_id:flight['_id']
-            });
-            console.log(`canceled ${ticket} seat number : ${seat_nr} from flight: ${flight}`)
-          }}>Cancel</Button>
+          <Button
+            type="primary"
+            onClick={async () => {
+              const { error, msg } = await Send_request("CancelTicket", {
+                ticket_id: ticket["_id"],
+                seat_nr: seat_nr,
+                flight_id: flight["_id"],
+              });
+              console.log(
+                `canceled ${ticket} seat number : ${seat_nr} from flight: ${flight}`
+              );
+
+              if (!error) {
+                setMsg(msg);
+              }
+            }}
+          >
+            Cancel
+          </Button>
 
           {/* <img src="http://eslkidsgames.com/Flash/QR%20Code%20Maker/eslkidsgames.com.png"  alt="" title="Ticket" /> */}
           <Row>
@@ -129,6 +141,15 @@ const Ticket = ({  }) => {
               <PageHeader title={`Seat Number: ${seat_nr}`}></PageHeader>
             </Col>
           </Row>
+
+          {msg != "" && (
+            <Fragment>
+              <Alert message="Cancled Ticet" type="success" />
+              <Button onClick={()=>{
+                navigate('../MyTickets')
+              }}>My Tickets</Button>
+            </Fragment>
+          )}
         </Form>
       </Card>
     </div>

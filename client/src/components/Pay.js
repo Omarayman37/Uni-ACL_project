@@ -37,6 +37,7 @@ import {
   useElements,
   PaymentElement,
 } from "@stripe/react-stripe-js";
+import Send_request from "../util/send_request";
 
 
 
@@ -62,16 +63,21 @@ const PayPage = () => {
   const navigate = useNavigate();
   const reserve_seat=(flight_id, seat_nr, price)=>{
       axios
-        .post("http://localhost:5000/createTicket", {
-          flight_id: flight["_id"],
-          seat_nr,
-          price,
-        })
+        .post("http://localhost:5000/createTicket", )
         .then((response) =>
           console.log(
             `sucessfully created ticket ${flight_id} and seat ${seat_nr}, price:${price}`
           )
         );
+
+        // Creating a ticket
+        Send_request("createTicket", {
+          flight_id: flight["_id"],
+          seat_nr,
+          price,
+        });
+
+        console.log('Scucessfull created a ticket')
   }
   useEffect( async () => {
     const f = location.state.flight;
@@ -107,7 +113,9 @@ const PayPage = () => {
       <Divider>Buisness</Divider>
 
       {business.map((seat, index) => (
-        <Tag key={index} color="cyan">{seat}</Tag>
+        <Tag key={index} color="cyan">
+          {seat}
+        </Tag>
       ))}
       <Divider>Economy</Divider>
 
@@ -124,7 +132,7 @@ const PayPage = () => {
           <Popconfirm
             placement="rightBottom"
             title={"Sure You want to Confirm Paymen"}
-            onConfirm={() => {
+            onConfirm={async () => {
               console.log("confirmed the payment");
               // Here we actually Pay we keda
 
@@ -140,17 +148,29 @@ const PayPage = () => {
                 reserve_seat(flight["_id"], seat, price * 1.4);
               }
 
-              // navigate
-              navigate("../StripePay");
+              console.log("going to strip pay now");
+              const data = {
+                flight_id:flight["_id"],
+                seat_price:parseInt(flight['price']) || 100,
+                items: [
+                  { id: "e", quantity: eco.length || 0 },
+                  { id: "b", quantity: business.length || 0 },
+                  { id: "f", quantity: first.length || 0 },
+                ],
+              };
+              const { error, url, msg } = await Send_request("StripePay", data);
+
+              window.open(url, "_blank");
+              
             }}
             okText="Yes Pay"
             cancelText="Wait"
           >
-            <Elements stripe={stripe} options={options}>
-              <StripPayPage />
-            </Elements>
-
-            <Button>Pay</Button>
+           
+              <Button>
+                pay
+              </Button>
+            
           </Popconfirm>
         </Col>
       </Row>

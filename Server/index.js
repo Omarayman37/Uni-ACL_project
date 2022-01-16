@@ -13,6 +13,7 @@ import nodemailer from "nodemailer";
 import { create_token, get_user_from_token } from "./util/jwt.js";
 import Stripe from 'stripe';
 import dotenv from 'dotenv'
+import { get } from "http";
 dotenv.config();
 const STRIPE_PUBLIC_KEY =
   "pk_test_51KHWXsLgiWcF7ZDaZjtY4a30WCMKUnX94ZJ0oRmtEsmcvddajlMkXaX9jfW5OhkcsUS8xz1EZRXb7dBPc4UYRiEa00D3YyVwsE";
@@ -103,10 +104,9 @@ app.get("/get-all-users", async function (req, res) {
 });
 
 app.post("/get-user", async (req, res) => {
-  if (userID == undefined) {
-    await res.status(403).send({ error: "not-logged in" });
-    return;
-  }
+  const {token} = req.body;
+  let userID = get_user_from_token(token)['_id'];
+  console.log('getting user data with id: ', userID)
   let user = await UserData.findOne({ _id: userID });
   res.status(200).send({ user: user });
 });
@@ -243,13 +243,14 @@ app.post("/get-ticket", async function (req, res) {
 app.post("/get-user-tickets", async function (req, res) {
   const { token } = req.body;
   console.group();
-  console.log(token);
+  //console.log(token);
   const user = get_user_from_token(token);
-  console.log(user);
+  //console.log(user);
   let userID = user["_id"];
   const data = await ticketData.find({ IDUser: userID });
   console.log(userID, data);
   res.status(200).send({ tickets: data });
+  console.groupEnd();
 });
 
 app.get("/get-all-tickets", async (req, res) => {
@@ -689,7 +690,7 @@ app.post("/LoginUser", function (req, res) {
     "in the post method server resived post request with body:\n" +
       JSON.stringify(req.body)
   );
-  console.log(req.body.email);
+  console.log(req.body.username);
   console.log(req.body.password);
   // here
   let hashed_user_pass = createHash("sha256") // hash the passowrd to send it via internet
@@ -697,8 +698,8 @@ app.post("/LoginUser", function (req, res) {
     .digest("hex");
 
   let querry = {
-    username: req.body.user_email,
-    password: req.body.user_password,
+    username: req.body.username,
+    password: req.body.password,
   };
   //console.log(querry)
   UserData.findOne(querry)
@@ -745,6 +746,8 @@ app.post("/ReserveSeats", async (req, res) => {
       res.status(200).json({ status: "ok", success: true, err: null }); // this means that it was great and it worked quiet well if i can say so myself
     });
   });
+
+  
 });
 
 app.post("/DecreaseSeats", async (req, res) => {
@@ -779,7 +782,8 @@ app.post("/EditUser", async (req, res) => {
 
 app.post('/StripePay', async (req, res)=>{
   
-  const {items, token} = req.body
+  const {items, token, flight_id, seat_price} = req.body
+  const user = get_user_from_token(token);
   let stripe = await Stripe(PRIVATE_KEY);
   console.log("paying with stripe", stripe.checkout);
   const session = await stripe.checkout.sessions.create({
@@ -787,17 +791,28 @@ app.post('/StripePay', async (req, res)=>{
     mode: "payment",
     success_url: `http://localhost:3000/PaySuccess`,
     cancel_url: `http://localhost:3000/Payfailure`,
-    line_items: items.map((item) => {
-      return {
+    line_items: items.filter((item)=>{return item.quantity!=0}).map((item) => {
+      // here we get the price for each ticket we keda
+     
+      const { id, quantity } = item;
+      let name = 'Buissness Seats'
+      switch(id){
+        case 'e':name='Eco Seats';break;
+        case 'b':name = "Buissness Seats";break;
+        case 'f':name= "First Class Seats";break;
+      }
+      let intent = {
         price_data: {
           currency: "usd",
           product_data: {
-            name: "item name 1",
+            name: name,
           },
-          unit_amount: 10000,
+          unit_amount: seat_price * 100,
         },
-        quantity: 1,
+        quantity: quantity,
       };
+      console.log("Item strips is", JSON.stringify(intent));
+      return intent;
     }),
   });
 
@@ -807,6 +822,9 @@ app.post('/StripePay', async (req, res)=>{
     msg:"redirect to payment isa",
     url:session.url
   })
+  // change the database
+  
+  
 
 })
 

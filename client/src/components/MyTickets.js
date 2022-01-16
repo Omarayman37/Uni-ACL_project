@@ -31,6 +31,7 @@ import Seat from "./Seat";
 import "../App.css";
 import Flight from "./Flight";
 import Ticket from './Ticket'
+import Send_request from "../util/send_request";
 const { Title } = Typography;
 
 const PayPage = () => {
@@ -43,8 +44,7 @@ const PayPage = () => {
   };
   useEffect(async () => {
     try{
-    let data = await axios.post("http://localhost:5000/get-user-tickets");
-    let tickets = data['data']['tickets']
+    let tickets = (await Send_request("get-user-tickets", {}))['tickets'];
     setTickets(tickets)
     console.log(`recived ${tickets}`);
     setTickets(tickets);
