@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
 import { useContext, createContext } from "react";
 import "./App.css";
@@ -70,6 +71,7 @@ function App() {
             <Route path="/AddAirplane" element={<AddAirplane />} exact />
             <Route path="/ReturnTrip" element={<ReturnTrip />} exact />
             <Route path="/SearchPage" element={<SearchPage />} exact />
+            <Route path="/UpdateFlights" element={<UpdateFlights />} exact />
             <Route path="/LoginUser" element={<LoginPage />} />
             <Route path="/myFlights" element={<MyFlights />} />
             <Route path="/userAllFlights" element={<UserAllFlights />} />
