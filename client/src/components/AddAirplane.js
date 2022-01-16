@@ -38,6 +38,7 @@ class AddAirplane extends Component {
       new_state_after_async_setState; // as we do not want to send the flights from state but send eveything else
     const response = await axios.post("http://localhost:5000/get-flights", {
       querry: querry,
+      
     });
 
     const flights = response["data"]["data"];
