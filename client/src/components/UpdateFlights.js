@@ -130,12 +130,9 @@ class UpdateFlights extends Component {
 
   handleDelete = (e) => {
     console.log(this.state);
-    App
-      .post("/delete", this.props.flight_id)
-      .then((response) =>
-        delete JSON(this.props.flight_id),
-        console.log("sucessfully saved\n" + JSON.stringify(this.state))
-      );
+    App.post("/delete", function (req , res) {
+      res.body(flight_id)
+    })
   };
 
   reroute = (e) => {
