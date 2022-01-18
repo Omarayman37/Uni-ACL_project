@@ -24,6 +24,7 @@ import {
 import axios from "axios";
 import Seat from "./Seat";
 import "../App.css";
+import Send_request from "../util/send_request";
 const Seats = ({}) => {
   const [seats, setSeats] = useState({});
   const [error_msg, setError_msg] = useState("");
@@ -31,19 +32,21 @@ const Seats = ({}) => {
   const [price, setprice] = useState(0);
   const location = useLocation();
   const [flight_id, setFlight_id] = useState("");
-  const [flight, setFlight] = useState({})
-  const navigate = useNavigate()
+  const [flight, setFlight] = useState({});
+  const navigate = useNavigate();
   useEffect(async () => {
     console.log("show seats");
     let flight = location.state.flight;
-    setFlight(flight)
-    let flight_id = flight._id
+    setFlight(flight);
+    let flight_id = flight._id;
     setFlight_id(flight_id);
-    const _data = await axios.post("http://localhost:5000/get-Seats", {
+    const _data = await Send_request("get-Seats", {
       flight_id: flight_id,
     });
-    console.log(`retrived seats ${_data["data"]["seat"]}`);
-    setSeats(_data["data"]["seat"]);
+    console.log(_data);
+
+    console.log(`retrived seats ${_data["seat"]}`);
+    setSeats(_data["seat"]);
     const ticket = { price: 123 };
     setprice(ticket.price);
   }, []);
@@ -146,45 +149,30 @@ const Seats = ({}) => {
       <Button
         type="primary"
         shape="round"
-        onClick={() => {
+        onClick={ async () => {
           console.log(seats);
           let reserved_seats_eco = [];
           for (const [key, value] of Object.entries(seats["EconomySeats"])) {
             if (value == "reserved") reserved_seats_eco.push(key);
           }
           // reserve eco seats
-          axios
-            .post("http://localhost:5000/ReserveSeats", {
+          await   Send_request("ReserveSeats", {
               reserved_seats: reserved_seats_eco,
               flight_id: flight_id,
               seat_class: "EconomySeats", // EconomySeats, BusinessSeats, FirstClassSeats
-            })
-            .then((res) =>
-              console.log(
-                `saved successfullly seats ${reserved_seats_eco} in flight ${flight_id}`
-              )
-            )
-            .catch((err) => setError_msg(err.message));
-
+            });
           let reserved_seats_business = [];
 
           for (const [key, value] of Object.entries(seats["BusinessSeats"])) {
             if (value == "reserved") reserved_seats_business.push(key);
             // send post requst to finish this
           }
-          //reserve buissness seats
-          axios
-            .post("http://localhost:5000/ReserveSeats", {
+
+           await  Send_request("ReserveSeats", {
               reserved_seats: reserved_seats_business,
               flight_id: flight_id,
               seat_class: "BusinessSeats", // EconomySeats, BusinessSeats, FirstClassSeats
-            })
-            .then((res) =>
-              console.log(
-                `saved successfullly seats ${reserved_seats_business} in flight ${flight_id}`
-              )
-            )
-            .catch((err) => setError_msg(err.message));
+            });
           let reserved_seats_first = [];
 
           for (const [key, value] of Object.entries(seats["FirstClassSeats"])) {
@@ -192,37 +180,30 @@ const Seats = ({}) => {
             // send post requst to finish this
           }
           // reserve first class
-          axios
-            .post("http://localhost:5000/ReserveSeats", {
-              reserved_seats: reserved_seats_first,
-              flight_id: flight_id,
-              seat_class: "FirstClassSeats", // EconomySeats, BusinessSeats, FirstClassSeats
-            })
-            .then((res) =>
-              console.log(
-                `saved successfullly seats ${reserved_seats_first} in flight ${flight_id}`
-              )
-            )
-            .catch((err) => setError_msg(err.message));
 
-          axios
-            .post("http://localhost:5000/DecreaseSeats", {
-              flight_id: flight_id,
-              number_of_seats:
-                reserved_seats_business.length +
-                reserved_seats_eco.length +
-                reserved_seats_first.length,
-            })
-            .then((res) => console.log(`changed remaing seats`))
-            .catch((err) => setError_msg(err.message));
+          await Send_request("ReserveSeats", {
+            reserved_seats: reserved_seats_first,
+            flight_id: flight_id,
+            seat_class: "FirstClassSeats", // EconomySeats, BusinessSeats, FirstClassSeats
+          });
 
-            let params = {
-              flight_id: flight_id,
-              flight: flight,
-              reserved_seats_business: reserved_seats_business,
-              reserved_seats_eco:reserved_seats_eco,
-              reserved_seats_first:reserved_seats_first
-            };
+         
+
+          await Send_request("DecreaseSeats", {
+            flight_id: flight_id,
+            number_of_seats:
+              reserved_seats_business.length +
+              reserved_seats_eco.length +
+              reserved_seats_first.length,
+          });
+
+          let params = {
+            flight_id: flight_id,
+            flight: flight,
+            reserved_seats_business: reserved_seats_business,
+            reserved_seats_eco: reserved_seats_eco,
+            reserved_seats_first: reserved_seats_first,
+          };
           navigate("../Pay", { state: params });
         }}
 

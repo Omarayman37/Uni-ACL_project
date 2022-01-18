@@ -16,6 +16,7 @@ import {
 import crypto, { AES, createCipheriv, createHash, randomBytes } from "crypto";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Send_request from "../util/send_request";
 
 const { Option } = Select;
 const { Paragraph } = Typography;
@@ -59,6 +60,7 @@ const RegistrationForm = () => {
       let updated_obj = {
           first_name:first_name,
           email:email,
+          username:username,
           password:password,
           home_address:home_address,
           last_name:last_name,
@@ -69,7 +71,10 @@ const RegistrationForm = () => {
   
     
     axios
-      .post("http://localhost:5000/EditUser", updated_obj)
+      .post("http://localhost:5000/EditUser", {
+        ...updated_obj,
+        token: window.localStorage.getItem("token"),
+      })
       .then((response) =>
         console.log(
           "updated Successfully saved\n" + JSON.stringify(updated_obj)
@@ -124,6 +129,7 @@ const RegistrationForm = () => {
 
 const [user, setUser] = useState({})
 const [first_name, setFirst_name] = useState("")
+const [username, setUsername] = useState("")
 const [last_name, setLast_name] = useState("")
 const [email, setEmail] = useState("")
 const [password, setPassword] = useState("")
@@ -135,11 +141,12 @@ const navigate = useNavigate()
   /// States for all the fields from the initial User
   useEffect( async() => {
       try {
-          const data = await axios.post("http://localhost:5000/get-user");
+          const data = await Send_request('get-user')
           const _user = data["data"]["user"];
           console.log(`initial user data ${JSON.stringify(_user)}`);
           setFirst_name(_user["first_name"]);
           setLast_name(_user.last_name);
+          setUsername(_user.username);
           setEmail(_user["email"]);
           setPassword(_user["password"]);
           settelephone_number(_user["telephone_number"]);
@@ -157,6 +164,12 @@ const navigate = useNavigate()
 
       <Form.Item name="password" label="Password">
         <Paragraph editable={{ onChange: setPassword }}>{password}</Paragraph>
+      </Form.Item>
+
+      <Form.Item name="username" label="username">
+        <Paragraph editable={{ onChange: setUsername }}>
+          {username}
+        </Paragraph>
       </Form.Item>
 
       <Form.Item name="first_name" label="First Name">
