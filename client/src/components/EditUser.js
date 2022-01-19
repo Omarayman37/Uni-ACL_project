@@ -69,17 +69,11 @@ const RegistrationForm = () => {
           passport:passport
       }
   
-    
-    axios
-      .post("http://localhost:5000/EditUser", {
+  
+      Send_request("./EditUser", {
         ...updated_obj,
         token: window.localStorage.getItem("token"),
-      })
-      .then((response) =>
-        console.log(
-          "updated Successfully saved\n" + JSON.stringify(updated_obj)
-        )
-      );
+      });
   };
 
   const prefixSelector = (
@@ -108,23 +102,6 @@ const RegistrationForm = () => {
   );
 
 
-  const [autoCompleteResult, setAutoCompleteResult] = useState([]);
-
-  const onWebsiteChange = (value) => {
-    if (!value) {
-      setAutoCompleteResult([]);
-    } else {
-      setAutoCompleteResult(
-        ["A52", "L01"].map((domain) => `${domain}${value}`)
-      );
-    }
-  };
-
-  const websiteOptions = autoCompleteResult.map((website) => ({
-    label: website,
-    value: website,
-  }));
-
 
 
 const [user, setUser] = useState({})
@@ -142,8 +119,10 @@ const navigate = useNavigate()
   useEffect( async() => {
       try {
           const data = await Send_request('get-user')
-          const _user = data["data"]["user"];
-          console.log(`initial user data ${JSON.stringify(_user)}`);
+
+          const _user = data["user"];
+          console.log(`initial user data`);
+          console.dir(_user)
           setFirst_name(_user["first_name"]);
           setLast_name(_user.last_name);
           setUsername(_user.username);
@@ -151,7 +130,9 @@ const navigate = useNavigate()
           setPassword(_user["password"]);
           settelephone_number(_user["telephone_number"]);
           setHome_address(_user["home_address"]);
+          setPassport(_user["passport"]);
       } catch (error) {
+        console.error(error)
           navigate('/LoginUser')
       }
      

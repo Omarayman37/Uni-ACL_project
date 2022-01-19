@@ -18,6 +18,8 @@ let flightSchema = new Schema(
     FirstClass_seats:Number,
     SeatsLeft:Number,
     baggage_allowance: Number,
+    terminal_deptarture:String,
+    terminal_arrival:String,
     Seats: {
       EconomySeats: {
         type: Map,

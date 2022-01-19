@@ -136,6 +136,36 @@ class SearchPage extends Component {
             </Col>
           </Row>
           <Row>
+            <Col span={8}>
+              <Form.Item label="Eco Seats">
+                <Input name="Economy_seats" onChange={this.handleChange} />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item label="High Class Seats">
+                <Input
+                  name="BusinessClass_seats"
+                  onChange={this.handleChange}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={8}>
+              <Form.Item label="Terminal Departure">
+                <Input name="terminal_deptarture" onChange={this.handleChange} />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item label="Terminal Arrival">
+                <Input
+                  name="terminal_arrival"
+                  onChange={this.handleChange}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
             <Col span={24}>
               <Form.Item name="price" label="Price">
                 <Slider

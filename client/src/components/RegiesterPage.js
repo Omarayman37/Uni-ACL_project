@@ -243,19 +243,7 @@ const RegistrationForm = () => {
         <Input />
       </Form.Item>
 
-      {/* <Form.Item
-        name="residence"
-        label="Habitual Residence"
-        rules={[
-          {
-            type: "array",
-            required: true,
-            message: "Please select your habitual residence!",
-          },
-        ]}
-      >
-        <Cascader options={residences} />
-      </Form.Item> */}
+
 
       <Form.Item
         name="telephone_number"
@@ -318,26 +306,15 @@ const RegistrationForm = () => {
           },
         ]}
       >
-        <InputNumber
-          addonAfter={suffixSelector}
+        <Input
+         
           style={{
             width: "100%",
           }}
         />
       </Form.Item>
 
-      {/* <Form.Item
-        name="intro"
-        label="Intro"
-        rules={[
-          {
-            required: true,
-            message: "Please input Intro",
-          },
-        ]}
-      >
-        <Input.TextArea showCount maxLength={100} />
-      </Form.Item> */}
+
 
       <Form.Item
         name="gender"
@@ -355,60 +332,19 @@ const RegistrationForm = () => {
         </Select>
       </Form.Item>
       <Form.Item
-        name="contry_code"
-        label="Country Code"
+        name="passport"
+        label="Passport"
         rules={[
           {
             required: true,
-            message: "Please select gender!",
+            message: "enter passport number",
           },
         ]}
       >
         <Input />
       </Form.Item>
 
-      {/* <Form.Item
-        label="Captcha"
-        extra="We must make sure that your are a human."
-      >
-        <Row gutter={8}>
-          <Col span={12}>
-            <Form.Item
-              name="captcha"
-              noStyle
-              rules={[
-                {
-                  required: true,
-                  message: "Please input the captcha you got!",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Button>Get captcha</Button>
-          </Col>
-        </Row>
-      </Form.Item> */}
 
-      {/* <Form.Item
-        name="agreement"
-        valuePropName="checked"
-        rules={[
-          {
-            validator: (_, value) =>
-              value
-                ? Promise.resolve()
-                : Promise.reject(new Error("Should accept agreement")),
-          },
-        ]}
-        {...tailFormItemLayout}
-      >
-        <Checkbox>
-          I have read the <a href="">agreement</a>
-        </Checkbox>
-      </Form.Item> */}
       <Form.Item {...tailFormItemLayout}>
         <Button type="primary" htmlType="submit">
           Register
