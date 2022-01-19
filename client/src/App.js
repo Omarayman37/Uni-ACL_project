@@ -3,8 +3,7 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-route
 import { useContext, createContext } from "react";
 import "./App.css";
 import Guest from "./components/Guest.js";
-import Airplanes from "./components/Airplanes.js";
-import AllAirplanes from "./components/AllAirplanes.js";
+import AllAirplanes from "./components/AdminAllFlights.js";
 import LoginPage from "./components/Login";
 import SearchPage from "./components/SearchPage";
 import Reservedflights from "./components/Reservedflights";
@@ -12,7 +11,6 @@ import HomeGuest from "./components/HomeGuest"; //home page that the guest gets 
 import MyFlights from "./components/myFlights"; //page containing the flights of the user signed in
 import UserAllFlights from "./components/UserAllFlights"; //contains all flights with an option to reserve it
 import EditUser from "./components/RegiesterPage";
-import AddAirplane from "./components/AddAirplane";
 import ReturnTrip from "./components/ReturnTrip";
 import Seat from "./components/Seat";
 import Ticket from "./components/Ticket";
@@ -35,6 +33,7 @@ import UpdateFlights from "./components/UpdateFlights";
 import Contexts, { Context } from "./components/Contexts";
 import StripePayPage from "./components/StripPayPage";
 import EditFlight from './components/EditFlight'
+import AddFlight from "./components/AddFlight";
 // These are global Variables 
 
 
@@ -58,9 +57,6 @@ function App() {
           <Nav />
         </Header>
         <Content style={{ padding: "50px 50px" }}>
-
-        
- 
           {false &&
             (function nonLoggedIn() {
               return (
@@ -100,10 +96,8 @@ function App() {
               <Route path="/EditUser" element={<EditUSer />} exact />
               <Route path="/PaySuccess" element={<PaySuccess />} exact />
 
-
               <Route path="/Pay" element={<PayPage />} exact />
               <Route path="/MyTickets" element={<MyTickets />} exact />
-              <Route path="/AddAirplane" element={<AddAirplane />} exact />
               <Route path="/ReturnTrip" element={<ReturnTrip />} exact />
               <Route path="/SearchPage" element={<SearchPage />} exact />
               <Route
@@ -116,10 +110,11 @@ function App() {
                   />
                 }
               />
+
               <Route path="/myFlights" element={<MyFlights />} />
               <Route path="/userAllFlights" element={<UserAllFlights />} />
               <Route path="/RegisterUser" element={<RegisterPage />} />
-              <Route path="/AddAirplanes" element={<Airplanes />} />
+
               <Route path="/HomeGuest" element={<HomeGuest />} />
               <Route path="/Ticket" element={<Ticket />} />
               <Route path="/FlightCard" element={<FlightCard />} />
@@ -131,15 +126,51 @@ function App() {
                     status="403"
                     title="403"
                     subTitle="Sorry, you are not authorized to access this page."
-                    extra={<Button type="primary" onClick={()=>{
-                      navigate('../')
-                    }}>Back Home</Button>}
+                    extra={
+                      <Button
+                        type="primary"
+                        onClick={() => {
+                          navigate("../");
+                        }}
+                      >
+                        Back Home
+                      </Button>
+                    }
                   />
                 }
               />
-              
             </Routes>
           )}
+
+          <Routes>
+            <Route path="/" element={<EditUSer />} exact />
+            <Route path="/FavFlights" element={<FavFlights />} exact />
+            <Route path="/ChooseSeats" element={<ChooseSeats />} exact />
+            <Route path="/EditUser" element={<EditUSer />} exact />
+            <Route path="/PaySuccess" element={<PaySuccess />} exact />
+
+            <Route path="/Pay" element={<PayPage />} exact />
+            <Route path="/MyTickets" element={<MyTickets />} exact />
+            <Route path="/ReturnTrip" element={<ReturnTrip />} exact />
+            <Route path="/SearchPage" element={<SearchPage />} exact />
+            <Route
+              path="/LoginUser"
+              element={
+                <LoginPage
+                  user_logged_in={() => {
+                    setUserLoggedIn(true);
+                  }}
+                />
+              }
+            />
+
+            <Route path="/admin/" element={<LoginAdmin />} />
+            <Route path="/admin/Main" element={<AdminPage />} />
+            <Route path="/admin/AllFlights" element={<AllAirplanes />} />
+            <Route path="/admin/AddFlight" element={<AddFlight />} />
+
+            <Route path="/admin/EditFlight" element={<EditFlight />} />
+          </Routes>
         </Content>
       </Layout>
     </div>

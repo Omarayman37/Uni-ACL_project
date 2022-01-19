@@ -11,14 +11,14 @@ import CreateSeatsObject from "./util/CreateSeatsObject.js";
 import { register_user } from "./routes/user.routes.js";
 import nodemailer from "nodemailer";
 import { create_token, get_user_from_token } from "./util/jwt.js";
-import Stripe from 'stripe';
-import dotenv from 'dotenv'
+import Stripe from "stripe";
+import dotenv from "dotenv";
 import { get } from "http";
 dotenv.config();
 const STRIPE_PUBLIC_KEY =
   "pk_test_51KHWXsLgiWcF7ZDaZjtY4a30WCMKUnX94ZJ0oRmtEsmcvddajlMkXaX9jfW5OhkcsUS8xz1EZRXb7dBPc4UYRiEa00D3YyVwsE";
 const PRIVATE_KEY =
-  "sk_test_51KHWXsLgiWcF7ZDafaMlq9FWUT5jo8jU6kP0tgomJm3lKfkUvyVMabgWq5e8ODY4X9jXei2ryfLQWYkNpj2DzDT700ahwa474v"; 
+  "sk_test_51KHWXsLgiWcF7ZDafaMlq9FWUT5jo8jU6kP0tgomJm3lKfkUvyVMabgWq5e8ODY4X9jXei2ryfLQWYkNpj2DzDT700ahwa474v";
 const stripe = await Stripe(PRIVATE_KEY);
 console.log("server is running");
 var userID; //id of signed in user
@@ -104,9 +104,9 @@ app.get("/get-all-users", async function (req, res) {
 });
 
 app.post("/get-user", async (req, res) => {
-  const {token} = req.body;
-  let userID = get_user_from_token(token)['_id'];
-  console.log('getting user data with id: ', userID)
+  const { token } = req.body;
+  let userID = get_user_from_token(token)["_id"];
+  console.log("getting user data with id: ", userID);
   let user = await UserData.findOne({ _id: userID });
   res.status(200).send({ user: user });
 });
@@ -134,14 +134,16 @@ app.post("/myFlights", async function (req, res) {
   let userID = user["_id"];
   console.log("getting flight data");
   let flights = (await UserData.findById(userID)).flightsID;
-  console.log(flights)
+  console.log(flights);
   const records = await flightData.find({
     _id: { $in: flights },
   });
-  console.log(`current user fav flights `, JSON.stringify(records))
+  console.log(`current user fav flights `, JSON.stringify(records));
   res.status(200).json({
-    error:false, msg:'success', flights:records
-  })
+    error: false,
+    msg: "success",
+    flights: records,
+  });
 });
 app.post("/myReservedFlights", async function (req, res) {
   const { token } = req.body;
@@ -172,7 +174,7 @@ app.post("/updateUser", async function (req, res, next) {
   console.log("updating user data");
   console.log(req.body);
   console.log(userID);
-  var editusername = { $set: { username: req.body.username } };///fee ehhhhhhhh 5555555555
+  var editusername = { $set: { username: req.body.username } }; ///fee ehhhhhhhh 5555555555
   var edituseremail = { $set: { email: req.body.email } };
   var editusernickname = { $set: { nickname: req.body.nickname } };
   var edituserpassword = { $set: { password: req.body.password } };
@@ -273,7 +275,7 @@ app.post("/RegisterUser", function (req, res) {
     email,
     password,
     username,
-    passport_number,
+    passport,
     first_name,
     last_name,
     home_address,
@@ -291,7 +293,7 @@ app.post("/RegisterUser", function (req, res) {
     home_address: home_address,
     contry_code: contry_code,
     telephone_number: telephone_number,
-    passport: passport_number,
+    passport: passport,
     flightsID: [],
     ticketsID: [],
   };
@@ -325,6 +327,8 @@ app.post("/RegisterFlight", async function (req, res) {
     baggage_allowance,
     BusinessClass_seats,
     Economy_seats,
+    terminal_arrival,
+    terminal_deptarture,
   } = req.body;
   // TODO: first class seats == buissness class seats
   var item = {
@@ -344,6 +348,7 @@ app.post("/RegisterFlight", async function (req, res) {
     BusinessClass_seats: BusinessClass_seats,
     Economy_seats: Economy_seats,
     FirstClass_seats: BusinessClass_seats,
+    
     SeatsLeft:
       parseInt(BusinessClass_seats) +
       parseInt(Economy_seats) +
@@ -353,6 +358,8 @@ app.post("/RegisterFlight", async function (req, res) {
       BusinessClass_seats,
       BusinessClass_seats // this is not truly correct but assume # of first class seats == buissness class seats TODO:
     ),
+    terminal_arrival: terminal_arrival,
+    terminal_deptarture: terminal_deptarture,
   };
   var data = new flightData(item);
   data
@@ -371,11 +378,13 @@ app.post("/addToFavourite", async function (req, res) {
   let userID = user["_id"];
   let { flight_id } = req.body;
   let a = await UserData.findById(userID);
-  
-  await UserData.updateOne({ _id: userID }, { $push: { flightsID: flight_id } }).exec();
+
+  await UserData.updateOne(
+    { _id: userID },
+    { $push: { flightsID: flight_id } }
+  ).exec();
   let f = (await UserData.findById(userID)).flightsID;
   console.log("Addded to favorite with id", f, " to user ", userID);
-
 });
 app.post("/cancelflight", async function (req, res) {
   let { token } = req.body;
@@ -651,21 +660,21 @@ app.post("/createTicket", async (req, res) => {
 
   const ticket = await new ticketData(item);
   await ticket.save();
-  const ticket_id = ticket['_id']
+  const ticket_id = ticket["_id"];
   console.log(`saved ticket ${ticket}`);
   await UserData.updateOne(
     { _id: userID },
-    { $push: { ticketsID: ticket_id } },
+    { $push: { ticketsID: ticket_id } }
   );
-  let conf = await UserData.findById(userID)
-  console.log(conf.flightsID)
+  let conf = await UserData.findById(userID);
+  console.log(conf.flightsID);
   res.status(200).send({ status: "ok", msg: "seats booked" });
 });
 
 app.post("/CancelTicket", async (req, res) => {
-  const {token} = req.body;
+  const { token } = req.body;
   const user = get_user_from_token(token);
-  const userID = user['_id']
+  const userID = user["_id"];
   const { ticket_id, seat_nr, flight_id } = req.body;
   await ticketData.findOneAndRemove({ _id: ticket_id });
   console.log(`deleted ticket ${ticket_id}`);
@@ -681,8 +690,11 @@ app.post("/CancelTicket", async (req, res) => {
   flight["Seats"][seat_type][seat_nr] = "free";
   await flight.save();
   console.log(`changed seat ${seat_nr} to free from ${seat_type}`);
-  await UserData.findOneAndUpdate({_id:userID}, { $pull: { ticketsID: ticket_id } }  )
-  console.log('removed from the user ticketsID')
+  await UserData.findOneAndUpdate(
+    { _id: userID },
+    { $pull: { ticketsID: ticket_id } }
+  );
+  console.log("removed from the user ticketsID");
   res.status(200).send({ success: true });
 });
 app.post("/LoginUser", function (req, res) {
@@ -728,9 +740,9 @@ app.post("/LoginUser", function (req, res) {
     })
     .catch((err) => console.error(err));
 });
-app.post("/LoginAdmin",async (req, res) => {
-  res.redirect('/');
-})
+app.post("/LoginAdmin", async (req, res) => {
+  res.redirect("/");
+});
 app.post("/ReserveSeats", async (req, res) => {
   console.log("reserving seats:\n" + JSON.stringify(req.body));
   const { flight_id, reserved_seats, seat_class } = req.body;
@@ -746,8 +758,6 @@ app.post("/ReserveSeats", async (req, res) => {
       res.status(200).json({ status: "ok", success: true, err: null }); // this means that it was great and it worked quiet well if i can say so myself
     });
   });
-
-  
 });
 
 app.post("/DecreaseSeats", async (req, res) => {
@@ -767,9 +777,9 @@ app.post("/DecreaseSeats", async (req, res) => {
 });
 
 app.post("/EditUser", async (req, res) => {
-   const { token } = req.body;
-   const user = get_user_from_token(token);
-   const userID = user["_id"];
+  const { token } = req.body;
+  const user = get_user_from_token(token);
+  const userID = user["_id"];
   let updated_user_info = req.body;
 
   await UserData.updateOne({ _id: userID }, updated_user_info);
@@ -780,9 +790,8 @@ app.post("/EditUser", async (req, res) => {
   res.status(200).send({ msg: "User Updated" });
 });
 
-app.post('/StripePay', async (req, res)=>{
-  
-  const {items, token, flight_id, seat_price} = req.body
+app.post("/StripePay", async (req, res) => {
+  const { items, token, flight_id, seat_price } = req.body;
   const user = get_user_from_token(token);
   let stripe = await Stripe(PRIVATE_KEY);
   console.log("paying with stripe", stripe.checkout);
@@ -791,47 +800,83 @@ app.post('/StripePay', async (req, res)=>{
     mode: "payment",
     success_url: `http://localhost:3000/PaySuccess`,
     cancel_url: `http://localhost:3000/Payfailure`,
-    line_items: items.filter((item)=>{return item.quantity!=0}).map((item) => {
-      // here we get the price for each ticket we keda
-     
-      const { id, quantity } = item;
-      let name = 'Buissness Seats'
-      switch(id){
-        case 'e':name='Eco Seats';break;
-        case 'b':name = "Buissness Seats";break;
-        case 'f':name= "First Class Seats";break;
-      }
-      let intent = {
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: name,
+    line_items: items
+      .filter((item) => {
+        return item.quantity != 0;
+      })
+      .map((item) => {
+        // here we get the price for each ticket we keda
+
+        const { id, quantity } = item;
+        let name = "Buissness Seats";
+        switch (id) {
+          case "e":
+            name = "Eco Seats";
+            break;
+          case "b":
+            name = "Buissness Seats";
+            break;
+          case "f":
+            name = "First Class Seats";
+            break;
+        }
+        let intent = {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: name,
+            },
+            unit_amount: seat_price * 100,
           },
-          unit_amount: seat_price * 100,
-        },
-        quantity: quantity,
-      };
-      console.log("Item strips is", JSON.stringify(intent));
-      return intent;
-    }),
+          quantity: quantity,
+        };
+        console.log("Item strips is", JSON.stringify(intent));
+        return intent;
+      }),
   });
 
-  console.log(session)
+
+  console.log(session);
   res.status(200).json({
-    error:false,
-    msg:"redirect to payment isa",
-    url:session.url
-  })
-  // change the database
+    error: false,
+    msg: "redirect to payment isa",
+    url: session.url,
+  });
+  // send Mail 
+  let msg = "Items Purchased \n";
+  items
+      .filter((item) => {
+        return item.quantity != 0;
+      })
+      .map((item) => {
+        // here we get the price for each ticket we keda
+
+        const { id, quantity } = item;
+        let name = "Buissness Seats";
+        switch (id) {
+          case "e":
+            name = "Eco Seats";
+            break;
+          case "b":
+            name = "Buissness Seats";
+            break;
+          case "f":
+            name = "First Class Seats";
+            break;
+        }
+        msg += `Purchased: ${quantity} ${name}`;
+      })
+  const options = {
+    from: "AlmazaAirport@outlook.com", //mail el sender
+    to: user["email"], //el mafrood mail
+    subject: "Flight Reserved",
+    text: msg,
+  };
+  transporter.sendMail(options, ()=>console.log('sent mail successfully')); // TODO: Maher this is not working or working mesh mota2aked
   
-  
-
-})
-
-
+});
 
 app.post("/EditFlight", async (req, res) => {
- 
   const { _Flight, id, _id } = req.body;
   const { token } = req.body;
   const user = get_user_from_token(token);
@@ -842,10 +887,21 @@ app.post("/EditFlight", async (req, res) => {
   await flightData.updateOne({ _id: _id }, updated_Flight_info);
 
   let a = await flightData.findById(_id);
-  console.log(a)
+  console.log(a);
   res.status(200).send({ msg: "User Updated" });
 });
+app.post("/deleteFlight", async (req, res) => {
+  const { flight_id } = req.body;
+  const { token } = req.body;
+  const user = get_user_from_token(token);
+  const userID = user["id"];
+  let updated_Flight_info = req.body;
+  console.log(req.body);
 
+  await flightData.deleteOne({ _id: flight_id });
 
+  console.log('Flight deleted', flight_id)
+  res.status(200).send({ error:false, msg: "Flight Deleted" });
+});
 
 export default app;

@@ -5,13 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Contexts from './components/Contexts';
-import StripPayPage from './components/StripPayPage';
-import EditFlight from './components/EditFlight';
-import Admin1 from './components/Admin1';
-import AdminPage from './components/AdminPage';
-import HomeGuest from './components/HomeGuest';
-import LoginAdmin from './components/LoginAdmin';
-import AddAirplane from './components/AddAirplane';
+
 
 
 ReactDOM.render(

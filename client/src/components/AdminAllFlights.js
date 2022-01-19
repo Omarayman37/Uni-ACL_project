@@ -18,20 +18,28 @@ import {
   Divider,
   Typography,
   Space,
+  Alert,
+  Popconfirm,
 } from "antd";
 import "antd/dist/antd.css";
 import axios from "axios";
 import NavigateButton from "./navigate_buton";
 import moment from "moment";
-import { DownloadOutlined, PlusCircleOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import {
+  DownloadOutlined,
+  PlusCircleOutlined,
+  MinusCircleOutlined,
+} from "@ant-design/icons";
 import "../App.css";
-import Flight from './Flight'
-import FavButton from './FavButton'
+import Flight from "./Flight";
+import FavButton from "./FavButton";
 import FlightCard from "./FlightCrad";
-import App from "./AdminAllFlights";
+import { useNavigate } from "react-router-dom";
+import Send_request from "../util/send_request";
+import { useState } from "react";
 const { Text, Link } = Typography;
 
-class UpdateFlights extends Component {
+class SearchPage extends Component {
   state = {
     flights: [],
     number_of_seats: 0,
@@ -39,7 +47,7 @@ class UpdateFlights extends Component {
   async componentWillMount(props) {
     if (this.props.querry) {
       console.log(
-        "Update flights was given an initial querry of ",
+        "Search page was given an initial querry of ",
         this.props.querry
       );
 
@@ -119,25 +127,6 @@ class UpdateFlights extends Component {
       );
   };
 
-  handleEdit = (e) => {
-    console.log(this.state);
-    App
-      .post("/edit", this.props.flight_id)
-      .then((response) =>
-        console.log("sucessfully saved\n" + JSON.stringify(this.state))
-      );
-  };
-
-  handleDelete = (e) => {
-    console.log(this.state);
-    App
-      .post("/delete", this.props.flight_id)
-      .then((response) =>
-        delete JSON(this.props.flight_id),
-        console.log("sucessfully saved\n" + JSON.stringify(this.state))
-      );
-  };
-
   reroute = (e) => {
     console.log("rerouting");
     this.props.navigation.navigate("Login");
@@ -146,7 +135,8 @@ class UpdateFlights extends Component {
     return (
       <div className="card-container">
         <Card
-          title="Update Flights"
+          title="Search Flights"
+          extra={<a href="#">More</a>}
           style={{ width: 900 }}
         >
           <Form
@@ -219,9 +209,9 @@ class UpdateFlights extends Component {
                 </Form.Item>
               </Col>
             </Row>
-            {/* <Row justify="center">
+            <Row justify="center">
               <Col span={24}>
-                <Card title="Default size card" style={{ width: "500px" }}>
+                <Card title="Availaible Seats" style={{ width: "500px" }}>
                   <Space align="center">
                     <Button
                       type="primary"
@@ -265,7 +255,7 @@ class UpdateFlights extends Component {
                   </Space>
                 </Card>
               </Col>
-            </Row> */}
+            </Row>
 
             <Row>
               <Col span={24}>
@@ -287,34 +277,80 @@ class UpdateFlights extends Component {
             <Row>
               <Col span={12}>
                 <Form.Item>
-                  <Button type="primary" onClick={this.handleEdit}>
-                    Edit
+                  <Button type="primary" onClick={this.handleSubmit}>
+                    Submit
                   </Button>
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item>
-                <Button type="primary" onClick={this.handleDelete}>
-                    Delete
-                  </Button>
+                  <NavigateButton
+                    func={() => {
+                      return this.state;
+                    }}
+                  />
                 </Form.Item>
               </Col>
             </Row>
           </Form>
         </Card>
-        {/* <Divider>Results</Divider> */}
-        {/* {this.state.flights.map((flight, index) => (
+
+        <Divider>Results</Divider>
+        {this.state.flights.map((flight, index) => (
           <Card key={index}>
             <Flight flight={flight} />
-            <FavButton flight={flight} />
+            <EditFlightButton flight_id={flight["_id"]}></EditFlightButton>
+            <CancelFlightButton flight_id={flight["_id"]}></CancelFlightButton>
           </Card>
-        ))} */}
-        {/* {this.state.flights.map((flight, index)=>{
-          <FlightCard key={index} flight={flight}/>
-        })} */}
+        ))}
       </div>
     );
   }
 }
 
-export default UpdateFlights;
+function EditFlightButton({flight_id}) {
+  let navigate = useNavigate();
+  return (
+    <div>
+      <Button
+      onClick={()=>{
+        navigate("../admin/EditFlight", {
+          state:{flight_id: flight_id}
+        });
+      }}
+      >
+        Edit
+      </Button>
+      
+    </div>
+  )
+}
+function CancelFlightButton({ flight_id }) {
+  let navigate = useNavigate();
+  const [msg, setMsg] = useState('');
+  const [error, setError] = useState(false);
+  
+  return (
+    <div>
+      <Popconfirm
+        placement="bottom"
+        title="Sure you want to delete this flight"
+        onConfirm={async () => {
+          const { msg, error } = await Send_request("deleteFlight", {
+            flight_id: flight_id,
+          });
+          setError(!error);
+          setMsg(msg);
+        }}
+        okText="Yes"
+        cancelText="No"
+      >
+        <Button type="danger">Delete</Button>
+      </Popconfirm>
+      {error && <Alert message={msg} type="success" />}
+      
+    </div>
+  );
+}
+
+export default SearchPage;

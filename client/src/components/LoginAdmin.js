@@ -1,5 +1,3 @@
-import React, { Component } from "react";
-import {Link } from "react-router-dom";
 import {
   Form,
   Input,
@@ -13,125 +11,95 @@ import {
   Button,
   AutoComplete,
   Alert,
+  FormGroup,
 } from "antd";
-import "antd/dist/antd.css";
-import axios from "axios";
-import crypto, {AES, createCipheriv, createHash, randomBytes} from "crypto";
-import { useHistory } from 'react-router-dom';
-import LoginAdminButton from "./LoginAdminButton";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Send_request from "../util/send_request";
+
 const FormItem = Form.Item;
-// const { getFieldDecorator } = this.props.form;
-class LoginAdmin extends Component {
-  // state
-  state = {
-    user_email: "",
-    show_error: false,
-    error: "",
-    user_password:""
-  };
-  // functions to controll input
-  handleChange = (evt) => {
-    const value = evt.target.value;
-    this.setState({
-      [evt.target.name]: value.trim(),
-    });
-  };
-  
- 
-
-  handleSubmit = (e) => {
-    
-
-    // Here we encrypt using a super scret key and and initialization vector 
-    let login_request_object = this.state
-    login_request_object["user_password_"] = createHash("sha256")
-      .update(login_request_object["user_password"])
-      .digest("hex");
-    console.log(login_request_object);
-
-    axios
-      .post("http://localhost:5000/LoginUser", login_request_object)
-      .then((res) => {
-        const { success, err } = res.data;
-        if (success) {
-
-          console.log(
-            "successfull login with credentials : " + JSON.stringify(this.state)
-          );
-          window.location.href = "http://localhost:3000/"; // TODO: FIX THIS TRASH LATER
-        } else {
-          console.log("invalud credentails :" + JSON.stringify(this.state));
-          // here we tell the UI to display an error we keda
-
-          this.setState({
-            show_error: true,
-            error: err,
-          });
-        }
-      })
-      .catch((err) => {
-        console.error(err);
+const Admin1 = () => {
+  let navigate = useNavigate();
+  const [Err, setErr] = useState(false);
+  const onFinish = async (values) => {
+    if (values.password == 12345) {
+      console.log("Success:", values);
+      const { msg, error, token } = await Send_request("LoginUser", {
+        username: 'admin',
+        password: '12345',
       });
+
+      if (error) {
+        //setMessage(msg);
+      } else {
+        localStorage.setItem("token", token);
+      }
+      navigate("../AdminPage", {
+        replace: true,
+      });
+    } else {
+      setErr(true);
+    }
   };
 
-  render() {
-    const { history } = this.props;
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 6 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
-      },
-    };
-    const tailFormItemLayout = {
-      wrapperCol: {
-        xs: {
-          span: 24,
-          offset: 0,
-        },
-        sm: {
-          span: 14,
-          offset: 6,
-        },
-      },
-    };
+  const onFinishFailed = (errorInfo) => {
+    console.log("Failed:", errorInfo);
+  };
 
-    return (
-      <Form
-        onSubmit={this.handleSubmit}
-        {...formItemLayout}
-        /* style={{ width: "600px" }}*/
-        style={{
-          height: "1200px",
-         
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
+  return (
+    <Form
+      name="basic"
+      labelCol={{
+        span: 8,
+      }}
+      wrapperCol={{
+        span: 16,
+      }}
+      initialValues={{
+        remember: true,
+      }}
+      onFinish={onFinish}
+      onFinishFailed={onFinishFailed}
+      autoComplete="off"
+    >
+      <Form.Item
+        label="Password"
+        name="password"
+        rules={[
+          {
+            required: true,
+            message: "Please input your password!",
+          },
+        ]}
+      >
+        <Input.Password />
+      </Form.Item>
+
+      <Form.Item
+        name="remember"
+        valuePropName="checked"
+        wrapperCol={{
+          offset: 8,
+          span: 16,
         }}
       >
-      
-        <FormItem label="Password" hasFeedback>
-        <Input.Password name="user_password" onChange={this.handleChange} />
-        </FormItem>
+        <Checkbox>Remember me</Checkbox>
+      </Form.Item>
 
-        <div>
+      <Form.Item
+        wrapperCol={{
+          offset: 8,
+          span: 16,
+        }}
+      >
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
 
-<Col span={15}>
-              <Form.Item><LoginAdminButton/></Form.Item>
-           
-            </Col>
-             </div>
-             
-    
-      
-        
-        {this.state.show_error && (
-          <FormItem {...tailFormItemLayout}>
+        {Err && (
+          <FormItem>
             <Alert
-              message={this.state.error}
+              message={"Invalid Password"}
               description="Your Password is wrong"
               type="error"
               showIcon
@@ -139,9 +107,8 @@ class LoginAdmin extends Component {
             />
           </FormItem>
         )}
-      </Form>
-    );
-  }
-}
-
-export default LoginAdmin;
+      </Form.Item>
+    </Form>
+  );
+};
+export default Admin1;

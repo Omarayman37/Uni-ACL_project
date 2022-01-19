@@ -20,6 +20,7 @@ import {
   Space,
   PageHeader,
   Alert,
+  Popconfirm,
 } from "antd";
 import "antd/dist/antd.css";
 import axios from "axios";
@@ -111,10 +112,11 @@ const Ticket = ({  }) => {
               <Form.Item label="price">{price}</Form.Item>
             </Col>
           </Row>
-
-          <Button
-            type="primary"
-            onClick={async () => {
+          
+          <Popconfirm
+            placement="right"
+            title="Are you sure you want to cancel this flight a refund may take a few days"
+            onConfirm={async () => {
               const { error, msg } = await Send_request("CancelTicket", {
                 ticket_id: ticket["_id"],
                 seat_nr: seat_nr,
@@ -128,9 +130,11 @@ const Ticket = ({  }) => {
                 setMsg(msg);
               }
             }}
+            okText="Yes"
+            cancelText="No"
           >
-            Cancel
-          </Button>
+            <Button type="danger">Cancel</Button>
+          </Popconfirm>
 
           {/* <img src="http://eslkidsgames.com/Flash/QR%20Code%20Maker/eslkidsgames.com.png"  alt="" title="Ticket" /> */}
           <Row>
@@ -145,9 +149,13 @@ const Ticket = ({  }) => {
           {msg != "" && (
             <Fragment>
               <Alert message="Cancled Ticet" type="success" />
-              <Button onClick={()=>{
-                navigate('../MyTickets')
-              }}>My Tickets</Button>
+              <Button
+                onClick={() => {
+                  navigate("../MyTickets");
+                }}
+              >
+                My Tickets
+              </Button>
             </Fragment>
           )}
         </Form>

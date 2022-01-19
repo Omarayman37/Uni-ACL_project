@@ -62,13 +62,7 @@ const PayPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const reserve_seat=(flight_id, seat_nr, price)=>{
-      axios
-        .post("http://localhost:5000/createTicket", )
-        .then((response) =>
-          console.log(
-            `sucessfully created ticket ${flight_id} and seat ${seat_nr}, price:${price}`
-          )
-        );
+
 
         // Creating a ticket
         Send_request("createTicket", {
