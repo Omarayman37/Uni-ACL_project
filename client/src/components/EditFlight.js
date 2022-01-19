@@ -54,7 +54,7 @@ const tailFormItemLayout = {
 const EditFlight = () => {
   const [form] = Form.useForm();
   const location = useLocation();
-  let {_id} = location.state;
+  let {flight_id:_id} = location.state;
   
 
   const onFinish = (values) => {
@@ -110,7 +110,7 @@ const EditFlight = () => {
   useEffect(async () => {
     try {
       const data = await Send_request("get-Flight",{flight_id:_id});
-      const _Flight = data["Flight"];
+      const _Flight = data["flight"];
       console.log(`initial Flight data ${JSON.stringify(_Flight)}`);
       setid(_Flight["id"]);
       setdeparture_time(_Flight.departure_time);
@@ -119,6 +119,7 @@ const EditFlight = () => {
       setfrom(_Flight["from"]);
       setto(_Flight["to"]);
     } catch (error) {
+      console.error(error)
       navigate("/LoginUser");
     }
   }, []);

@@ -1,4 +1,4 @@
-import React, { Component, useContext } from "react";
+import React, { Component, useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Form,
@@ -20,19 +20,29 @@ import axios from "axios";
 import crypto, { AES, createCipheriv, createHash, randomBytes } from "crypto";
 import { Context } from "./Contexts";
 import send_request from "../util/send_request";
-
-const FormItem = Form.Item;
+import { useForm } from "rc-field-form";
 
 export default function Login2() {
     const navigate = useNavigate()
     const context = useContext(Context);
+    const [message, setMessage] = useState("")
+    
      const onFinish = async (values) => {
        console.log("Success:", values);
-       const {token} = await send_request('LoginUser', values)
-       localStorage.setItem('token', token)
-       console.log(`token is now = to ${token} and on local storage = ${localStorage.getItem('token')}`)
-       //context.setUserLoggedIn(true);
-       navigate('../')
+       const {msg,error,token} = await send_request('LoginUser', values)
+       if(error){
+        setMessage(msg);
+       }else{
+ localStorage.setItem("token", token);
+ console.log(
+   `token is now = to ${token} and on local storage = ${localStorage.getItem(
+     "token"
+   )}`
+ );
+ //context.setUserLoggedIn(true);
+ navigate("../");
+       }
+      
      };
 
      const onFinishFailed = (errorInfo) => {
@@ -41,25 +51,86 @@ export default function Login2() {
 
     return (
       <Form
-        name="basic"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-        initialValues={{ remember: true }}
+        name="login_user"
+        labelCol={{
+          span: 8,
+        }}
+        wrapperCol={{
+          span: 16,
+        }}
+        initialValues={{
+          remember: true,
+        }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
-        <FormItem type="primary" label="Username" hasFeedback>
-          <Input name="user_email" onChange={this.handleChange} />
-        </FormItem>
-        <FormItem label="Password" hasFeedback>
-          <Input.Password name="user_password" onChange={this.handleChange} />
-        </FormItem>
+        <Form.Item
+          label="Username"
+          name="username"
+          rules={[
+            {
+              required: true,
+              message: "Please input your username!",
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        <Form.Item
+          label="Password"
+          name="password"
+          rules={[
+            {
+              required: true,
+              message: "Please input your password!",
+            },
+          ]}
+        >
+          <Input.Password />
+        </Form.Item>
+
+        <Form.Item
+          name="remember"
+          valuePropName="checked"
+          wrapperCol={{
+            offset: 8,
+            span: 16,
+          }}
+        >
+          <Checkbox>Remember me</Checkbox>
+        </Form.Item>
+
+        <Form.Item
+          wrapperCol={{
+            offset: 8,
+            span: 16,
+          }}
+        >
           <Button type="primary" htmlType="submit">
             Submit
           </Button>
+        </Form.Item>
+        <Form.Item
+          wrapperCol={{
+            offset: 8,
+            span: 16,
+          }}
+        >
+          <Button type="primary" htmlType="submit" onClick={()=>{
+            navigate('../RegisterUser');
+          }}>
+            Register
+          </Button>
+        </Form.Item>
+        <Form.Item
+          wrapperCol={{
+            offset: 8,
+            span: 16,
+          }}
+        >
+          {message && <Alert message={message}></Alert>}
         </Form.Item>
       </Form>
     );

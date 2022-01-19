@@ -21,20 +21,8 @@ function StripPayPage() {
    
     return (
         <div>
-            <Button onClick={async ()=>{
-              console.log('clicked')
-              const data = {
-                items: [
-                  { id: 1, quantity: 3 },
-                  { id: 2, quantity: 1 },
-                ],
-              };
-              const{error, url, msg} = await Send_request("StripePay", data);
-              window.open(url, "_blank");
-
-            }}>
-              pay
-            </Button>
+          
+           
         </div>
     )
 }
